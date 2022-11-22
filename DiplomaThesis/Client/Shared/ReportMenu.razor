@@ -1,0 +1,213 @@
+@using DiplomaThesis.Client.Services.Interfaces
+@using DiplomaThesis.Shared.Contracts
+@inject IReportService ReportService
+@inject IDatasetService DatasetService
+@inject IAdministrationService AdministrationService
+
+<div class="flex-column float-end right-side-menus"
+     style="display: @(ShowMenu ? "block" : "none");">
+
+    @if (Report is null || UserGroups is null || Datasets is null)
+    {
+        <p>
+            <em>Loading...</em>
+        </p>
+    }
+    else
+    {
+        <p><strong>Id:</strong>&nbsp;@Report.Id</p>
+        <p><strong>Name:</strong>&nbsp;@Report.Name</p>
+        <hr/>
+        <strong>User group:</strong>
+        <label>
+            <select id="user_groups"
+                    name="user_groups"
+                    value="@SelectedUserGroupId"
+                    @onchange="SelectedUserGroupChanged">
+                <option value="@Guid.Empty.ToString()">&lt;No group assigned&gt;</option>
+                @foreach (var userGroup in UserGroups)
+                {
+                    <option value="@userGroup.Id.ToString()">
+                        @userGroup.Name
+                    </option>
+                }
+            </select>
+        </label>
+        <hr/>
+        <strong>Dataset:</strong>
+        <label>
+            <select id="data_sets"
+                    name="data_sets"
+                    value="@SelectedDatasetId"
+                    @onchange="SelectedDatasetChanged">
+                <option value="@Guid.Empty.ToString()">&lt;No group assigned&gt;</option>
+                @foreach (var dataset in Datasets)
+                {
+                    <option value="@dataset.Id.ToString()">
+                        @dataset.Name
+                    </option>
+                }
+            </select>
+        </label>
+        <hr/>
+        <div class="flex-row">
+            <label>
+                <input placeholder="New report name"
+                       @bind="_newReportName"
+                       @bind:event="oninput"/>
+            </label>
+            <button class="btn btn-outline-dark"
+                    @onclick="CloneReportButton">
+                Clone
+            </button>
+        </div>
+        <hr/>
+        <button
+            class="btn btn-outline-danger flex-fill"
+            style="width: 100%"
+            @onclick="DeleteReportButton">
+            Delete report
+        </button>
+        <hr/>
+    }
+    <button
+        class="btn btn-outline-dark flex-fill"
+        style="width: 100%"
+        @onclick="ToggleMenu">
+        Hide
+    </button>
+</div>
+
+@code {
+
+    [Parameter]
+    public EventCallback OnReportChanged { get; set; }
+
+    private ReportContract? _report = null;
+
+    public ReportContract? Report
+    {
+        get => _report;
+        set
+        {
+            _report = value;
+            SelectedUserGroupId = (value?.UserGroupId ?? Guid.Empty).ToString();
+            SelectedDatasetId = (value?.DatasetId ?? Guid.Empty).ToString();
+            ShowMenu = true;
+            StateHasChanged();
+        }
+    }
+
+    private string _selectedUserGroupId = Guid.Empty.ToString();
+
+    private string SelectedUserGroupId
+    {
+        get => _selectedUserGroupId;
+        set
+        {
+            _selectedUserGroupId = value;
+            StateHasChanged();
+        }
+    }
+
+    private string _selectedDatasetId = Guid.Empty.ToString();
+
+    private string SelectedDatasetId
+    {
+        get => _selectedDatasetId;
+        set
+        {
+            _selectedDatasetId = value;
+            StateHasChanged();
+        }
+    }
+
+    private UserGroupContract[]? UserGroups { get; set; }
+    private DatasetContract[]? Datasets { get; set; }
+
+    public bool ShowMenu { get; set; }
+
+    private string _newReportName = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        await UpdateData();
+    }
+
+    public void ToggleMenu()
+    {
+        ShowMenu = !ShowMenu;
+    }
+
+    private async Task UpdateData()
+    {
+        var userGroups = await AdministrationService.GetUserGroups();
+        UserGroups = userGroups;
+
+        var datasets = await DatasetService.GetDatasets();
+        Datasets = datasets;
+    }
+
+    private async Task SelectedDatasetChanged(ChangeEventArgs e)
+    {
+        var selectedDatasetId = e.Value?.ToString();
+
+        if (selectedDatasetId is null)
+        {
+            return;
+        }
+
+        SelectedDatasetId = selectedDatasetId;
+
+        if (Report is not null && !Report.DatasetId.Equals(Guid.Parse(SelectedDatasetId)))
+        {
+            if (await ReportService.RebindReportToDataset(Report!.Id, Guid.Parse(SelectedDatasetId)))
+            {
+                await OnReportChanged.InvokeAsync();
+                ToggleMenu();
+                StateHasChanged();
+            }
+        }
+    }
+
+    private async Task SelectedUserGroupChanged(ChangeEventArgs e)
+    {
+        var selectedUserGroupId = e.Value?.ToString();
+
+        if (selectedUserGroupId is null)
+        {
+            return;
+        }
+
+        SelectedUserGroupId = selectedUserGroupId;
+
+        if (Report is not null && !Report.UserGroupId.Equals(Guid.Parse(SelectedUserGroupId)))
+        {
+            if (await ReportService.MoveReportToUserGroup(Report!.Id, Guid.Parse(SelectedUserGroupId)))
+            {
+                await OnReportChanged.InvokeAsync();
+                ToggleMenu();
+                StateHasChanged();
+            }
+        }
+    }
+
+    private async Task CloneReportButton()
+    {
+        if (await ReportService.CloneReport(Report!.Id, _newReportName))
+        {
+            await OnReportChanged.InvokeAsync();
+            StateHasChanged();
+        }
+    }
+
+    private async Task DeleteReportButton()
+    {
+        if (await ReportService.DeleteReport(Report?.Id ?? Guid.Empty))
+        {
+            ToggleMenu();
+            await OnReportChanged.InvokeAsync();
+        }
+    }
+
+}

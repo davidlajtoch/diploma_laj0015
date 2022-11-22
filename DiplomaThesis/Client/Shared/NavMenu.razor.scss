@@ -1,0 +1,64 @@
+﻿@import '../wwwroot/css/variables';
+
+.nav {
+    width: 40px;
+    position: fixed;
+    left: 15px;
+    top: 50%;
+    -ms-transform: translateY(-50%);
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    font-family: $font_nunito_bold;
+    z-index: 10;
+
+    .group {
+        margin-top: 6px;
+        margin-bottom: 6px;
+
+        .item {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            flex-direction: row;
+            color: $color_grey;
+            background-color: $color_white;
+            border-radius: 500px;
+            margin-top: 5px;
+            margin-bottom: 5px;
+            transition: all ease-in-out 0.15s;
+            box-shadow: $shadow_normal_grey;
+            overflow: hidden;
+            cursor: pointer;
+
+            &:hover {
+                width: 180px;
+                color: $color_purple;
+                box-shadow: $shadow_normal_purple;
+            }
+
+            .icon {
+                position: relative;
+                top: 8px;
+                left: 8px;
+            }
+
+            .text {
+                width: 100px;
+                position: relative;
+                left: 20px;
+                text-align: center;
+                line-height: 40px;
+            }
+        }
+
+        .profile:hover {
+            width: 240px;
+        }
+    }
+}
+
+
+
+
+

@@ -1,0 +1,9 @@
+﻿.page {
+    display: flex;
+    flex-direction: row;
+
+    .main_container{
+        margin-left: 70px;
+        width: calc(100% - 70px);
+    }
+}

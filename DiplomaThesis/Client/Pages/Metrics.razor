@@ -1,0 +1,69 @@
+@page "/metrics"
+@using DiplomaThesis.Client.Services.Interfaces
+@using DiplomaThesis.Shared.Contracts
+@using Microsoft.AspNetCore.Authorization
+
+@inject IReportService ReportService
+
+@attribute [Authorize]
+
+<PageTitle>Metrics</PageTitle>
+<PageHeader Text="Metrics" />
+
+@if (_reports is null || _reports.Length == 0)
+{
+    <Loader />
+}
+else
+{
+    <div class="row">
+        @foreach (var report in _reports)
+        {
+            <div class="col m-4 report-element">
+                <AuthorizeView Roles="Architect">
+                    <button class="btn btn-outline-primary w-100"
+                            @onclick="() => SelectReport(report)">
+                        Select
+                    </button>
+                </AuthorizeView>
+                <ReportContainer Report="@report"/>
+            </div>
+        }
+    </div>
+
+    <div>
+        <AuthorizeView Roles="Architect">
+            <ReportMenu @ref="_reportMenu" OnReportChanged="UpdateData"/>
+        </AuthorizeView>
+    </div>
+}
+
+@code {
+    ReportMenu _reportMenu = null!;
+
+    ReportContract[]? _reports;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await UpdateData();
+        StateHasChanged();
+    }
+
+    private async Task UpdateData()
+    {
+        var reports = await ReportService.GetReportsFromBackend();
+
+        if (reports is not null)
+        {
+            _reports = reports;
+        }
+
+        StateHasChanged();
+    }
+
+    private void SelectReport(ReportContract report)
+    {
+        _reportMenu.Report = report;
+    }
+
+}

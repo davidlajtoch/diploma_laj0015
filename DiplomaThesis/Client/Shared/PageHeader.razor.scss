@@ -1,0 +1,11 @@
+﻿@import '../wwwroot/css/variables';
+
+.header {
+    width: 100%;
+    text-align: center;
+    font-family: $font_nunito_bold;
+    font-weight: 900;
+    font-size: 40px;
+    color: $color_grey;
+    margin-bottom: 40px;
+}

@@ -1,0 +1,109 @@
+@page "/data-sources"
+@using DiplomaThesis.Client.Services.Interfaces
+@using DiplomaThesis.Shared.Contracts
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize(Roles = "Admin, Architect")]
+
+@inject IDatasetService DatasetService
+@inject IFileParsingService Parser
+
+<PageTitle>Datasets</PageTitle>
+<PageHeader Text="Datasets" />
+
+<div class="flex-column">
+    @if (DatasetArray is null)
+    {   
+        <Loader />
+    }
+    else
+    {
+        foreach (var dataset in DatasetArray)
+        {
+            <div>
+                <strong>Id:</strong>&nbsp;@dataset.Id<br/>
+                <strong>Name:</strong>&nbsp;@dataset.Name<br/>
+                @if (dataset.ColumnNames.Any())
+                {
+                    <strong>Dataset structure:</strong>
+                    <br/>
+                    <table class="table">
+                        <thead>
+                        <tr>
+                            <th>Names</th>
+                            <th>Types</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        @foreach (var column in dataset.ColumnNames.Zip(dataset.ColumnTypes))
+                        {
+                            <tr>
+                                <td>@column.First</td>
+                                <td>@column.Second</td>
+                            </tr>
+                        }
+                        </tbody>
+                    </table>
+                }
+                else
+                {
+                    <strong>Dataset not uploaded through this app.</strong>
+                    <br/>
+                }
+                <strong>Upload more rows:</strong><br/>
+                <InputFile OnChange="@(args => LoadFile(args, dataset.Id))"/>
+            </div>
+            <hr/>
+        }
+        <div>
+            <strong>Create new dataset from JSON or CSV</strong><br/>
+            <InputFile OnChange="@(args => LoadFile(args, Guid.Empty))"/>
+        </div>
+        <hr/>
+    }
+</div>
+
+@code {
+    DatasetContract[]? DatasetArray { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await UpdateData();
+    }
+
+    private async Task UpdateData()
+    {
+        var datasets = await DatasetService.GetDatasets();
+        DatasetArray = datasets;
+
+        StateHasChanged();
+    }
+
+    private async Task LoadFile(InputFileChangeEventArgs e, Guid datasetId)
+    {
+        var file = e.File;
+        var datasetFileContent = await new StreamReader(file.OpenReadStream()).ReadToEndAsync();
+        string datasetJson;
+
+        try
+        {
+            datasetJson = Parser.ParseToJson(datasetFileContent, e.File.Name.Split(".").Last());
+            Console.WriteLine(datasetJson);
+        }
+        catch
+        {
+            Console.WriteLine("Exception");
+            return;
+        }
+
+
+        if (datasetId.Equals(Guid.Empty))
+        {
+            if (await DatasetService.UploadNewDataset(e.File.Name.Split(".")[0], datasetJson)) _ = UpdateData();
+        }
+        else
+        {
+            if (await DatasetService.UploadRowsToDataset(datasetId, datasetJson)) _ = UpdateData();
+        }
+    }
+
+}

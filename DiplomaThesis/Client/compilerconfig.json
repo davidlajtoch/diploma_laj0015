@@ -1,0 +1,26 @@
+﻿[
+  {
+    "outputFile": "Shared/NavMenu.razor.css",
+    "inputFile": "Shared/NavMenu.razor.scss"
+  },
+  {
+    "outputFile": "Shared/MainLayout.razor.css",
+    "inputFile": "Shared/MainLayout.razor.scss"
+  },
+  {
+    "outputFile": "Shared/Loader.razor.css",
+    "inputFile": "Shared/Loader.razor.scss"
+  },
+  {
+    "outputFile": "Pages/Index.razor.css",
+    "inputFile": "Pages/Index.razor.scss"
+  },
+  {
+    "outputFile": "Pages/Datasets.razor.css",
+    "inputFile": "Pages/Datasets.razor.scss"
+  },
+  {
+    "outputFile": "Shared/PageHeader.razor.css",
+    "inputFile": "Shared/PageHeader.razor.scss"
+  }
+]

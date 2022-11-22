@@ -1,0 +1,184 @@
+@using DiplomaThesis.Client.Services.Interfaces
+@using DiplomaThesis.Shared.Contracts
+@inject IAdministrationService AdministrationService
+
+<div class="flex-column float-end right-side-menus"
+     style="display: @(ShowUserMenu ? "block" : "none");">
+
+    @if (User is null || Roles is null || UserGroups is null)
+    {
+        <p>
+            <em>Loading...</em>
+        </p>
+    }
+    else
+    {
+        <p><strong>Id:</strong>&nbsp;@User.Id</p>
+        <p><strong>Name:</strong>&nbsp;@User.Name</p>
+        <hr/>
+        <strong>Roles:</strong>
+        <table class="table">
+            @foreach (var role in Roles)
+            {
+                <tr>
+                    <td>
+                        @role.Name
+                    </td>
+                    @if (!role.Name.Equals("Admin"))
+                    {
+                        @if (User.Roles.Any(roleInUser => roleInUser.Name.Equals(role.Name)))
+                        {
+                            <button class="btn btn-outline-dark oi oi-minus"
+                                    @onclick="() => AdministrationService.RemoveRole(User.Name, role.Name)">
+                            </button>
+                        }
+                        else
+                        {
+                            <button class="btn btn-outline-dark oi oi-plus"
+                                    @onclick="() => AdministrationService.AddRole(User.Name, role.Name)">
+                            </button>
+                        }
+                    }
+                </tr>
+            }
+        </table>
+
+        <hr/>
+        <strong>User group:</strong>
+        <label>
+            <select id="user_groups"
+                    name="user_groups"
+                    value="@SelectedUserGroupId"
+                    @onchange="SelectedUserGroupChanged">
+                <option value="@Guid.Empty.ToString()">&lt;No group assigned&gt;</option>
+                @foreach (var userGroup in UserGroups)
+                {
+                    <option value="@userGroup.Id.ToString()">
+                        @userGroup.Name
+                    </option>
+                }
+            </select>
+        </label>
+
+        <hr/>
+        <button
+            class="btn btn-outline-danger flex-fill"
+            style="width: 100%"
+            @onclick="DeleteUserButton">
+            Delete user
+        </button>
+    }
+    <hr/>
+    <button
+        class="btn btn-outline-dark flex-fill"
+        style="width: 100%"
+        @onclick="ToggleUserMenu">
+        Hide
+    </button>
+</div>
+
+@code {
+
+    [Parameter]
+    public EventCallback OnUserChanged { get; set; }
+
+    private UserContract? User { get; set; }
+    private RoleContract[]? Roles { get; set; }
+    private UserGroupContract[]? UserGroups { get; set; }
+
+    public bool ShowUserMenu { get; set; }
+
+    private string _selectedUserGroupId = Guid.Empty.ToString();
+
+    private string SelectedUserGroupId
+    {
+        get => _selectedUserGroupId;
+        set
+        {
+            _selectedUserGroupId = value;
+            StateHasChanged();
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var roles = await AdministrationService.GetRoles();
+        Roles = roles;
+
+        var userGroups = await AdministrationService.GetUserGroups();
+        UserGroups = userGroups;
+    }
+
+    public void ToggleUserMenu()
+    {
+        ShowUserMenu = !ShowUserMenu;
+    }
+
+    public void ShowUser(UserContract user)
+    {
+        User = user;
+        ShowUserMenu = true;
+        SelectedUserGroupId = User.UserGroupId.ToString();
+        StateHasChanged();
+    }
+
+    private async Task SelectedUserGroupChanged(ChangeEventArgs e)
+    {
+        var selectedUserGroupId = e.Value?.ToString();
+
+        if (selectedUserGroupId is null)
+        {
+            return;
+        }
+
+        SelectedUserGroupId = selectedUserGroupId;
+
+        if (User is not null && !User.UserGroupId.Equals(Guid.Parse(SelectedUserGroupId)))
+        {
+            if (await AdministrationService.MoveUserToUserGroup(User!.Id, Guid.Parse(SelectedUserGroupId)))
+            {
+                await OnUserChanged.InvokeAsync();
+                await AdministrationService.GetUser(User!.Id);
+                StateHasChanged();
+            }
+        }
+    }
+
+    private async Task AddRoleButton(string userName, string roleName)
+    {
+        if (await AdministrationService.AddRole(userName, roleName))
+        {
+            await OnUserChanged.InvokeAsync();
+            var user = await AdministrationService.GetUser(User!.Id);
+            if (user is not null)
+            {
+                User = user;
+                StateHasChanged();
+            }
+        }
+    }
+
+    private async Task RemoveRoleButton(string userName, string roleName)
+    {
+        if (await AdministrationService.RemoveRole(userName, roleName))
+        {
+            await OnUserChanged.InvokeAsync();
+            var user = await AdministrationService.GetUser(User!.Id);
+            if (user is not null)
+            {
+                User = user;
+                StateHasChanged();
+            }
+        }
+    }
+
+    private async Task DeleteUserButton()
+    {
+        if (await AdministrationService.DeleteUser(User!.Name))
+        {
+            ToggleUserMenu();
+            await OnUserChanged.InvokeAsync();
+        }
+    }
+
+}

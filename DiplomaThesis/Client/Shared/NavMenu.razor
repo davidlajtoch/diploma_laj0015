@@ -1,0 +1,85 @@
+﻿@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+@inject NavigationManager Navigation
+@inject SignOutSessionStateManager SignOutManager
+
+<div class="@NavMenuCssClass nav_container" @onclick="ToggleNavMenu">
+    <nav class="nav">
+        <div class="group">
+            <AuthorizeView>
+                <Authorized>
+                    <NavLink style="text-decoration: none;" class="link" href="" Match="NavLinkMatch.All">
+                        <div class="item">
+                            <i class="material-icons icon">home</i>
+                            <span class="text">Home</span>
+                        </div>
+                    </NavLink>
+                </Authorized>
+            </AuthorizeView>
+        </div>
+        
+        <div class="group">
+            <AuthorizeView>
+                <NavLink style="text-decoration: none;" class="link" href="metrics">
+                     <div class="item"> 
+                        <i class="material-icons icon">timeline</i>
+                        <span class="text">Metrics</span>
+                    </div>
+                </NavLink>
+            </AuthorizeView>
+
+            <AuthorizeView Roles="Architect">
+                <NavLink style="text-decoration: none;" class="link" href="data-sources">
+                    <div class="item">                
+                        <i class="material-icons icon">storage</i>
+                        <span class="text">Datasets</span>                
+                    </div>
+                </NavLink>
+            </AuthorizeView>
+
+            <AuthorizeView Roles="Admin">
+                <NavLink style="text-decoration: none;" class="link" href="administration">
+                    <div class="item">          
+                        <i class="material-icons icon">supervisor_account</i>
+                        <span class="text">Administration</span>                
+                    </div>
+                </NavLink>
+            </AuthorizeView>
+        </div>
+        <div class="group">
+            <AuthorizeView>
+                <NavLink style="text-decoration: none;" class="link" href="authentication/profile">
+                    <div class="item">
+                        <i class="material-icons icon">face</i>
+                        <span class="text">@context.User.Identity?.Name.Split("@")[0]</span>
+                    </div>
+                </NavLink>
+            </AuthorizeView>
+
+            <AuthorizeView>
+                <NavLink style="text-decoration: none;" class="link" @onclick="BeginSignOut">
+                    <div class="item">
+                        <i class="material-icons icon">https</i>
+                        <span class="text">Log out</span>
+                    </div>
+                </NavLink>
+            </AuthorizeView>
+        </div>
+    </nav>
+</div>
+
+@code {
+    private bool _collapseNavMenu = true;
+
+    private string? NavMenuCssClass => _collapseNavMenu ? "collapse" : null;
+
+    private void ToggleNavMenu()
+    {
+        _collapseNavMenu = !_collapseNavMenu;
+    }
+
+    private async Task BeginSignOut(MouseEventArgs args)
+    {
+        await SignOutManager.SetSignOutState();
+        Navigation.NavigateTo("authentication/logout");
+    }
+}

@@ -1,0 +1,62 @@
+@using DiplomaThesis.Shared.Contracts
+@implements IAsyncDisposable
+@inject IJSRuntime Js
+
+<div>
+    <h5>
+        <abbr title="@Report?.Id">@Report?.Name</abbr>
+    </h5>
+    <div @ref="@_powerBiElement" class="power-bi-metric"></div>
+</div>
+
+@code {
+
+    [Parameter]
+    public ReportContract? Report { get; set; }
+
+    ElementReference _powerBiElement;
+    IJSObjectReference? _embedModule;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        try
+        {
+            if (firstRender)
+            {
+                _embedModule = await Js.InvokeAsync<IJSObjectReference>("import", "./scripts/powerbi-embed.js");
+
+                await UpdateEmbeddedReport();
+            }
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+        }
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await UpdateEmbeddedReport();
+    }
+
+    private async Task UpdateEmbeddedReport()
+    {
+        if (_embedModule is not null && Report is not null)
+        {
+            await _embedModule.InvokeVoidAsync("embedReport",
+                _powerBiElement,
+                Report.Id.ToString(),
+                Report.EmbedUrl,
+                Report.EmbedToken);
+
+            StateHasChanged();
+        }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (_embedModule is not null)
+            await _embedModule.DisposeAsync();
+    }
+
+}
