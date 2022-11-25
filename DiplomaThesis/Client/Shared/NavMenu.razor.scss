@@ -1,9 +1,9 @@
 ﻿@import '../wwwroot/css/variables';
 
 .nav {
-    width: 40px;
+    width: 38px;
     position: fixed;
-    left: 15px;
+    left: 17px;
     padding: 5px;
     padding-top: 0px;
     padding-bottom: 0px;
@@ -15,7 +15,7 @@
     font-family: $font_nunito_bold;
     background-color: $color_white;
     border-radius: 15px;
-    transition: all ease-in-out 0.3s;
+    transition: all ease-in-out 0.25s;
     box-shadow: $shadow_normal_grey;
     overflow: hidden;
     cursor: default;
@@ -37,7 +37,7 @@
             color: $color_grey;
             margin-top: 5px;
             margin-bottom: 5px;
-            transition: all ease-in-out 0.15s;
+            transition: all ease-in-out 0.1s;
             overflow: hidden;
             cursor: pointer;
 
@@ -48,7 +48,7 @@
             .icon {
                 position: relative;
                 top: 8px;
-                left: 8px;
+                left: 7px;
             }
 
             .text {

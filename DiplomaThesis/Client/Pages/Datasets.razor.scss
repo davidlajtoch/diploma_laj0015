@@ -114,19 +114,18 @@
 
 .datasets {
     width: 100%;
-    height: calc(100% - 80px);
+    height: calc(100% - 70px);
     overflow-y: scroll;
     display: flex;
     flex-direction: column;
     font-family: $font_nunito_bold;
     color: $color_grey;
     padding: 0px;
+    border: 1px solid red;
 
     .dataset {
-        width: calc(100% - 35px);
+        width: calc(100% - 25px);
         height: 200px;
-        margin-left: 5px;
-        margin-right: 5px;
         margin-top: 10px;
         margin-bottom: 10px;
         border-radius: 10px;

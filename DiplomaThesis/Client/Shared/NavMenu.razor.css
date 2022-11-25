@@ -1,7 +1,7 @@
 ﻿.nav {
-  width: 40px;
+  width: 38px;
   position: fixed;
-  left: 15px;
+  left: 17px;
   padding: 5px;
   padding-top: 0px;
   padding-bottom: 0px;
@@ -11,13 +11,13 @@
   display: flex;
   flex-direction: column;
   font-family: "Nunito", sans-serif;
-  z-index: 10;
   background-color: #fff;
   border-radius: 15px;
-  transition: all ease-in-out 0.3s;
+  transition: all ease-in-out 0.25s;
   box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
   overflow: hidden;
   cursor: default;
+  z-index: 10;
 }
 .nav:hover, .nav:hover .group .item {
   width: 170px;
@@ -34,7 +34,7 @@
   color: #424242;
   margin-top: 5px;
   margin-bottom: 5px;
-  transition: all ease-in-out 0.15s;
+  transition: all ease-in-out 0.1s;
   overflow: hidden;
   cursor: pointer;
 }
@@ -44,7 +44,7 @@
 .nav .group .item .icon {
   position: relative;
   top: 8px;
-  left: 8px;
+  left: 7px;
 }
 .nav .group .item .text {
   width: 100px;
