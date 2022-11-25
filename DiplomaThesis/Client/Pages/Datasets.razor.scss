@@ -1,1 +1,161 @@
-﻿
+﻿@import '../wwwroot/css/variables';
+
+.menu {
+    width: 100%;
+    height: 40px;
+    font-family: $font_nunito_bold;
+    color: $color_grey;
+    margin-bottom: 10px;
+
+    .search {
+        height: 40px;
+        float: left;
+        display: flex;
+        flex-direction: row;
+        background-color: $color_lighter_grey;
+        border-radius: 500px;
+        transition: 0.2s ease-in-out;
+
+        &:hover{
+            padding-left: 10px;
+            padding-right: 10px;
+        }
+
+        .input_text {
+            width: 150px;
+            padding: 0px;
+            padding-left: 15px;
+            padding-right: 5px;
+            font-family: $font_nunito_bold;
+            font-size: 16px;
+            color: $color_purple;
+            background: none;
+            border: none;
+            border-radius: 500px;
+            outline: none;
+        }
+
+        .button_search {
+            background: none;
+            border: none;
+            border-radius: 500px;
+            transition: 0.2s ease-in-out;
+            color: $color_grey;
+            cursor: pointer;
+
+            &:hover {
+                color: $color_purple;
+            }
+
+            .icon {
+                position: relative;
+                top: 2px;
+            }
+        }
+    }
+
+    .buttons {
+        float: right;
+        display: flex;
+        flex-direction: row;
+
+        .input_file {
+            background-color: $color_lighter_grey;
+            display: block;
+            height: 100%;
+            margin-left: 5px;
+            margin-right: 5px;
+            padding: 10px;
+            padding-left: 20px;
+            padding-right: 20px;
+            border: none;
+            border-radius: 500px;
+            text-align: center;
+            line-height: 20px;
+            cursor: pointer;
+            transition: 0.2s ease-in-out;
+
+            &:hover {
+                color: $color_purple;
+                padding-left: 30px;
+                padding-right: 30px;
+            }
+
+            input[type="file"] {
+                display: none;
+            }
+        }
+
+        .button_settings {
+            width: 50px;
+            height: 40px;
+            margin-left: 5px;
+            margin-right: 5px;
+            background-color: $color_lighter_grey;
+            color: $color_grey;
+            display: block;
+            border: none;
+            border-radius: 500px;
+            transition: 0.2s ease-in-out;
+            cursor: pointer;
+
+            &:hover {
+                color: $color_purple;
+                width: 60px;
+            }
+
+            .icon {
+                position: relative;
+                top: 2px;
+            }
+        }
+    }
+}
+
+.datasets {
+    width: 100%;
+    height: calc(100% - 80px);
+    overflow-y: scroll;
+    display: flex;
+    flex-direction: column;
+    font-family: $font_nunito_bold;
+    color: $color_grey;
+    padding: 0px;
+
+    .dataset {
+        width: calc(100% - 35px);
+        height: 200px;
+        margin-left: 5px;
+        margin-right: 5px;
+        margin-top: 10px;
+        margin-bottom: 10px;
+        border-radius: 10px;
+        //box-shadow: $shadow_normal_grey;
+        background-color: $color_lighter_grey;
+        display: flex;
+        flex-direction: column;
+        padding: 10px;
+
+        .name {
+            width: 100%;
+            height: 15px;
+            text-align: center;
+            line-height: 15px;
+            margin-bottom: 5px;
+        }
+
+        .table_info {
+            width: 100%;
+            border: 1px solid blue;
+            text-align: center;
+        }
+    }
+}
+
+.nothing_found {
+    width: 100%;
+    height: 40px;
+    font-family: $font_nunito_bold;
+    text-align: center;
+    color: $color_grey;
+}

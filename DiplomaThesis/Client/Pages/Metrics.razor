@@ -16,25 +16,30 @@
 }
 else
 {
-    <div class="row">
-        @foreach (var report in _reports)
-        {
-            <div class="col m-4 report-element">
-                <AuthorizeView Roles="Architect">
-                    <button class="btn btn-outline-primary w-100"
-                            @onclick="() => SelectReport(report)">
-                        Select
-                    </button>
-                </AuthorizeView>
-                <ReportContainer Report="@report"/>
-            </div>
-        }
-    </div>
+    <div class="animate__animated animate__fadeIn">
+        <div class="row">
+            @foreach (var report in _reports)
+            {
+                <div class="col m-4 report-element">
+                    <AuthorizeView Roles="Architect">
+                        <button class="btn btn-outline-primary w-100"
+                                @onclick="() => SelectReport(report)">
+                            Select
+                        </button>
+                    </AuthorizeView>
+                    <div style="border-radius: 20px;">
+                        <ReportContainer Report="@report" />
+                    </div>
+                
+                </div>
+            }
+        </div>
 
-    <div>
-        <AuthorizeView Roles="Architect">
-            <ReportMenu @ref="_reportMenu" OnReportChanged="UpdateData"/>
-        </AuthorizeView>
+        <div>
+            <AuthorizeView Roles="Architect">
+                <ReportMenu @ref="_reportMenu" OnReportChanged="UpdateData"/>
+            </AuthorizeView>
+        </div>
     </div>
 }
 

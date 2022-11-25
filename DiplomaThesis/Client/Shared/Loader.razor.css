@@ -11,9 +11,18 @@
   margin: 0;
   position: absolute;
   top: 50%;
-  left: calc(50% - 70px);
+  left: calc(50% - 35px);
   -ms-transform: translate(-50%, -50%);
   transform: translate(-50%, -50%);
+  animation: appear 1s ease;
+}
+@keyframes appear {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
 }
 .loader_container .loader .lds-ellipsis {
   display: inline-block;

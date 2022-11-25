@@ -10,60 +10,89 @@
 <PageTitle>Datasets</PageTitle>
 <PageHeader Text="Datasets" />
 
-<div class="flex-column">
     @if (DatasetArray is null)
     {   
         <Loader />
     }
     else
     {
-        foreach (var dataset in DatasetArray)
-        {
-            <div>
-                <strong>Id:</strong>&nbsp;@dataset.Id<br/>
-                <strong>Name:</strong>&nbsp;@dataset.Name<br/>
-                @if (dataset.ColumnNames.Any())
-                {
-                    <strong>Dataset structure:</strong>
-                    <br/>
-                    <table class="table">
-                        <thead>
-                        <tr>
-                            <th>Names</th>
-                            <th>Types</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        @foreach (var column in dataset.ColumnNames.Zip(dataset.ColumnTypes))
-                        {
-                            <tr>
-                                <td>@column.First</td>
-                                <td>@column.Second</td>
-                            </tr>
-                        }
-                        </tbody>
-                    </table>
-                }
-                else
-                {
-                    <strong>Dataset not uploaded through this app.</strong>
-                    <br/>
-                }
-                <strong>Upload more rows:</strong><br/>
-                <InputFile OnChange="@(args => LoadFile(args, dataset.Id))"/>
+        <div class="animate__animated animate__fadeIn">
+            <div class="menu">
+                <div class="search">
+                <input type="text" class="input_text" placeholder="Search by name..." @onkeydown="@FilterDatasetsWithEnter" 
+                        @bind="@SearchValue" @oninput="@((e) => { SearchValue=(string)e.Value;})">
+                    <button class="button_search" @onclick="FilterDatasets"><i class="material-icons icon">search</i></button>
+                </div>
+                <div class="buttons">
+                    <label class="input_file">
+                        New dataset
+                        <InputFile OnChange="@(args => LoadFile(args, Guid.Empty))" style="display: none;"/>
+                    </label>
+                <button class="button_settings"><i class="material-icons icon">settings</i></button>
+                </div>
             </div>
-            <hr/>
-        }
-        <div>
-            <strong>Create new dataset from JSON or CSV</strong><br/>
-            <InputFile OnChange="@(args => LoadFile(args, Guid.Empty))"/>
+            <div class="datasets">
+            @foreach (var dataset in DatasetArray)
+            {
+                <div class="dataset">
+                    <div class="name">@dataset.Name</div>
+                    <table class="table_info">
+                        <tr>
+                            <td>ID</td>
+                            <td>@dataset.Id</td>
+                        </tr>
+                    </table>
+                
+                    @if (dataset.ColumnNames.Any())
+                    {
+                        <strong>Dataset structure:</strong>
+                        <br />
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Names</th>
+                                    <th>Types</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var column in dataset.ColumnNames.Zip(dataset.ColumnTypes))
+                                {
+                                    <tr>
+                                        <td>@column.First</td>
+                                        <td>@column.Second</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    }
+                    else
+                    {
+                        <strong>Dataset not uploaded through this app.</strong>
+                        <br />
+                    }
+                    <strong>Upload more rows:</strong><br />
+                    <InputFile OnChange="@(args => LoadFile(args, dataset.Id))" />
+                </div>
+            }
+            </div>
+            @if (DatasetArray.Length == 0)
+            {
+                <div class="nothing_found">
+                    Nothing found :(
+                </div>
+            }
         </div>
-        <hr/>
+
+        
     }
-</div>
+
+    
+    
 
 @code {
     DatasetContract[]? DatasetArray { get; set; }
+    DatasetContract[]? DatasetArrayFull { get; set; }
+    private string SearchValue { get; set; } = "";
 
     protected override async Task OnInitializedAsync()
     {
@@ -74,6 +103,7 @@
     {
         var datasets = await DatasetService.GetDatasets();
         DatasetArray = datasets;
+        DatasetArrayFull = datasets;
 
         StateHasChanged();
     }
@@ -103,6 +133,21 @@
         else
         {
             if (await DatasetService.UploadRowsToDataset(datasetId, datasetJson)) _ = UpdateData();
+        }
+    }
+
+    public void FilterDatasetsWithEnter(KeyboardEventArgs e)
+    {
+        if (e.Code == "Enter" || e.Code == "NumpadEnter")
+        {
+            FilterDatasets();
+        }
+    }
+
+    private void FilterDatasets(){
+        if(DatasetArray != null){
+            DatasetArray = DatasetArrayFull;
+            DatasetArray = Array.FindAll(DatasetArray, s => s.Name.Contains(SearchValue));
         }
     }
 

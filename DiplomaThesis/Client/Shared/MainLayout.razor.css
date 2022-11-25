@@ -2,7 +2,27 @@
   display: flex;
   flex-direction: row;
 }
+.page * {
+  animation: appear 1s ease;
+}
+@keyframes appear {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
 .page .main_container {
   margin-left: 70px;
-  width: calc(100% - 70px);
+  width: calc(100% - 100px);
+  animation: appear 1s ease;
+}
+@keyframes appear {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
 }

@@ -4,37 +4,45 @@
     width: 40px;
     position: fixed;
     left: 15px;
+    padding: 5px;
+    padding-top: 0px;
+    padding-bottom: 0px;
     top: 50%;
     -ms-transform: translateY(-50%);
     transform: translateY(-50%);
     display: flex;
     flex-direction: column;
     font-family: $font_nunito_bold;
+    background-color: $color_white;
+    border-radius: 15px;
+    transition: all ease-in-out 0.3s;
+    box-shadow: $shadow_normal_grey;
+    overflow: hidden;
+    cursor: default;
     z-index: 10;
+
+    &:hover, &:hover .group .item {
+        width: 170px;
+    }
 
     .group {
         margin-top: 6px;
         margin-bottom: 6px;
 
         .item {
-            width: 40px;
+            width: 30px;
             height: 40px;
             display: flex;
             flex-direction: row;
             color: $color_grey;
-            background-color: $color_white;
-            border-radius: 500px;
             margin-top: 5px;
             margin-bottom: 5px;
             transition: all ease-in-out 0.15s;
-            box-shadow: $shadow_normal_grey;
             overflow: hidden;
             cursor: pointer;
 
             &:hover {
-                width: 180px;
                 color: $color_purple;
-                box-shadow: $shadow_normal_purple;
             }
 
             .icon {
@@ -51,14 +59,5 @@
                 line-height: 40px;
             }
         }
-
-        .profile:hover {
-            width: 240px;
-        }
     }
 }
-
-
-
-
-

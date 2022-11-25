@@ -2,6 +2,9 @@
   width: 40px;
   position: fixed;
   left: 15px;
+  padding: 5px;
+  padding-top: 0px;
+  padding-bottom: 0px;
   top: 50%;
   -ms-transform: translateY(-50%);
   transform: translateY(-50%);
@@ -9,30 +12,34 @@
   flex-direction: column;
   font-family: "Nunito", sans-serif;
   z-index: 10;
+  background-color: #fff;
+  border-radius: 15px;
+  transition: all ease-in-out 0.3s;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+  overflow: hidden;
+  cursor: default;
+}
+.nav:hover, .nav:hover .group .item {
+  width: 170px;
 }
 .nav .group {
   margin-top: 6px;
   margin-bottom: 6px;
 }
 .nav .group .item {
-  width: 40px;
+  width: 30px;
   height: 40px;
   display: flex;
   flex-direction: row;
   color: #424242;
-  background-color: #fff;
-  border-radius: 500px;
   margin-top: 5px;
   margin-bottom: 5px;
   transition: all ease-in-out 0.15s;
-  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
   overflow: hidden;
   cursor: pointer;
 }
 .nav .group .item:hover {
-  width: 180px;
   color: #751aff;
-  box-shadow: 0 3px 6px rgba(117, 26, 255, 0.16), 0 3px 6px rgba(117, 26, 255, 0.23);
 }
 .nav .group .item .icon {
   position: relative;
@@ -45,7 +52,4 @@
   left: 20px;
   text-align: center;
   line-height: 40px;
-}
-.nav .group .profile:hover {
-  width: 240px;
 }
