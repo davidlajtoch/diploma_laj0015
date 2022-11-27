@@ -22,5 +22,9 @@
   {
     "outputFile": "Shared/PageHeader.razor.css",
     "inputFile": "Shared/PageHeader.razor.scss"
+  },
+  {
+    "outputFile": "Pages/Administration.razor.css",
+    "inputFile": "Pages/Administration.razor.scss"
   }
 ]

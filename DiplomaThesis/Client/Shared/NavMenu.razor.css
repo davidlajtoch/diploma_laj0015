@@ -12,7 +12,7 @@
   flex-direction: column;
   font-family: "Nunito", sans-serif;
   background-color: #fff;
-  border-radius: 15px;
+  border-radius: 20px;
   transition: all ease-in-out 0.25s;
   box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
   overflow: hidden;
@@ -20,7 +20,7 @@
   z-index: 10;
 }
 .nav:hover, .nav:hover .group .item {
-  width: 170px;
+  width: 180px;
 }
 .nav .group {
   margin-top: 6px;
@@ -47,9 +47,12 @@
   left: 7px;
 }
 .nav .group .item .text {
-  width: 100px;
+  width: 120px;
   position: relative;
   left: 20px;
   text-align: center;
   line-height: 40px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
 }

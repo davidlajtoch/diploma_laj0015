@@ -5,16 +5,12 @@
 <div class="@NavMenuCssClass nav_container" @onclick="ToggleNavMenu">
     <nav class="nav">
         <div class="group">
-            <AuthorizeView>
-                <Authorized>
-                    <NavLink style="text-decoration: none;" class="link" href="" Match="NavLinkMatch.All">
-                        <div class="item">
-                            <i class="material-icons icon">home</i>
-                            <span class="text">Home</span>
-                        </div>
-                    </NavLink>
-                </Authorized>
-            </AuthorizeView>
+            <NavLink style="text-decoration: none;" class="link" href="" Match="NavLinkMatch.All">
+                <div class="item">
+                    <i class="material-icons icon">home</i>
+                    <span class="text">Home</span>
+                </div>
+            </NavLink>
         </div>
         
         <div class="group">

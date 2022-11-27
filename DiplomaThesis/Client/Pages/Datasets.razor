@@ -18,17 +18,18 @@
     {
         <div class="animate__animated animate__fadeIn">
             <div class="menu">
-                <div class="search">
-                <input type="text" class="input_text" placeholder="Search by name..." @onkeydown="@FilterDatasetsWithEnter" 
-                        @bind="@SearchValue" @oninput="@((e) => { SearchValue=(string)e.Value;})">
-                    <button class="button_search" @onclick="FilterDatasets"><i class="material-icons icon">search</i></button>
-                </div>
                 <div class="buttons">
+                    <button class="button_settings"><i class="material-icons icon">settings</i></button>
                     <label class="input_file">
                         New dataset
                         <InputFile OnChange="@(args => LoadFile(args, Guid.Empty))" style="display: none;"/>
                     </label>
-                <button class="button_settings"><i class="material-icons icon">settings</i></button>
+                </div>
+
+                <div class="search">
+                    <input type="text" class="input_text" placeholder="Search by name..." @onkeydown="@FilterDatasetsWithEnter" 
+                        @bind="@SearchValue" @oninput="@((e) => { SearchValue=(string)e.Value;})">
+                    <button class="button_search" @onclick="FilterDatasets"><i class="material-icons icon">search</i></button>
                 </div>
             </div>
             <div class="datasets">
