@@ -22,10 +22,6 @@
                 <div class="buttons">
                     <button class="@(_showUsers ? "selected" : "")" @onclick="() => _showUsers = true">Users</button>
                     <button class="@(!_showUsers ? "selected" : "")" @onclick="() => _showUsers = false">User groups</button>
-                    @if(_showUsers)
-                    {
-
-                    }
                 </div>
 
                 @if (_showUsers)
@@ -46,81 +42,52 @@
                 }
             </div>
 
-            <div class="d-flex">
                 @if (_showUsers)
                 {
-                    <div class="flex-column">
-                        <table class="table">
-                            <thead>
-                            <tr>
-                                <th>Id</th>
-                                <th>Name</th>
-                                <th>Group</th>
-                                <th>Roles</th>
-                                <th></th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            @foreach (var user in _users)
-                            {
-                                <tr>
-                                    <td>@user.Id</td>
-                                    <td>@user.Name</td>
-                                    <td>
-                                        @_user_groups.FirstOrDefault(
-                                            userGroup => userGroup?.Id.Equals(user.UserGroupId) ?? false, null
-                                            )?.Name
-                                    </td>
-                                    <td>
-                                        <div class="flex-column">
-                                            @foreach (var role in user.Roles)
-                                            {
-                                                <text>@role.Name&nbsp;</text>
-                                            }
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <button
-                                            class="btn btn-outline-dark"
-                                            @onclick="() => _userMenu.ShowUser(user)">
-                                            Select
-                                        </button>
-                                    </td>
-                                </tr>
-                            }
-                            </tbody>
-                        </table>
-                    </div>
+                    <ul class="table_users">
+                        <li class="header">
+                            <div class="col col-1">ID</div>
+                            <div class="col col-2">Name</div>
+                            <div class="col col-3">Group</div>
+                            <div class="col col-4">Roles</div>
+                        </li>
+                        @foreach (var user in _users)
+                        {
+                            <li class="row" @onclick="() => _userMenu.ShowUser(user)">
+                                <div class="col col-1" data-label="ID">@user.Id</div>
+                                <div class="col col-2" data-label="Name">@user.Name</div>
+                                <div class="col col-3" data-label="Group">
+                                    @_user_groups.FirstOrDefault(
+                                    userGroup => userGroup?.Id.Equals(user.UserGroupId) ?? false, null
+                                    )?.Name
+                                </div>
+                                <div class="col col-4" data-label="Roles">
+                                    @foreach (var role in user.Roles)
+                                    {
+                                        <text>@role.Name&nbsp;</text>
+                                    }
+                                </div>
+                            </li>
+                        }
+                    </ul>
                 }
                 else
                 {
-                    <div class="flex-column">
-                        <table class="table">
-                            <thead>
-                            <tr>
-                                <th>Id</th>
-                                <th>Name</th>
-                                <th>Users</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            @foreach (var userGroup in _user_groups)
-                            {
-                                <tr>
-                                    <td>@userGroup.Id</td>
-                                    <td>@userGroup.Name</td>
-                                    <td>
-                                        <div class="flex-column">
-                                            @foreach (var userId in userGroup.Users)
-                                            {
-                                                <text>@_users.First(user => user.Id.Equals(userId)).Name&nbsp;</text>
-                                            }
-                                        </div>
-                                    </td>
-                                </tr>
-                            }
-                            </tbody>
-                        </table>
+                    <ul class="table_groups">
+                        <li class="header">
+                            <div class="col col-1">ID</div>
+                            <div class="col col-2">Name</div>
+                            <div class="col col-3">Users</div>
+                        </li>
+                        @foreach (var user_group in _user_groups)
+                        {
+                            <li class="row">
+                                <div class="col col-1" data-label="ID">@user_group.Id</div>
+                                <div class="col col-2" data-label="Name">@user_group.Name</div>
+                                <div class="col col-3" data-label="Users">users</div>
+                            </li>
+                        }
+                    </ul>
                         <div class="flex-row">
                             <label>
                                 <input placeholder="New user group name"
@@ -132,9 +99,7 @@
                                 Create
                             </button>
                         </div>
-                    </div>
                 }
-            </div>
             <div>
                 <UserMenu @ref="_userMenu" OnUserChanged="UpdateData"/>
             </div>

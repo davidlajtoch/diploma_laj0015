@@ -19,8 +19,9 @@
 
     .main_container {
         margin-left: 70px;
-        width: calc(100% - 100px);
+        width: calc(100% - 75px);
         animation: appear 1s ease;
+        overflow: visible;
 
         @keyframes appear {
             0% {

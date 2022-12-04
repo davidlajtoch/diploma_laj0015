@@ -22,6 +22,9 @@
 .nav:hover, .nav:hover .group .item {
   width: 180px;
 }
+.nav:hover {
+  box-shadow: 0 3px 6px rgba(117, 26, 255, 0.16), 0 3px 6px rgba(117, 26, 255, 0.23);
+}
 .nav .group {
   margin-top: 6px;
   margin-bottom: 6px;

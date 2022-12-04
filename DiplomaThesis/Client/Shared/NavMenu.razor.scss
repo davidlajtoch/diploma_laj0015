@@ -25,6 +25,10 @@
         width: 180px;
     }
 
+    &:hover {
+        box-shadow: $shadow_normal_purple;
+    }
+
     .group {
         margin-top: 6px;
         margin-bottom: 6px;
