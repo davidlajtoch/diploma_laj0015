@@ -171,6 +171,17 @@
     text-align: center;
   }
 }
+.table_users .row_expanded, .table_groups .row_expanded {
+  animation: expand 1s linear;
+}
+@keyframes expand {
+  0% {
+    height: 30px;
+  }
+  100% {
+    height: 500px;
+  }
+}
 
 .table_groups .col-1 {
   flex-basis: 20%;

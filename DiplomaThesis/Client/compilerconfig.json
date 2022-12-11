@@ -26,5 +26,9 @@
   {
     "outputFile": "Pages/Administration.razor.css",
     "inputFile": "Pages/Administration.razor.scss"
+  },
+  {
+    "outputFile": "Shared/UserMenu.razor.css",
+    "inputFile": "Shared/UserMenu.razor.scss"
   }
 ]

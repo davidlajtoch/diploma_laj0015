@@ -53,7 +53,7 @@
                         </li>
                         @foreach (var user in _users)
                         {
-                            <li class="row" @onclick="() => _userMenu.ShowUser(user)">
+                    <li class="row" @onclick="() => _userMenu.ShowUser(user)">
                                 <div class="col col-1" data-label="ID">@user.Id</div>
                                 <div class="col col-2" data-label="Name">@user.Name</div>
                                 <div class="col col-3" data-label="Group">

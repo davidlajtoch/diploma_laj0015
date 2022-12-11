@@ -1,0 +1,125 @@
+﻿@import '../wwwroot/css/variables';
+
+.animate__animated.animate__fadeIn {
+    --animate-duration: 0.2s;
+}
+
+.user_menu_container {
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    top: 0px;
+    left: 70px;
+    background-color: rgba(255, 255, 255, 0.8);
+    z-index: 5;
+
+    .user_menu {
+        padding: 15px;
+        margin: 0;
+        position: absolute;
+        top: 50%;
+        left: calc(50% - 35px);
+        -ms-transform: translate(-50%, -50%);
+        transform: translate(-50%, -50%);
+        border-radius: 15px;
+        box-shadow: $shadow_normal_grey;
+        font-family: $font_nunito_bold;
+        color: $color_grey;
+        background-color: $color_white;
+
+        .bottom_menu {
+            width: 100%;
+            height: 40px;
+            margin-top: 10px;
+
+            .buttons {
+                height: 40px;
+
+                button {
+                    height: 100%;
+                    padding: 10px;
+                    padding-left: 20px;
+                    padding-right: 20px;
+                    text-decoration: none;
+                    font-family: $font_nunito_bold;
+                    font-size: 16px;
+                    border-radius: 500px;
+                    border: none;
+                    color: $color_grey;
+                    background-color: $color_lighter_grey;
+                    transition: 0.2s ease-in-out;
+                    cursor: pointer;
+
+                    &:hover {
+                        color: $color_purple;
+                        padding-left: 30px;
+                        padding-right: 30px;
+                    }
+                }
+
+                .button_save {
+                    float: right;
+                }
+
+                .button_delete {
+                    float: left;
+
+                    &:hover {
+                        color: $color_red;
+                        background-color: $color_light_red;
+                    }
+                }
+            }
+        }
+
+        .table_info {
+            text-align: center;
+
+            .label {
+                color: $color_purple;
+                text-align: left;
+            }
+        }
+
+        .section_header {
+            width: 100%;
+            text-align: center;
+            margin-top: 10px;
+            margin-bottom: 5px;
+            color: $color_purple;
+        }
+
+        .selected_user_group {
+            width: calc(100% - 24px);
+            padding: 5px;
+            padding-left: 12px;
+            padding-right: 12px;
+            font-family: $font_nunito_bold;
+            font-size: 16px;
+            color: $color_purple;
+            background-color: $color_lighter_grey;
+            border: none;
+            border-radius: 500px;
+            outline: none;
+        }
+
+        .user_group_list {
+            width: 100%;
+            height: 200px;
+            overflow-y: scroll;
+
+            .user_group {
+                width: 100%;
+                padding-top: 5px;
+                padding-bottom: 5px;
+                border-bottom: 1px solid $color_lighter_grey;
+                transition: 0.2s ease-in-out;
+                cursor: pointer;
+
+                &:hover {
+                    color: $color_purple;
+                }
+            }
+        }
+    }
+}
