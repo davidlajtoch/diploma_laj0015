@@ -9,48 +9,23 @@
     .search {
         height: 40px;
         float: right;
-        display: flex;
-        flex-direction: row;
+        width: 150px;
+        padding-left: 20px;
+        padding-right: 20px;
+        font-family: $font_nunito_bold;
+        font-size: 16px;
+        color: $color_purple;
         background-color: $color_lighter_grey;
+        border: none;
         border-radius: 500px;
+        outline: none;
         transition: 0.2s ease-in-out;
 
         &:hover {
-            padding-left: 10px;
-            padding-right: 10px;
+            padding-left: 30px;
+            padding-right: 30px;
         }
 
-        .input_text {
-            width: 150px;
-            padding: 0px;
-            padding-left: 15px;
-            padding-right: 5px;
-            font-family: $font_nunito_bold;
-            font-size: 16px;
-            color: $color_purple;
-            background: none;
-            border: none;
-            border-radius: 500px;
-            outline: none;
-        }
-
-        .button_search {
-            background: none;
-            border: none;
-            border-radius: 500px;
-            transition: 0.2s ease-in-out;
-            color: $color_grey;
-            cursor: pointer;
-
-            &:hover {
-                color: $color_purple;
-            }
-
-            .icon {
-                position: relative;
-                top: 2px;
-            }
-        }
     }
 
     .buttons {
@@ -116,9 +91,9 @@
 }
 
 .table_users, .table_groups {
-    width: calc(100%);
-    height: calc(100% - 100px);
-    padding: 0px;
+    width: 100%;
+    //height: calc(100% - 1000px);
+    padding-left: 10px;
     font-family: $font_nunito_bold;
     color: $color_grey;
     overflow-y: scroll;
@@ -130,7 +105,6 @@
         justify-content: space-between;
         margin-top: 10px;
         margin-bottom: 10px;
-        margin-left: 10px;
         width: calc(100% - 40px);
         text-align: center;
     }
@@ -150,9 +124,7 @@
         cursor: pointer;
 
         &:hover {
-            padding-top: 30px;
-            padding-bottom: 30px;
-            //box-shadow: $shadow_light_grey, 0px 0px 0px 3px $color_purple;
+            color: $color_purple;
         }
     }
 

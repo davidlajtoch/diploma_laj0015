@@ -72,13 +72,23 @@
             }
         }
 
-        .table_info {
+        .table_info, .table_user_group_info {
             text-align: center;
+            width: 100%;
+
+            td {
+                text-align: right;
+            }
 
             .label {
                 color: $color_purple;
                 text-align: left;
             }
+        }
+
+        .table_user_group_info {
+            margin-top: 10px;
+            margin-bottom: 10px;
         }
 
         .section_header {
@@ -89,7 +99,7 @@
             color: $color_purple;
         }
 
-        .selected_user_group {
+        .searched_user_group {
             width: calc(100% - 24px);
             padding: 5px;
             padding-left: 12px;
@@ -103,12 +113,13 @@
             outline: none;
         }
 
-        .user_group_list {
+        .user_group_list, .role_list {
             width: 100%;
-            height: 200px;
+            height: 115px;
             overflow-y: scroll;
+            margin-top: 10px;
 
-            .user_group {
+            .user_group, .role {
                 width: 100%;
                 padding-top: 5px;
                 padding-bottom: 5px;
@@ -118,6 +129,38 @@
 
                 &:hover {
                     color: $color_purple;
+                }
+            }
+
+            .role {
+                display: inline-block;
+                cursor: auto;
+
+                .role_name {
+                    float: left;
+                }
+
+                button {
+                    height: 25px;
+                    float: right;
+                    position: relative;
+                    top: -2px;
+                    cursor: pointer;
+                    background-color: $color_lighter_grey;
+                    color: $color_grey;
+                    border: none;
+                    border-radius: 500px;
+                    transition: 0.2s ease-in-out;
+
+                    &:hover {
+                        color: $color_purple;
+                        padding-left: 12px;
+                        padding-right: 12px;
+                    }
+                }
+
+                &:hover {
+                    color: $color_grey;
                 }
             }
         }

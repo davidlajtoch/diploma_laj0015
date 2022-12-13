@@ -26,19 +26,13 @@
 
                 @if (_showUsers)
                 {
-                    <div class="search">
-                        <input type="text" class="input_text" placeholder="Search by name..." @onkeydown="@FilterUsersWithEnter"
-                       @bind="@users_search_value" @oninput="@((e) => { users_search_value=(string)e.Value;})">
-                        <button class="button_search" @onclick="FilterUsers"><i class="material-icons icon">search</i></button>
-                    </div>
+                    <input type="text" class="search" placeholder="Search by name..."
+                        @oninput="@((e) => SearchUser(e.Value!.ToString()!))">
                 }
                 else
                 {
-                    <div class="search">
-                        <input type="text" class="input_text" placeholder="Search by name..." @onkeydown="@FilterUserGroupsWithEnter"
-                       @bind="@user_groups_search_value" @oninput="@((e) => { user_groups_search_value=(string)e.Value;})">
-                        <button class="button_search" @onclick="FilterUserGroups"><i class="material-icons icon">search</i></button>
-                    </div>
+                    <input type="text" class="search" placeholder="Search by name..."
+                        @oninput="@((e) => SearchUserGroup(e.Value!.ToString()!))">
                 }
             </div>
 
@@ -51,9 +45,9 @@
                             <div class="col col-3">Group</div>
                             <div class="col col-4">Roles</div>
                         </li>
-                        @foreach (var user in _users)
+                        @foreach (var user in _users_searched!)
                         {
-                    <li class="row" @onclick="() => _userMenu.ShowUser(user)">
+                            <li class="row" @onclick="() => _userMenu.ShowUser(user)">
                                 <div class="col col-1" data-label="ID">@user.Id</div>
                                 <div class="col col-2" data-label="Name">@user.Name</div>
                                 <div class="col col-3" data-label="Group">
@@ -79,7 +73,7 @@
                             <div class="col col-2">Name</div>
                             <div class="col col-3">Users</div>
                         </li>
-                        @foreach (var user_group in _user_groups)
+                        @foreach (var user_group in _user_groups_searched!)
                         {
                             <li class="row">
                                 <div class="col col-1" data-label="ID">@user_group.Id</div>
@@ -111,12 +105,9 @@
     private UserMenu _userMenu = null!;
 
     private UserContract[]? _users;
-    private UserContract[]? _users_full;
+    private UserContract[]? _users_searched;
     private UserGroupContract[]? _user_groups;
-    private UserGroupContract[]? _user_groups_full;
-
-    private string users_search_value { get; set; } = "";
-    private string user_groups_search_value { get; set; } = "";
+    private UserGroupContract[]? _user_groups_searched;
 
     private string _newUserGroupName = "";
 
@@ -135,13 +126,13 @@
         if (users is not null)
         {
             _users = users;
-            _users_full = users;
+            _users_searched = users;
         }
 
         if (userGroups is not null)
         {
             _user_groups = userGroups;
-            _user_groups_full = userGroups;
+            _user_groups_searched = userGroups;
         }
 
         StateHasChanged();
@@ -155,37 +146,21 @@
         }
     }
 
-    public void FilterUsersWithEnter(KeyboardEventArgs e)
+    private void SearchUser(string searched_user)
     {
-        if (e.Code == "Enter" || e.Code == "NumpadEnter")
+        if (searched_user is null)
         {
-            FilterUsers();
+            return;
         }
+        _users_searched = Array.FindAll(_users!, u => u.Name.Contains(searched_user));
     }
 
-    private void FilterUsers()
+    private void SearchUserGroup(string searched_user_group)
     {
-        if (_users != null)
+        if (searched_user_group is null)
         {
-            _users = _users_full;
-            _users = Array.FindAll(_users, s => s.Name.Contains(users_search_value));
+            return;
         }
-    }
-
-    public void FilterUserGroupsWithEnter(KeyboardEventArgs e)
-    {
-        if (e.Code == "Enter" || e.Code == "NumpadEnter")
-        {
-            FilterUserGroups();
-        }
-    }
-
-    private void FilterUserGroups()
-    {
-        if (_user_groups != null)
-        {
-            _user_groups = _user_groups_full;
-            _user_groups = Array.FindAll(_user_groups, s => s.Name.Contains(user_groups_search_value));
-        }
+        _user_groups_searched = Array.FindAll(_user_groups!, s => s.Name.Contains(searched_user_group));
     }
 }
