@@ -23,30 +23,35 @@
                 </tr>
             </table>
 
-            <div class="section_header">Roles</div>
+            <div class="section_header">User roles</div>
             <div class="role_list">
-                @foreach (var role in Roles)
+                @foreach (var role in User.Roles)
                 {
                     <div class="role">
                         <div class="role_name">@role.Name</div>
-                        @if (!role.Name.Equals("Admin"))
+                        @if (role.Name != "Admin")
                         {
-                            @if (User.Roles.Any(roleInUser => roleInUser.Name.Equals(role.Name)))
-                            {
-                                <button @onclick="() => AdministrationService.RemoveRole(User.Name, role.Name)">
-                                    <i class="material-icons icon">remove</i>
-                                </button>
-                            }
-                            else
-                            {
-                                <button
-                                    @onclick="() => AdministrationService.AddRole(User.Name, role.Name)">
-                                    <i class="material-icons icon">add</i>
-                                </button>
-                            }
+                            <button @onclick="() => RemoveRole(User.Name, role.Name)">
+                                <i class="material-icons icon">remove</i>
+                            </button>
                         }
                     </div>
                 }
+            </div>
+            <div class="section_header">Available roles</div>
+            <div class="role_list">
+                @foreach (var role in UserRolesOther!)
+                {
+                    @if (role.Name != "Admin")
+                    {
+                        <div class="role">
+                            <div class="role_name">@role.Name</div>
+                            <button @onclick="() => AddRole(User.Name, role.Name)">
+                                <i class="material-icons icon">add</i>
+                            </button>
+                        </div>
+                    }
+                } 
             </div>
 
             <table class="table_user_group_info">
@@ -87,6 +92,7 @@
 
     private UserContract? User { get; set; }
     private RoleContract[]? Roles { get; set; }
+    private List<RoleContract>? UserRolesOther { get; set; }
     private UserGroupContract[]? UserGroups { get; set; }
     private UserGroupContract[]? UserGroupsFiltered { get; set; }
 
@@ -131,6 +137,7 @@
         SelectedUserGroupName = UserGroups!.FirstOrDefault(
                                     UserGroups => UserGroups?.Id.Equals(user.UserGroupId) ?? false, null
                                 )?.Name;
+        UserRolesOther = Roles!.Where(r1 => User.Roles.All(r2 => r2.Name != r1.Name)).ToList();
         StateHasChanged();
     }
 
@@ -154,7 +161,7 @@
         }
     }
 
-    private async Task AddRoleButton(string userName, string roleName)
+    private async Task AddRole(string userName, string roleName)
     {
         if (await AdministrationService.AddRole(userName, roleName))
         {
@@ -163,12 +170,13 @@
             if (user is not null)
             {
                 User = user;
+                UserRolesOther = UserRolesOther!.Where(r => r.Name != roleName).ToList();
                 StateHasChanged();
             }
         }
     }
 
-    private async Task RemoveRoleButton(string userName, string roleName)
+    private async Task RemoveRole(string userName, string roleName)
     {
         if (await AdministrationService.RemoveRole(userName, roleName))
         {
@@ -177,6 +185,7 @@
             if (user is not null)
             {
                 User = user;
+                UserRolesOther!.Add((Roles!.FirstOrDefault(r => r.Name == roleName)));
                 StateHasChanged();
             }
         }

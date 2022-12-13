@@ -146,6 +146,9 @@
     text-align: center;
   }
 }
+.table_users .info_light, .table_groups .info_light {
+  color: #bdbdbd;
+}
 .table_users .row_expanded, .table_groups .row_expanded {
   animation: expand 1s linear;
 }

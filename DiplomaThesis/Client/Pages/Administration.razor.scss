@@ -176,6 +176,10 @@
         }
     }
 
+    .info_light{
+        color: $color_light_grey;
+    }
+
     .row_expanded {
         animation: expand 1s linear;
 

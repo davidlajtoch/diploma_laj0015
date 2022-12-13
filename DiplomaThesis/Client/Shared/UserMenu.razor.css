@@ -142,3 +142,8 @@
 .user_menu_container .user_menu .user_group_list .role:hover, .user_menu_container .user_menu .role_list .role:hover {
   color: #424242;
 }
+.user_menu_container .user_menu .info_no_roles {
+  width: 100%;
+  color: #bdbdbd;
+  text-align: center;
+}

@@ -51,15 +51,27 @@
                                 <div class="col col-1" data-label="ID">@user.Id</div>
                                 <div class="col col-2" data-label="Name">@user.Name</div>
                                 <div class="col col-3" data-label="Group">
-                                    @_user_groups.FirstOrDefault(
-                                    userGroup => userGroup?.Id.Equals(user.UserGroupId) ?? false, null
-                                    )?.Name
+                                    @if (user.UserGroupId.ToString().All((c) => c == '0' || c == '-')){
+                                        <div class="info_light">No group</div>
+                                    }
+                                    else{
+                                        @_user_groups.FirstOrDefault(
+                                            userGroup => userGroup?.Id.Equals(user.UserGroupId) ?? false, null
+                                        )?.Name
+                                    }
+                                    
                                 </div>
                                 <div class="col col-4" data-label="Roles">
-                                    @foreach (var role in user.Roles)
-                                    {
-                                        <text>@role.Name&nbsp;</text>
+                                    @if(user.Roles.Count() == 0){
+                                        <div class="info_light">No roles</div>
                                     }
+                                    else{
+                                        @foreach (var role in user.Roles)
+                                        {
+                                            <text>@role.Name&nbsp;</text>
+                                        }
+                                    }
+                                    
                                 </div>
                             </li>
                         }
