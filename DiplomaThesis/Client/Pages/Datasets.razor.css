@@ -21,8 +21,8 @@
 .menu .search .input_text {
   width: 150px;
   padding: 0px;
-  padding-left: 15px;
-  padding-right: 5px;
+  padding-left: 20px;
+  padding-right: 20px;
   font-family: "Nunito", sans-serif;
   font-size: 16px;
   color: #751aff;
@@ -30,21 +30,6 @@
   border: none;
   border-radius: 500px;
   outline: none;
-}
-.menu .search .button_search {
-  background: none;
-  border: none;
-  border-radius: 500px;
-  transition: 0.2s ease-in-out;
-  color: #424242;
-  cursor: pointer;
-}
-.menu .search .button_search:hover {
-  color: #751aff;
-}
-.menu .search .button_search .icon {
-  position: relative;
-  top: 2px;
 }
 .menu .buttons {
   float: left;
@@ -106,15 +91,15 @@
   font-family: "Nunito", sans-serif;
   color: #424242;
   padding: 0px;
-  border: 1px solid red;
 }
 .datasets .dataset {
-  width: calc(100% - 25px);
+  width: calc(100% - 40px);
   height: 200px;
-  margin-top: 10px;
-  margin-bottom: 10px;
+  margin: 0 auto;
+  margin-top: 5px;
+  margin-bottom: 5px;
   border-radius: 10px;
-  background-color: #f5f5f5;
+  box-shadow: 0px 0px 9px 0px rgba(0, 0, 0, 0.1);
   display: flex;
   flex-direction: column;
   padding: 10px;

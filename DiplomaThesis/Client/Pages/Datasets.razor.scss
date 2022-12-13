@@ -24,8 +24,8 @@
         .input_text {
             width: 150px;
             padding: 0px;
-            padding-left: 15px;
-            padding-right: 5px;
+            padding-left: 20px;
+            padding-right: 20px;
             font-family: $font_nunito_bold;
             font-size: 16px;
             color: $color_purple;
@@ -33,24 +33,6 @@
             border: none;
             border-radius: 500px;
             outline: none;
-        }
-
-        .button_search {
-            background: none;
-            border: none;
-            border-radius: 500px;
-            transition: 0.2s ease-in-out;
-            color: $color_grey;
-            cursor: pointer;
-
-            &:hover {
-                color: $color_purple;
-            }
-
-            .icon {
-                position: relative;
-                top: 2px;
-            }
         }
     }
 
@@ -121,16 +103,15 @@
     font-family: $font_nunito_bold;
     color: $color_grey;
     padding: 0px;
-    border: 1px solid red;
 
     .dataset {
-        width: calc(100% - 25px);
+        width: calc(100% - 40px);
         height: 200px;
-        margin-top: 10px;
-        margin-bottom: 10px;
+        margin: 0 auto;
+        margin-top: 5px;
+        margin-bottom: 5px;
         border-radius: 10px;
-        //box-shadow: $shadow_normal_grey;
-        background-color: $color_lighter_grey;
+        box-shadow: $shadow_light_grey;
         display: flex;
         flex-direction: column;
         padding: 10px;

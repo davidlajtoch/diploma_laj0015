@@ -10,7 +10,7 @@
 <PageTitle>Datasets</PageTitle>
 <PageHeader Text="Datasets" />
 
-    @if (DatasetArray is null)
+    @if (_datasets is null)
     {   
         <Loader />
     }
@@ -27,13 +27,12 @@
                 </div>
 
                 <div class="search">
-                    <input type="text" class="input_text" placeholder="Search by name..." @onkeydown="@FilterDatasetsWithEnter" 
-                        @bind="@SearchValue" @oninput="@((e) => { SearchValue=(string)e.Value;})">
-                    <button class="button_search" @onclick="FilterDatasets"><i class="material-icons icon">search</i></button>
+                    <input type="text" class="input_text" placeholder="Search by name..."
+                        @oninput="@((e) => SearchDatasetByName(e.Value!.ToString()!))">
                 </div>
             </div>
             <div class="datasets">
-            @foreach (var dataset in DatasetArray)
+            @foreach (var dataset in _datasets_searched)
             {
                 <div class="dataset">
                     <div class="name">@dataset.Name</div>
@@ -76,7 +75,7 @@
                 </div>
             }
             </div>
-            @if (DatasetArray.Length == 0)
+            @if (_datasets.Length == 0)
             {
                 <div class="nothing_found">
                     Nothing found :(
@@ -91,8 +90,8 @@
     
 
 @code {
-    DatasetContract[]? DatasetArray { get; set; }
-    DatasetContract[]? DatasetArrayFull { get; set; }
+    private DatasetContract[]? _datasets { get; set; }
+    private DatasetContract[]? _datasets_searched { get; set; }
     private string SearchValue { get; set; } = "";
 
     protected override async Task OnInitializedAsync()
@@ -103,8 +102,8 @@
     private async Task UpdateData()
     {
         var datasets = await DatasetService.GetDatasets();
-        DatasetArray = datasets;
-        DatasetArrayFull = datasets;
+        _datasets = datasets;
+        _datasets_searched = datasets;
 
         StateHasChanged();
     }
@@ -137,19 +136,12 @@
         }
     }
 
-    public void FilterDatasetsWithEnter(KeyboardEventArgs e)
+    private void SearchDatasetByName(string searched_dataset_name)
     {
-        if (e.Code == "Enter" || e.Code == "NumpadEnter")
-        {
-            FilterDatasets();
+        if(searched_dataset_name is null){
+            return;
         }
-    }
-
-    private void FilterDatasets(){
-        if(DatasetArray != null){
-            DatasetArray = DatasetArrayFull;
-            DatasetArray = Array.FindAll(DatasetArray, s => s.Name.Contains(SearchValue));
-        }
+        _datasets_searched = Array.FindAll(_datasets!, s => s.Name.Contains(searched_dataset_name));
     }
 
 }

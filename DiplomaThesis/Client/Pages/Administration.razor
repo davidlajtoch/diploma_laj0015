@@ -51,7 +51,7 @@
                                 <div class="col col-1" data-label="ID">@user.Id</div>
                                 <div class="col col-2" data-label="Name">@user.Name</div>
                                 <div class="col col-3" data-label="Group">
-                                    @if (user.UserGroupId.ToString().All((c) => c == '0' || c == '-')){
+                                    @if (user.UserGroupId.ToString() == Guid.Empty.ToString()){
                                         <div class="info_light">No group</div>
                                     }
                                     else{
