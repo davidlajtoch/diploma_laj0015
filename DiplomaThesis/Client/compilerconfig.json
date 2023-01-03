@@ -30,5 +30,9 @@
   {
     "outputFile": "Shared/UserMenu.razor.css",
     "inputFile": "Shared/UserMenu.razor.scss"
+  },
+  {
+    "outputFile": "Shared/UserGroupMenu.razor.css",
+    "inputFile": "Shared/UserGroupMenu.razor.scss"
   }
 ]

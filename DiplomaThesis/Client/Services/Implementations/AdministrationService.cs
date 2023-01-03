@@ -31,12 +31,12 @@ public class AdministrationService : IAdministrationService
         return null;
     }
 
-    public async Task<UserContract[]?> GetUsers()
+    public async Task<List<UserContract>?> GetUsers()
     {
         try
         {
             var response = await _http.GetFromJsonAsync<IEnumerable<UserContract>>("Administration/ListUsers");
-            return response?.ToArray();
+            return response?.ToList();
         }
         catch (AccessTokenNotAvailableException exception)
         {
@@ -79,6 +79,39 @@ public class AdministrationService : IAdministrationService
         }
 
         return false;
+    }
+
+    public async Task<bool> RemoveUserFromUserGroup(Guid userId, Guid userGroupId)
+    {
+        try
+        {
+            var response = await _http.PutAsJsonAsync(
+                "Administration/RemoveUserFromUserGroup",
+                new RemoveUserFromUserGroupCommand { UserId = userId, UserGroupId = userGroupId }
+            );
+            return response.IsSuccessStatusCode;
+        }
+        catch (AccessTokenNotAvailableException exception)
+        {
+            exception.Redirect();
+        }
+
+        return false;
+    }
+
+    public async Task<UserGroupContract?> GetUserGroup(Guid user_group_id)
+    {
+        try
+        {
+            var response =
+                await _http.GetFromJsonAsync<UserGroupContract>($"Administration/GetUserGroup/{user_group_id}");
+            return response!;
+        }
+        catch (AccessTokenNotAvailableException exception)
+        {
+            exception.Redirect();
+        }
+        return null;
     }
 
     public async Task<UserGroupContract[]?> GetUserGroups()

@@ -6,29 +6,82 @@
     font-family: $font_nunito_bold;
     color: $color_grey;
 
-    .search {
-        height: 40px;
+    .group_right {
         float: right;
-        width: 150px;
-        padding-left: 20px;
-        padding-right: 20px;
-        font-family: $font_nunito_bold;
-        font-size: 16px;
-        color: $color_purple;
-        background-color: $color_lighter_grey;
-        border: none;
-        border-radius: 500px;
-        outline: none;
-        transition: 0.2s ease-in-out;
+        display: flex;
+        flex-direction: row;
 
-        &:hover {
-            padding-left: 30px;
-            padding-right: 30px;
+        .input_with_button_container{
+            display: flex;
+            flex-direction: row;
+            margin-right: -30px;
+            
+            input{
+                height: 40px;
+                width: 140px;
+                padding-left: 20px;
+                padding-right: 45px;
+                border: none;
+                outline: none;
+                background-color: $color_lighter_grey;
+                color: $color_purple;
+                font-family: $font_nunito_bold;
+                font-size: 16px;
+                border-radius: 500px;
+                transition: 0.2s ease-in-out;
+
+                &:hover {
+                    padding-left: 30px;
+                    padding-right: 55px;
+                }
+            }
+
+            button{
+                width: 40px;
+                height: 40px;
+                background: none;
+                position: relative;
+                right: 40px;
+                outline: none;
+                border: none;
+                cursor: pointer;
+                color: $color_grey;
+                transition: 0.2s ease-in-out;
+
+                &:hover{
+                    color: $color_purple;
+                }
+
+                .icon{
+                    position: relative;
+                    right: 4px;
+                    top: 2px;
+                }
+            }
         }
+        
+        .search {
+            height: 40px;
+            width: 150px;
+            padding-left: 20px;
+            padding-right: 20px;
+            font-family: $font_nunito_bold;
+            font-size: 16px;
+            color: $color_purple;
+            background-color: $color_lighter_grey;
+            border: none;
+            border-radius: 500px;
+            outline: none;
+            transition: 0.2s ease-in-out;
 
+            &:hover {
+                padding-left: 30px;
+                padding-right: 30px;
+            }
+        }
     }
 
-    .buttons {
+    .group_left {
         float: left;
         display: flex;
         flex-direction: row;

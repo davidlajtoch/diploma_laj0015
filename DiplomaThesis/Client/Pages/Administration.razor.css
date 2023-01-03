@@ -4,9 +4,56 @@
   font-family: "Nunito", sans-serif;
   color: #424242;
 }
-.menu .search {
-  height: 40px;
+.menu .group_right {
   float: right;
+  display: flex;
+  flex-direction: row;
+}
+.menu .group_right .input_with_button_container {
+  display: flex;
+  flex-direction: row;
+  margin-right: -30px;
+}
+.menu .group_right .input_with_button_container input {
+  height: 40px;
+  width: 140px;
+  padding-left: 20px;
+  padding-right: 45px;
+  border: none;
+  outline: none;
+  background-color: #f5f5f5;
+  color: #751aff;
+  font-family: "Nunito", sans-serif;
+  font-size: 16px;
+  border-radius: 500px;
+  transition: 0.2s ease-in-out;
+}
+.menu .group_right .input_with_button_container input:hover {
+  padding-left: 30px;
+  padding-right: 55px;
+}
+.menu .group_right .input_with_button_container button {
+  width: 40px;
+  height: 40px;
+  background: none;
+  position: relative;
+  right: 40px;
+  outline: none;
+  border: none;
+  cursor: pointer;
+  color: #424242;
+  transition: 0.2s ease-in-out;
+}
+.menu .group_right .input_with_button_container button:hover {
+  color: #751aff;
+}
+.menu .group_right .input_with_button_container button .icon {
+  position: relative;
+  right: 4px;
+  top: 2px;
+}
+.menu .group_right .search {
+  height: 40px;
   width: 150px;
   padding-left: 20px;
   padding-right: 20px;
@@ -19,16 +66,16 @@
   outline: none;
   transition: 0.2s ease-in-out;
 }
-.menu .search:hover {
+.menu .group_right .search:hover {
   padding-left: 30px;
   padding-right: 30px;
 }
-.menu .buttons {
+.menu .group_left {
   float: left;
   display: flex;
   flex-direction: row;
 }
-.menu .buttons button {
+.menu .group_left button {
   height: 100%;
   padding: 10px;
   padding-left: 20px;
@@ -45,17 +92,17 @@
   transition: 0.2s ease-in-out;
   cursor: pointer;
 }
-.menu .buttons button:hover {
+.menu .group_left button:hover {
   color: #751aff;
   padding-left: 30px;
   padding-right: 30px;
 }
-.menu .buttons .selected {
+.menu .group_left .selected {
   color: #751aff;
   padding-left: 30px;
   padding-right: 30px;
 }
-.menu .buttons .button_settings {
+.menu .group_left .button_settings {
   width: 50px;
   height: 40px;
   margin-left: 5px;
@@ -68,11 +115,11 @@
   transition: 0.2s ease-in-out;
   cursor: pointer;
 }
-.menu .buttons .button_settings:hover {
+.menu .group_left .button_settings:hover {
   color: #751aff;
   width: 60px;
 }
-.menu .buttons .button_settings .icon {
+.menu .group_left .button_settings .icon {
   position: relative;
   top: 2px;
 }

@@ -19,21 +19,27 @@
     {
         <div class="animate__animated animate__fadeIn">
             <div class="menu">
-                <div class="buttons">
+                <div class="group_left">
                     <button class="@(_showUsers ? "selected" : "")" @onclick="() => _showUsers = true">Users</button>
                     <button class="@(!_showUsers ? "selected" : "")" @onclick="() => _showUsers = false">User groups</button>
                 </div>
 
-                @if (_showUsers)
-                {
-                    <input type="text" class="search" placeholder="Search by name..."
-                        @oninput="@((e) => SearchUser(e.Value!.ToString()!))">
-                }
-                else
-                {
-                    <input type="text" class="search" placeholder="Search by name..."
-                        @oninput="@((e) => SearchUserGroup(e.Value!.ToString()!))">
-                }
+                <div class="group_right">
+                    @if (_showUsers)
+                    {
+                        <input type="text" class="search" placeholder="Search by name..."
+                            @oninput="@((e) => SearchUser(e.Value!.ToString()!))">
+                    }
+                    else
+                    {
+                            <div class="input_with_button_container">
+                                <input @bind="_new_user_group_name" type="text" placeholder="Create new group...">
+                                <button @onclick="CreateUserGroupButton"><i class="material-icons icon">add</i></button>
+                            </div>
+                            <input type="text" class="search" placeholder="Search by name..."
+                                @oninput="@((e) => SearchUserGroup(e.Value!.ToString()!))">
+                    }
+                </div>
             </div>
 
                 @if (_showUsers)
@@ -76,6 +82,7 @@
                             </li>
                         }
                     </ul>
+                    <UserMenu @ref="_userMenu" OnUserChanged="UpdateData" />
                 }
                 else
                 {
@@ -87,41 +94,29 @@
                         </li>
                         @foreach (var user_group in _user_groups_searched!)
                         {
-                            <li class="row">
+                            <li class="row" @onclick="() => _userGroupMenu.ShowUserGroup(user_group)">
                                 <div class="col col-1" data-label="ID">@user_group.Id</div>
                                 <div class="col col-2" data-label="Name">@user_group.Name</div>
-                                <div class="col col-3" data-label="Users">users</div>
+                                <div class="col col-3" data-label="Users">@user_group.Users.Count()</div>
                             </li>
                         }
                     </ul>
-                        <div class="flex-row">
-                            <label>
-                                <input placeholder="New user group name"
-                                       @bind="_newUserGroupName"
-                                       @bind:event="oninput"/>
-                            </label>
-                            <button class="btn btn-outline-dark"
-                                    @onclick="CreateUserGroupButton">
-                                Create
-                            </button>
-                        </div>
+                    <UserGroupMenu @ref="_userGroupMenu" OnUserGroupChanged="UpdateData" />
                 }
-            <div>
-                <UserMenu @ref="_userMenu" OnUserChanged="UpdateData"/>
-            </div>
         </div>
     }
 
 
 @code {
     private UserMenu _userMenu = null!;
+    private UserGroupMenu _userGroupMenu = null!;
 
-    private UserContract[]? _users;
-    private UserContract[]? _users_searched;
+    private List<UserContract>? _users;
+    private List<UserContract>? _users_searched;
     private UserGroupContract[]? _user_groups;
     private UserGroupContract[]? _user_groups_searched;
 
-    private string _newUserGroupName = "";
+    private string _new_user_group_name = "";
 
     private bool _showUsers = true;
 
@@ -152,8 +147,14 @@
 
     private async Task CreateUserGroupButton()
     {
-        if (await AdministrationService.CreateUserGroup(_newUserGroupName))
+        if(_new_user_group_name == "" || _new_user_group_name == null)
         {
+            return;
+        }
+
+        if (await AdministrationService.CreateUserGroup(_new_user_group_name))
+        {
+            _new_user_group_name = "";
             await UpdateData();
         }
     }
@@ -164,7 +165,7 @@
         {
             return;
         }
-        _users_searched = Array.FindAll(_users!, u => u.Name.Contains(searched_user));
+        _users_searched = _users.FindAll(u => u.Name.Contains(searched_user));
     }
 
     private void SearchUserGroup(string searched_user_group)

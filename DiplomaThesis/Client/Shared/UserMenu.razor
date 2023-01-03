@@ -185,7 +185,7 @@
             if (user is not null)
             {
                 User = user;
-                UserRolesOther!.Add((Roles!.FirstOrDefault(r => r.Name == roleName)));
+                UserRolesOther!.Add((Roles!.FirstOrDefault(r => r.Name == roleName)!));
                 StateHasChanged();
             }
         }

@@ -1,0 +1,180 @@
+﻿@using DiplomaThesis.Client.Services.Interfaces
+@using DiplomaThesis.Shared.Contracts
+@inject IAdministrationService AdministrationService
+
+<div class="user_menu_container animate__animated animate__fadeIn" style="display: @(ShowUserGroupMenu ? "block" : "none");">
+    <div class="user_menu">
+        @if (UserGroup is null || Users is null)
+        {
+            <p>
+                <em>Loading...</em>
+            </p>
+        }
+        else
+        {
+            <table class="table_info">
+                <tr>
+                    <td class="label">ID</td>
+                    <td>@UserGroup.Id</td>
+                </tr>
+                <tr>
+                    <td class="label">Name</td>
+                    <td>@UserGroup.Name</td>
+                </tr>
+            </table>
+
+            <div class="section_header">Members</div>
+            <input type="text" class="searched_user_group" placeholder="Search and remove users..."
+               @oninput="@((e) => SearchUser(e.Value!.ToString()!))">
+            <div class="role_list">
+                @foreach (var user in UsersMembersFiltered!)
+                {
+                    <div class="role">
+                        <div class="role_name">@user.Name</div>
+                        <button @onclick="() => RemoveUserFromUserGroup(user)">
+                            <i class="material-icons icon">remove</i>
+                        </button>
+                    </div>
+                }
+            </div>
+            <div class="section_header">Other users</div>
+            <input type="text" class="searched_user_group" placeholder="Search and add users..."
+               @oninput="@((e) => SearchOtherUser(e.Value!.ToString()!))">
+            <div class="role_list">
+                @foreach (var user in UsersOtherFiltered!)
+                {
+                    <div class="role">
+                        <div class="role_name">@user.Name</div>
+                        <button @onclick="() => MoveUserToUserGroup(user)">
+                            <i class="material-icons icon">add</i>
+                        </button>
+                    </div>
+                }
+            </div>
+        }
+        <div class="bottom_menu">
+            <div class="buttons">
+                <button class="button_delete" @onclick="DeleteUserGroupButton" @onmouseout="ResetUserGroupDeleteConfirm">
+                    @(_delete_user_group_confirmation ? "Are you sure?" : "Delete user group")
+                </button>
+                <button class="button_save" @onclick="ToggleUserGroupMenu">Save and close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@code {
+
+    [Parameter]
+    public EventCallback OnUserGroupChanged { get; set; }
+
+    private UserGroupContract? UserGroup { get; set; }
+    private List<UserContract>? Users { get; set; }
+    private List<UserContract>? UsersMembers { get; set; }
+    private List<UserContract>? UsersMembersFiltered { get; set; }
+    private List<UserContract>? UsersOther { get; set; }
+    private List<UserContract>? UsersOtherFiltered { get; set; }
+
+    public bool ShowUserGroupMenu { get; set; }
+
+    private bool _delete_user_group_confirmation = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var users = await AdministrationService.GetUsers();
+        Users = users;
+    }
+
+    public void ToggleUserGroupMenu()
+    {
+        ShowUserGroupMenu = !ShowUserGroupMenu;
+        _delete_user_group_confirmation = false;
+    }
+
+    public void ShowUserGroup(UserGroupContract user_group)
+    {
+        UserGroup = user_group;
+        ShowUserGroupMenu = true;
+
+        UsersMembers = Users!.FindAll(u => u.UserGroupId == UserGroup.Id);
+        UsersMembersFiltered = UsersMembers;
+        UsersOther = Users.FindAll(u => u.UserGroupId != UserGroup.Id);
+        UsersOtherFiltered = UsersOther;
+        StateHasChanged();
+    }
+
+    private void ResetUserDeleteConfirm()
+    {
+        if (_delete_user_group_confirmation == true)
+        {
+            _delete_user_group_confirmation = false;
+        }
+    }
+
+    private void SearchUser(string searched_user)
+    {
+        UsersMembersFiltered = UsersMembers!.FindAll(u => u.Name.Contains(searched_user));
+    }
+
+    private void SearchOtherUser(string searched_user)
+    {
+        UsersOtherFiltered = UsersOther!.FindAll(u => u.Name.Contains(searched_user));
+    }
+
+    private async Task MoveUserToUserGroup(UserContract user)
+    {
+        if (await AdministrationService.MoveUserToUserGroup(user.Id, UserGroup!.Id))
+        {
+            await OnUserGroupChanged.InvokeAsync();
+            var user_group = await AdministrationService.GetUserGroup(UserGroup!.Id);
+            if (user_group is not null)
+            {
+                UserGroup = user_group;
+                UsersOther!.Remove(user);
+                UsersOtherFiltered = UsersOther;
+                UsersMembers!.Add(user);
+                UsersMembersFiltered = UsersMembers;
+                StateHasChanged();
+            }
+        }
+    }
+
+    private async Task RemoveUserFromUserGroup(UserContract user)
+    {
+        if (await AdministrationService.RemoveUserFromUserGroup(user.Id, UserGroup!.Id))
+        {
+            await OnUserGroupChanged.InvokeAsync();
+            var user_group = await AdministrationService.GetUserGroup(UserGroup!.Id);
+            if (user_group is not null)
+            {
+                UserGroup = user_group;
+                UsersMembers!.Remove(user);
+                UsersMembersFiltered = UsersMembers;
+                UsersOther!.Add(user);
+                UsersOtherFiltered = UsersOther;
+                StateHasChanged();
+            }
+        }
+    }
+
+    private async Task DeleteUserGroupButton()
+    {
+        if (_delete_user_group_confirmation == false)
+        {
+            _delete_user_group_confirmation = true;
+            return;
+        }
+        /*if (await AdministrationService.DeleteUserGroup(UserGroup!.Name))
+        {
+            ToggleUserGroupMenu();
+            await OnUserGroupChanged.InvokeAsync();
+        }*/
+    }
+
+    private void ResetUserGroupDeleteConfirm()
+    {
+        _delete_user_group_confirmation = false;
+    }
+    
+}

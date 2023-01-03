@@ -1,5 +1,7 @@
+using System.Linq;
 using System.Security.Claims;
 using DiplomaThesis.Server.Data;
+using DiplomaThesis.Server.Data.Migrations;
 using DiplomaThesis.Server.Models;
 using DiplomaThesis.Shared.Commands;
 using DiplomaThesis.Shared.Contracts;
@@ -7,6 +9,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.PowerBI.Api.Models;
 
 namespace DiplomaThesis.Server.Controllers;
 
@@ -164,6 +167,28 @@ public class AdministrationController : ControllerBase
         return Ok();
     }
 
+    [HttpGet("{user_group_id}")]
+    public async Task<ActionResult> GetUserGroup(
+        [FromRoute] Guid user_group_id    
+    )
+    {
+        var user_group = await _context.UserGroups.FindAsync(user_group_id);
+        if (user_group is null) return NotFound();
+
+        var users = await _context.Users.ToListAsync();
+        if (users is null) return NotFound();
+
+        var users_group_ids = users.FindAll(u => u.UserGroupId == user_group_id).Select(u => Guid.Parse(u.Id)).ToList();
+
+        var result = new UserGroupContract
+        {
+            Id = user_group.Id,
+            Name = user_group.Name,
+            Users = users_group_ids.AsEnumerable()
+        };
+        return Ok(result);
+    }
+
     [HttpGet]
     public ActionResult ListUserGroups()
     {
@@ -218,10 +243,10 @@ public class AdministrationController : ControllerBase
 
     [Authorize(Roles = "Admin")]
     [HttpPut]
-    public ActionResult MoveUserToUserGroup(
+    public async Task<ActionResult> MoveUserToUserGroup(
         [FromBody] MoveUserToUserGroupCommand moveUserToUserGroupCommand)
     {
-        var user = _context.Users.Find(moveUserToUserGroupCommand.UserId.ToString());
+        var user = await _context.Users.FindAsync(moveUserToUserGroupCommand.UserId.ToString());
         if (user is null) return NotFound();
 
         if (moveUserToUserGroupCommand.UserGroupId.Equals(Guid.Empty))
@@ -242,7 +267,29 @@ public class AdministrationController : ControllerBase
             if (userGroup is null) return NotFound();
 
             user.UserGroup = userGroup;
+            user.UserGroupId = userGroup.Id;
         }
+
+        _context.SaveChanges();
+
+        return Ok();
+    }
+
+    [Authorize(Roles = "Admin")]
+    [HttpPut]
+    public async Task<ActionResult> RemoveUserFromUserGroup(
+        [FromBody] RemoveUserFromUserGroupCommand removeUserFromUserGroupCommand)
+    {
+        var user = await _context.Users.FindAsync(removeUserFromUserGroupCommand.UserId.ToString());
+        if (user is null) return NotFound();
+
+        var user_group = _context.UserGroups.Find(removeUserFromUserGroupCommand.UserGroupId);
+
+        if(user.UserGroupId != user_group.Users.FirstOrDefault(u => u.UserGroupId == user.UserGroupId).UserGroupId) return NotFound();
+
+        user.UserGroup = null;
+        user.UserGroupId = null;
+        user_group.Users.Remove(user);
 
         _context.SaveChanges();
 
