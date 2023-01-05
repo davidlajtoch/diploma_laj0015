@@ -72,9 +72,11 @@
             }
         }
 
-        .table_info, .table_user_group_info {
+        .table_info {
             text-align: center;
             width: 100%;
+            margin-top: 5px;
+            margin-bottom: 5px;
 
             td {
                 text-align: right;
@@ -86,21 +88,16 @@
             }
         }
 
-        .table_user_group_info {
-            margin-top: 10px;
-            margin-bottom: 10px;
-        }
-
         .section_header {
             width: 100%;
             text-align: center;
-            margin-top: 10px;
+            margin-top: 5px;
             margin-bottom: 5px;
             color: $color_purple;
         }
 
-        .searched_user_group {
-            width: calc(100% - 24px);
+        .search {
+            width: calc(100% - 27px);
             padding: 5px;
             padding-left: 12px;
             padding-right: 12px;
@@ -113,7 +110,7 @@
             outline: none;
         }
 
-        .user_group_list, .role_list {
+        .list_user_groups, .list_roles {
             width: 100%;
             height: 115px;
             overflow-y: scroll;
@@ -136,7 +133,7 @@
                 display: inline-block;
                 cursor: auto;
 
-                .role_name {
+                .name {
                     float: left;
                 }
 

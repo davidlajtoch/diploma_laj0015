@@ -4,5 +4,5 @@ public class UserGroupContract
 {
     public Guid Id { get; init; }
     public string Name { get; init; } = null!;
-    public IEnumerable<Guid>? Users { get; init; } = null!;
+    public List<UserContract>? Users { get; init; } = null!;
 }

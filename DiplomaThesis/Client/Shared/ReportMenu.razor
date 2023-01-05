@@ -122,8 +122,8 @@
         }
     }
 
-    private UserGroupContract[]? UserGroups { get; set; }
-    private DatasetContract[]? Datasets { get; set; }
+    private List<UserGroupContract>? UserGroups { get; set; }
+    private List<DatasetContract>? Datasets { get; set; }
 
     public bool ShowMenu { get; set; }
 
@@ -141,7 +141,7 @@
 
     private async Task UpdateData()
     {
-        var userGroups = await AdministrationService.GetUserGroups();
+        var userGroups = await AdministrationService.GetAllUserGroups();
         UserGroups = userGroups;
 
         var datasets = await DatasetService.GetDatasets();

@@ -6,23 +6,34 @@ public interface IAdministrationService
 {
     public Task<UserContract?> GetUser(Guid userId);
 
-    public Task<List<UserContract>?> GetUsers();
+    public Task<List<UserContract>?> GetAllUsers();
 
     public Task<bool> DeleteUser(string userName);
 
-    public Task<bool> MoveUserToUserGroup(Guid userId, Guid userGroupId);
-
-    public Task<bool> RemoveUserFromUserGroup(Guid userId, Guid userGroupId);
-    
-    public Task<UserGroupContract[]?> GetUserGroups();
-
-    public Task<bool> CreateUserGroup(string newUserGroupName);
-
-    public Task<UserGroupContract?> GetUserGroup(Guid user_group_id);
-
-    public Task<RoleContract[]?> GetRoles();
+    public Task<List<RoleContract>?> GetAllRoles();
 
     public Task<bool> AddRole(string userName, string roleName);
 
     public Task<bool> RemoveRole(string userName, string roleName);
+
+    /*public Task<List<RoleContract>?> GetUserRoles();
+
+    public Task<List<RoleContract>?> GetNonUserRoles();*/
+
+    public Task<UserGroupContract?> GetUserGroup(Guid user_group_id);
+
+    public Task<List<UserGroupContract>?> GetAllUserGroups();
+
+    public Task<bool> CreateUserGroup(string newUserGroupName);
+
+    public Task<bool> DeleteUserGroup(Guid userGroupId);
+
+    public Task<List<UserContract>?> GetUserGroupMembers(Guid userGroupId);
+
+    public Task<List<UserContract>?> GetUserGroupNonMembers(Guid userGroupId);
+
+    public Task<bool> MoveUserToUserGroup(Guid userId, Guid userGroupId);
+
+    public Task<bool> RemoveUserFromUserGroup(Guid userId, Guid userGroupId);
+   
 }

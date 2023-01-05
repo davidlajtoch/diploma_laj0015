@@ -24,11 +24,11 @@
             </table>
 
             <div class="section_header">User roles</div>
-            <div class="role_list">
+            <div class="list_roles">
                 @foreach (var role in User.Roles)
                 {
-                    <div class="role">
-                        <div class="role_name">@role.Name</div>
+                    <div class="role animate__fadeInUp">
+                        <div class="name">@role.Name</div>
                         @if (role.Name != "Admin")
                         {
                             <button @onclick="() => RemoveRole(User.Name, role.Name)">
@@ -38,14 +38,15 @@
                     </div>
                 }
             </div>
+
             <div class="section_header">Available roles</div>
-            <div class="role_list">
+            <div class="list_roles">
                 @foreach (var role in UserRolesOther!)
                 {
                     @if (role.Name != "Admin")
                     {
-                        <div class="role">
-                            <div class="role_name">@role.Name</div>
+                        <div class="role animate__fadeInDown">
+                            <div class="name">@role.Name</div>
                             <button @onclick="() => AddRole(User.Name, role.Name)">
                                 <i class="material-icons icon">add</i>
                             </button>
@@ -54,29 +55,28 @@
                 } 
             </div>
 
-            <table class="table_user_group_info">
+            <table class="table_info">
                 <tr>
                     <td class="label">User group</td>
-                    <td>@SelectedUserGroupName</td>
+                    <td>@AssignedUserGroupName</td>
                 </tr>
             </table>
 
-            <input type="text" class="searched_user_group" placeholder="Search and select User group..."
+            <input type="text" class="search" placeholder="Search and select User group..."
                @oninput="@((e) => SearchUserGroup(e.Value!.ToString()!))">
-            <div class="user_group_list">
+            <div class="list_user_groups">
                 @foreach (var userGroup in UserGroupsFiltered!)
                 {
-                    <div class="user_group" @onclick="()=> SelectedUserGroupChanged(userGroup.Id.ToString(), userGroup.Name)">
+                    <div class="user_group" @onclick="()=> SelectedUserGroupChanged(userGroup)">
                         @userGroup.Name
                     </div>
-                    
                 }
             </div>
         }
         <div class="bottom_menu">
             <div class="buttons">
                 <button class="button_delete" @onclick="DeleteUserButton" @onmouseout="ResetUserDeleteConfirm">
-                    @(_delete_user_confirmation ? "Are you sure?" : "Delete user")
+                    @(_deleteUserConfirmation ? "Are you sure?" : "Delete user")
                 </button>
                 <button class="button_save" @onclick="ToggleUserMenu">Save and close</button>
             </div>
@@ -91,34 +91,24 @@
     public EventCallback OnUserChanged { get; set; }
 
     private UserContract? User { get; set; }
-    private RoleContract[]? Roles { get; set; }
+    private List<RoleContract>? Roles { get; set; }
     private List<RoleContract>? UserRolesOther { get; set; }
-    private UserGroupContract[]? UserGroups { get; set; }
-    private UserGroupContract[]? UserGroupsFiltered { get; set; }
+    private List<UserGroupContract>? UserGroups { get; set; }
+    private List<UserGroupContract>? UserGroupsFiltered { get; set; }
 
     public bool ShowUserMenu { get; set; }
 
-    private string _selectedUserGroupId = Guid.Empty.ToString();
-    private bool _delete_user_confirmation = false;
+    private bool _deleteUserConfirmation = false;
 
-    private string? SelectedUserGroupName { get; set; }
+    private string? AssignedUserGroupName { get; set; }
     private string? SearchedUserGroupName { get; set; }
-    private string SelectedUserGroupId
-    {
-        get => _selectedUserGroupId;
-        set
-        {
-            _selectedUserGroupId = value;
-            StateHasChanged();
-        }
-    }
 
     protected override async Task OnInitializedAsync()
     {
-        var roles = await AdministrationService.GetRoles();
+        var roles = await AdministrationService.GetAllRoles();
         Roles = roles;
 
-        var userGroups = await AdministrationService.GetUserGroups();
+        var userGroups = await AdministrationService.GetAllUserGroups();
         UserGroups = userGroups;
         UserGroupsFiltered = userGroups;
     }
@@ -126,37 +116,33 @@
     public void ToggleUserMenu()
     {
         ShowUserMenu = !ShowUserMenu;
-        _delete_user_confirmation = false;
+        _deleteUserConfirmation = false;
     }
 
     public void ShowUser(UserContract user)
     {
         User = user;
         ShowUserMenu = true;
-        SelectedUserGroupId = User.UserGroupId.ToString();
-        SelectedUserGroupName = UserGroups!.FirstOrDefault(
+
+        AssignedUserGroupName = UserGroups!.FirstOrDefault(
                                     UserGroups => UserGroups?.Id.Equals(user.UserGroupId) ?? false, null
                                 )?.Name;
         UserRolesOther = Roles!.Where(r1 => User.Roles.All(r2 => r2.Name != r1.Name)).ToList();
         StateHasChanged();
     }
 
-    private async Task SelectedUserGroupChanged(string selected_user_group_id, string selected_user_group_name)
+    private async Task SelectedUserGroupChanged(UserGroupContract userGroup)
     {
-        if (selected_user_group_id is null || selected_user_group_name is null)
+        if (userGroup is null || User is null)
         {
-            return;
-        }
-        if (User is null){
             return;
         }
 
-        SelectedUserGroupId = selected_user_group_id;
-        if (await AdministrationService.MoveUserToUserGroup(User!.Id, Guid.Parse(SelectedUserGroupId)))
+        if (await AdministrationService.MoveUserToUserGroup(User!.Id, userGroup.Id))
         {
             await OnUserChanged.InvokeAsync();
             await AdministrationService.GetUser(User!.Id);
-            SelectedUserGroupName = selected_user_group_name;
+            AssignedUserGroupName = userGroup.Name;
             StateHasChanged();
         }
     }
@@ -170,7 +156,7 @@
             if (user is not null)
             {
                 User = user;
-                UserRolesOther = UserRolesOther!.Where(r => r.Name != roleName).ToList();
+                UserRolesOther = UserRolesOther!.FindAll(r => r.Name != roleName);
                 StateHasChanged();
             }
         }
@@ -192,19 +178,21 @@
     }
 
     private void ResetUserDeleteConfirm(){
-        if(_delete_user_confirmation == true){
-            _delete_user_confirmation = false;
+        if (_deleteUserConfirmation == true)
+        {
+            _deleteUserConfirmation = false;
         }
     }
 
     private void SearchUserGroup(string searched_user_group){
-        UserGroupsFiltered = Array.FindAll(UserGroups!, s => s.Name.Contains(searched_user_group));
+        UserGroupsFiltered = UserGroups!.FindAll(ug => ug.Name.Contains(searched_user_group));
     }
 
     private async Task DeleteUserButton()
     {
-        if(_delete_user_confirmation == false){
-            _delete_user_confirmation = true;
+        if (_deleteUserConfirmation == false)
+        {
+            _deleteUserConfirmation = true;
             return;
         }
         if (await AdministrationService.DeleteUser(User!.Name))

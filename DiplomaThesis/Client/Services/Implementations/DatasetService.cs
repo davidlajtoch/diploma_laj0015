@@ -15,12 +15,12 @@ public class DatasetService : IDatasetService
         _http = http;
     }
 
-    public async Task<DatasetContract[]?> GetDatasets()
+    public async Task<List<DatasetContract>?> GetDatasets()
     {
         try
         {
-            var response = await _http.GetFromJsonAsync<IEnumerable<DatasetContract>>("Dataset/ListDatasets");
-            return response?.ToArray();
+            var response = await _http.GetFromJsonAsync<List<DatasetContract>?>("Dataset/ListDatasets");
+            return response;
         }
         catch (AccessTokenNotAvailableException exception)
         {

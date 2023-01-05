@@ -80,6 +80,7 @@
                                     
                                 </div>
                             </li>
+                            
                         }
                     </ul>
                     <UserMenu @ref="_userMenu" OnUserChanged="UpdateData" />
@@ -99,6 +100,7 @@
                                 <div class="col col-2" data-label="Name">@user_group.Name</div>
                                 <div class="col col-3" data-label="Users">@user_group.Users.Count()</div>
                             </li>
+                            
                         }
                     </ul>
                     <UserGroupMenu @ref="_userGroupMenu" OnUserGroupChanged="UpdateData" />
@@ -113,8 +115,8 @@
 
     private List<UserContract>? _users;
     private List<UserContract>? _users_searched;
-    private UserGroupContract[]? _user_groups;
-    private UserGroupContract[]? _user_groups_searched;
+    private List<UserGroupContract>? _user_groups;
+    private List<UserGroupContract>? _user_groups_searched;
 
     private string _new_user_group_name = "";
 
@@ -127,8 +129,8 @@
 
     private async Task UpdateData()
     {
-        var users = await AdministrationService.GetUsers();
-        var userGroups = await AdministrationService.GetUserGroups();
+        var users = await AdministrationService.GetAllUsers();
+        var userGroups = await AdministrationService.GetAllUserGroups();
 
         if (users is not null)
         {
@@ -140,6 +142,11 @@
         {
             _user_groups = userGroups;
             _user_groups_searched = userGroups;
+        }
+
+        foreach(var userGroup in _user_groups)
+        {
+            Console.WriteLine(userGroup.Id);
         }
 
         StateHasChanged();
@@ -165,7 +172,7 @@
         {
             return;
         }
-        _users_searched = _users.FindAll(u => u.Name.Contains(searched_user));
+        _users_searched = _users!.FindAll(u => u.Name.Contains(searched_user));
     }
 
     private void SearchUserGroup(string searched_user_group)
@@ -174,6 +181,6 @@
         {
             return;
         }
-        _user_groups_searched = Array.FindAll(_user_groups!, s => s.Name.Contains(searched_user_group));
+        _user_groups_searched = _user_groups.FindAll(ug => ug.Name.Contains(searched_user_group));
     }
 }

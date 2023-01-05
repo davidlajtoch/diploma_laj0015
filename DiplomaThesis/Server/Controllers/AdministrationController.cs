@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.PowerBI.Api;
 using Microsoft.PowerBI.Api.Models;
 
 namespace DiplomaThesis.Server.Controllers;
@@ -33,6 +34,35 @@ public class AdministrationController : ControllerBase
         _context = context;
     }
 
+    private async Task<List<UserContract>> ApplicationUsersToUserContracts(List<ApplicationUser> applicationUsers)
+    {
+        var userGroups = await _context.UserGroups.ToListAsync();
+
+        var result = new List<UserContract>();
+        foreach (var user in applicationUsers)
+        {
+            var roles = await _userManager.GetRolesAsync(user);
+
+            var userGroupId = userGroups.FirstOrDefault(
+                group =>
+                {
+                    if (group is null || group.Users is null) return false;
+                    return group.Users.Any(userInGroup => userInGroup.Id.Equals(user.Id));
+                }, null)?.Id ?? Guid.Empty;
+
+            var resultRoles = roles.Select(x => new RoleContract { Name = x }).ToList();
+
+            result.Add(new UserContract
+            {
+                Id = Guid.Parse(user.Id),
+                Name = user.UserName,
+                UserGroupId = userGroupId,
+                Roles = resultRoles
+            });
+        }
+        return result;
+    }
+
     [Authorize(Roles = "Admin")]
     [HttpGet("{userId}")]
     public async Task<ActionResult> GetUser(
@@ -53,7 +83,7 @@ public class AdministrationController : ControllerBase
                 return group.Users.Any(userInGroup => userInGroup.Id.Equals(userId.ToString()));
             }, null)?.Id ?? Guid.Empty;
 
-        var resultRoles = roles.Select(x => new RoleContract { Name = x });
+        var resultRoles = roles.Select(x => new RoleContract { Name = x }).ToList();
 
         var result = new UserContract
         {
@@ -67,46 +97,39 @@ public class AdministrationController : ControllerBase
 
     [Authorize(Roles = "Admin")]
     [HttpGet]
-    public async Task<ActionResult> ListUsers()
+    public async Task<ActionResult> GetAllUsers()
     {
         var users = await _userManager.Users.ToListAsync();
+        var result = await ApplicationUsersToUserContracts(users);
+        return Ok(result);
+    }
 
-        var userGroups = await _context.UserGroups.ToListAsync();
+    [Authorize(Roles = "Admin")]
+    [HttpDelete]
+    public async Task<ActionResult> DeleteUser(
+        [FromBody] DeleteUserCommand deleteUserCommand)
+    {
+        var user = await _userManager.FindByNameAsync(deleteUserCommand.UserName);
+        if (user is null) return NotFound();
 
-        var result = new List<UserContract>();
+        var loggedInUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (loggedInUserId.Equals(user.Id)) return BadRequest();
 
-        foreach (var user in users)
-        {
-            var roles = await _userManager.GetRolesAsync(user);
+        var result = await _userManager.DeleteAsync(user);
 
-            var userGroupId = userGroups.FirstOrDefault(
-                group =>
-                {
-                    if (group is null || group.Users is null) return false;
-                    return group.Users.Any(userInGroup => userInGroup.Id.Equals(user.Id));
-                }, null)?.Id ?? Guid.Empty;
+        if (!result.Succeeded)
+            return StatusCode(500);
 
-            var resultRoles = roles.Select(x => new RoleContract { Name = x });
-
-            result.Add(new UserContract
-            {
-                Id = Guid.Parse(user.Id),
-                Name = user.UserName,
-                UserGroupId = userGroupId,
-                Roles = resultRoles
-            });
-        }
-
-        return Ok(result.AsEnumerable());
+        return Ok();
     }
 
     [Authorize(Roles = "Admin")]
     [HttpGet]
-    public ActionResult ListRoles()
+    public ActionResult GetAllRoles()
     {
-        var result = _roleManager.Roles;
+        var result = _roleManager.Roles.ToList();
 
-        return Ok(result.AsEnumerable());
+        return Ok(result);
     }
 
     [Authorize(Roles = "Admin")]
@@ -148,58 +171,51 @@ public class AdministrationController : ControllerBase
         return Ok();
     }
 
-    [Authorize(Roles = "Admin")]
-    [HttpDelete]
-    public async Task<ActionResult> DeleteUser(
-        [FromBody] DeleteUserCommand deleteUserCommand)
-    {
-        var user = await _userManager.FindByNameAsync(deleteUserCommand.UserName);
-        if (user is null) return NotFound();
-
-        var loggedInUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        if (loggedInUserId.Equals(user.Id)) return BadRequest();
-
-        var result = await _userManager.DeleteAsync(user);
-
-        if (!result.Succeeded)
-            return StatusCode(500);
-
-        return Ok();
-    }
-
-    [HttpGet("{user_group_id}")]
+    [HttpGet("{userGroupId}")]
     public async Task<ActionResult> GetUserGroup(
-        [FromRoute] Guid user_group_id    
+        [FromRoute] Guid userGroupId   
     )
     {
-        var user_group = await _context.UserGroups.FindAsync(user_group_id);
-        if (user_group is null) return NotFound();
+        var userGroup = await _context.UserGroups.FindAsync(userGroupId);
+        if (userGroup is null) return NotFound();
 
         var users = await _context.Users.ToListAsync();
         if (users is null) return NotFound();
 
-        var users_group_ids = users.FindAll(u => u.UserGroupId == user_group_id).Select(u => Guid.Parse(u.Id)).ToList();
+        var usersMembers = await ApplicationUsersToUserContracts(users.FindAll(u => u.UserGroupId == userGroupId));
 
         var result = new UserGroupContract
         {
-            Id = user_group.Id,
-            Name = user_group.Name,
-            Users = users_group_ids.AsEnumerable()
+            Id = userGroup.Id,
+            Name = userGroup.Name,
+            Users = usersMembers
         };
         return Ok(result);
     }
 
     [HttpGet]
-    public ActionResult ListUserGroups()
+    public async Task<ActionResult> GetAllUserGroups()
     {
-        var result = _context.UserGroups.Select(group => new UserGroupContract
-        {
-            Id = group.Id,
-            Name = group.Name,
-            Users = group.Users.Select(user => Guid.Parse(user.Id))
-        }).ToList();
+        var userGroups = _context.UserGroups;
 
-        return Ok(result.AsEnumerable());
+        var result = new List<UserGroupContract>();
+        foreach(var userGroup in userGroups)
+        {
+            var users = await _userManager.Users.ToListAsync();
+            if (users is null) return NotFound();
+
+            var usersMembers = await ApplicationUsersToUserContracts(users.FindAll(u => u.UserGroupId == userGroup.Id));
+
+            result.Add(
+                new UserGroupContract
+                {
+                    Id = userGroup.Id,
+                    Name = userGroup.Name,
+                    Users = usersMembers
+                }    
+            );
+        }
+        return Ok(result);
     }
 
     [Authorize(Roles = "Admin")]
@@ -223,22 +239,89 @@ public class AdministrationController : ControllerBase
         {
             Id = result.Entity.Id,
             Name = result.Entity.Name,
-            Users = new List<Guid>()
+            Users = new List<UserContract>()
         });
     }
 
     [Authorize(Roles = "Admin")]
     [HttpDelete]
-    public ActionResult DeleteUserGroup(
-        [FromRoute] Guid userGroupId)
+    public async Task<ActionResult> DeleteUserGroup(
+        [FromBody] DeleteUserGroupCommand deleteUserGroupCommand)
     {
-        var userGroup = _context.UserGroups.Find(userGroupId.ToString());
+        var userGroup = await _context.UserGroups.FindAsync(deleteUserGroupCommand.UserGroupId);
         if (userGroup is null) return NotFound();
 
+        var users = _userManager.Users.Where(u => u.UserGroupId == deleteUserGroupCommand.UserGroupId);
+
+        foreach(var user in users)
+        {
+            user.UserGroupId = null;
+        }
         _context.UserGroups.Remove(userGroup);
         _context.SaveChanges();
 
         return Ok();
+    }
+
+    [HttpGet("{userGroupId}")]
+    public async Task<ActionResult> GetUserGroupMembers(
+        [FromRoute] Guid userGroupId    
+    )
+    {
+        var user_group = await _context.UserGroups.FindAsync(userGroupId);
+        if (user_group is null) return NotFound();
+
+        var users = await _context.Users.ToListAsync();
+        if (users is null) return NotFound();
+
+        var usersMembers = users.FindAll(u => u.UserGroupId == userGroupId);
+
+        var result = new List<UserContract>(); 
+        foreach (var user in usersMembers)
+        {
+            var roles = await _userManager.GetRolesAsync(user);
+            var resultRoles = roles.Select(x => new RoleContract { Name = x }).ToList();
+
+            result.Add(new UserContract
+            {
+                Id = Guid.Parse(user.Id),
+                Name = user.UserName,
+                UserGroupId = userGroupId,
+                Roles = resultRoles
+            });
+        }
+        return Ok(result);
+    }
+
+    [HttpGet("{userGroupId}")]
+    public async Task<ActionResult> GetUserGroupNonMembers(
+        [FromRoute] Guid userGroupId    
+    )
+    {
+        var user_group = await _context.UserGroups.FindAsync(userGroupId);
+        if (user_group is null) return NotFound();
+
+        var users = await _context.Users.ToListAsync();
+        if (users is null) return NotFound();
+
+        var usersNonMembers = users.FindAll(u => u.UserGroupId != userGroupId);
+
+        var result = new List<UserContract>(); 
+        foreach (var user in usersNonMembers)
+        {
+            var roles = await _userManager.GetRolesAsync(user);
+            var resultRoles = roles.Select(x => new RoleContract { Name = x }).ToList();
+
+            result.Add(new UserContract
+            {
+                Id = Guid.Parse(user.Id),
+                Name = user.UserName,
+                UserGroupId = userGroupId,
+                Roles = resultRoles
+            });
+        }
+
+        return Ok(result);
     }
 
     [Authorize(Roles = "Admin")]
@@ -259,7 +342,7 @@ public class AdministrationController : ControllerBase
                     return group.Users.Any(userInGroup => userInGroup.Id.Equals(user.Id));
                 }, null);
             user.UserGroup = null;
-            userGroup?.Users.Remove(user);
+            userGroup?.Users!.Remove(user);
         }
         else
         {
@@ -285,11 +368,11 @@ public class AdministrationController : ControllerBase
 
         var user_group = _context.UserGroups.Find(removeUserFromUserGroupCommand.UserGroupId);
 
-        if(user.UserGroupId != user_group.Users.FirstOrDefault(u => u.UserGroupId == user.UserGroupId).UserGroupId) return NotFound();
+        if(user.UserGroupId != user_group!.Users!.FirstOrDefault(u => u.UserGroupId == user.UserGroupId)!.UserGroupId) return NotFound();
 
         user.UserGroup = null;
         user.UserGroupId = null;
-        user_group.Users.Remove(user);
+        user_group.Users!.Remove(user);
 
         _context.SaveChanges();
 

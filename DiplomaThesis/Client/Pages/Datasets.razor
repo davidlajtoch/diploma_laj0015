@@ -32,7 +32,7 @@
                 </div>
             </div>
             <div class="datasets">
-            @foreach (var dataset in _datasets_searched)
+            @foreach (var dataset in _datasets_searched!)
             {
                 <div class="dataset">
                     <div class="name">@dataset.Name</div>
@@ -75,7 +75,7 @@
                 </div>
             }
             </div>
-            @if (_datasets.Length == 0)
+            @if (_datasets.Count() == 0)
             {
                 <div class="nothing_found">
                     Nothing found :(
@@ -90,8 +90,8 @@
     
 
 @code {
-    private DatasetContract[]? _datasets { get; set; }
-    private DatasetContract[]? _datasets_searched { get; set; }
+    private List<DatasetContract>? _datasets { get; set; }
+    private List<DatasetContract>? _datasets_searched { get; set; }
     private string SearchValue { get; set; } = "";
 
     protected override async Task OnInitializedAsync()
@@ -141,7 +141,7 @@
         if(searched_dataset_name is null){
             return;
         }
-        _datasets_searched = Array.FindAll(_datasets!, s => s.Name.Contains(searched_dataset_name));
+        _datasets_searched = _datasets!.FindAll(d => d.Name.Contains(searched_dataset_name));
     }
 
 }

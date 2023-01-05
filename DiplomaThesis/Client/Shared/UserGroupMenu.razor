@@ -2,9 +2,9 @@
 @using DiplomaThesis.Shared.Contracts
 @inject IAdministrationService AdministrationService
 
-<div class="user_menu_container animate__animated animate__fadeIn" style="display: @(ShowUserGroupMenu ? "block" : "none");">
-    <div class="user_menu">
-        @if (UserGroup is null || Users is null)
+<div class="user_group_menu_container animate__animated animate__fadeIn" style="display: @(ShowUserGroupMenu ? "block" : "none");">
+    <div class="user_group_menu">
+        @if (UserGroup is null || UsersMembers is null || UsersNonMembers is null)
         {
             <p>
                 <em>Loading...</em>
@@ -24,27 +24,28 @@
             </table>
 
             <div class="section_header">Members</div>
-            <input type="text" class="searched_user_group" placeholder="Search and remove users..."
-               @oninput="@((e) => SearchUser(e.Value!.ToString()!))">
-            <div class="role_list">
+            <input type="text" class="search" placeholder="Search and remove users..."
+               @oninput="@((e) => SearchMember(e.Value!.ToString()!))">
+            <div class="user_list">
                 @foreach (var user in UsersMembersFiltered!)
                 {
-                    <div class="role">
-                        <div class="role_name">@user.Name</div>
+                    <div class="user animate__animated animate__fadeInUp">
+                        <div class="name">@user.Name</div>
                         <button @onclick="() => RemoveUserFromUserGroup(user)">
                             <i class="material-icons icon">remove</i>
                         </button>
                     </div>
                 }
             </div>
-            <div class="section_header">Other users</div>
-            <input type="text" class="searched_user_group" placeholder="Search and add users..."
-               @oninput="@((e) => SearchOtherUser(e.Value!.ToString()!))">
-            <div class="role_list">
-                @foreach (var user in UsersOtherFiltered!)
+
+            <div class="section_header">Non members</div>
+            <input type="text" class="search" placeholder="Search and add users..."
+               @oninput="@((e) => SearchNonMember(e.Value!.ToString()!))">
+            <div class="user_list">
+                @foreach (var user in UsersNonMembersFiltered!)
                 {
-                    <div class="role">
-                        <div class="role_name">@user.Name</div>
+                    <div class="user animate__animated animate__fadeInDown">
+                        <div class="name">@user.Name</div>
                         <button @onclick="() => MoveUserToUserGroup(user)">
                             <i class="material-icons icon">add</i>
                         </button>
@@ -55,7 +56,7 @@
         <div class="bottom_menu">
             <div class="buttons">
                 <button class="button_delete" @onclick="DeleteUserGroupButton" @onmouseout="ResetUserGroupDeleteConfirm">
-                    @(_delete_user_group_confirmation ? "Are you sure?" : "Delete user group")
+                    @(_deleteUserGroupConfirmation ? "Are you sure?" : "Delete user group")
                 </button>
                 <button class="button_save" @onclick="ToggleUserGroupMenu">Save and close</button>
             </div>
@@ -63,76 +64,72 @@
     </div>
 </div>
 
-
 @code {
 
     [Parameter]
     public EventCallback OnUserGroupChanged { get; set; }
 
     private UserGroupContract? UserGroup { get; set; }
-    private List<UserContract>? Users { get; set; }
     private List<UserContract>? UsersMembers { get; set; }
     private List<UserContract>? UsersMembersFiltered { get; set; }
-    private List<UserContract>? UsersOther { get; set; }
-    private List<UserContract>? UsersOtherFiltered { get; set; }
+    private List<UserContract>? UsersNonMembers { get; set; }
+    private List<UserContract>? UsersNonMembersFiltered { get; set; }
 
     public bool ShowUserGroupMenu { get; set; }
 
-    private bool _delete_user_group_confirmation = false;
-
-    protected override async Task OnInitializedAsync()
-    {
-        var users = await AdministrationService.GetUsers();
-        Users = users;
-    }
+    private bool _deleteUserGroupConfirmation = false;
 
     public void ToggleUserGroupMenu()
     {
         ShowUserGroupMenu = !ShowUserGroupMenu;
-        _delete_user_group_confirmation = false;
+        _deleteUserGroupConfirmation = false;
     }
 
-    public void ShowUserGroup(UserGroupContract user_group)
+    public async Task ShowUserGroup(UserGroupContract userGroup)
     {
-        UserGroup = user_group;
+        UserGroup = userGroup;
         ShowUserGroupMenu = true;
 
-        UsersMembers = Users!.FindAll(u => u.UserGroupId == UserGroup.Id);
+        var users = await AdministrationService.GetAllUsers();
+
+        UsersMembers = users!.FindAll(u => u.UserGroupId == UserGroup.Id);
         UsersMembersFiltered = UsersMembers;
-        UsersOther = Users.FindAll(u => u.UserGroupId != UserGroup.Id);
-        UsersOtherFiltered = UsersOther;
+
+        UsersNonMembers = users!.FindAll(u => u.UserGroupId != UserGroup.Id);
+        UsersNonMembersFiltered = UsersNonMembers;
+
+        /*UsersMembers = await AdministrationService.GetUserGroupMembers(UserGroup!.Id);
+        UsersMembersFiltered = UsersMembers;
+
+        UsersNonMembers = await AdministrationService.GetUserGroupNonMembers(UserGroup!.Id);
+        UsersNonMembersFiltered = UsersNonMembers;*/
+
         StateHasChanged();
     }
 
-    private void ResetUserDeleteConfirm()
-    {
-        if (_delete_user_group_confirmation == true)
-        {
-            _delete_user_group_confirmation = false;
-        }
-    }
-
-    private void SearchUser(string searched_user)
+    private void SearchMember(string searched_user)
     {
         UsersMembersFiltered = UsersMembers!.FindAll(u => u.Name.Contains(searched_user));
     }
 
-    private void SearchOtherUser(string searched_user)
+    private void SearchNonMember(string searched_user)
     {
-        UsersOtherFiltered = UsersOther!.FindAll(u => u.Name.Contains(searched_user));
+        UsersNonMembersFiltered = UsersNonMembers!.FindAll(u => u.Name.Contains(searched_user));
     }
 
     private async Task MoveUserToUserGroup(UserContract user)
     {
+        Console.WriteLine(UserGroup!.Id);
         if (await AdministrationService.MoveUserToUserGroup(user.Id, UserGroup!.Id))
         {
             await OnUserGroupChanged.InvokeAsync();
             var user_group = await AdministrationService.GetUserGroup(UserGroup!.Id);
             if (user_group is not null)
             {
+                
                 UserGroup = user_group;
-                UsersOther!.Remove(user);
-                UsersOtherFiltered = UsersOther;
+                UsersNonMembers!.Remove(user);
+                UsersNonMembersFiltered = UsersNonMembers;
                 UsersMembers!.Add(user);
                 UsersMembersFiltered = UsersMembers;
                 StateHasChanged();
@@ -151,8 +148,8 @@
                 UserGroup = user_group;
                 UsersMembers!.Remove(user);
                 UsersMembersFiltered = UsersMembers;
-                UsersOther!.Add(user);
-                UsersOtherFiltered = UsersOther;
+                UsersNonMembers!.Add(user);
+                UsersNonMembersFiltered = UsersNonMembers;
                 StateHasChanged();
             }
         }
@@ -160,21 +157,21 @@
 
     private async Task DeleteUserGroupButton()
     {
-        if (_delete_user_group_confirmation == false)
+        if (_deleteUserGroupConfirmation == false)
         {
-            _delete_user_group_confirmation = true;
+            _deleteUserGroupConfirmation = true;
             return;
         }
-        /*if (await AdministrationService.DeleteUserGroup(UserGroup!.Name))
+        if (await AdministrationService.DeleteUserGroup(UserGroup!.Id))
         {
             ToggleUserGroupMenu();
             await OnUserGroupChanged.InvokeAsync();
-        }*/
+        }
     }
 
     private void ResetUserGroupDeleteConfirm()
     {
-        _delete_user_group_confirmation = false;
+        _deleteUserGroupConfirmation = false;
     }
     
 }
