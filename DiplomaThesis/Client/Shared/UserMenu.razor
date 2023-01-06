@@ -27,7 +27,7 @@
             <div class="list_roles">
                 @foreach (var role in User.Roles)
                 {
-                    <div class="role animate__fadeInUp">
+                    <div class="role animate__animated animate__fadeInUp">
                         <div class="name">@role.Name</div>
                         @if (role.Name != "Admin")
                         {
@@ -45,7 +45,7 @@
                 {
                     @if (role.Name != "Admin")
                     {
-                        <div class="role animate__fadeInDown">
+                        <div class="role animate__animated animate__fadeInDown">
                             <div class="name">@role.Name</div>
                             <button @onclick="() => AddRole(User.Name, role.Name)">
                                 <i class="material-icons icon">add</i>
