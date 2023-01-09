@@ -1,27 +1,12 @@
 ﻿.page {
-    display: flex;
-    flex-direction: row;
-
-
-    * {
-        animation: appear 1s ease;
-
-        @keyframes appear {
-            0% {
-                opacity: 0;
-            }
-
-            100% {
-                opacity: 1;
-            }
-        }
-    }
-
     .main_container {
-        margin-left: 70px;
-        width: calc(100% - 75px);
+        position: relative;
+        left: 60px;
+        top: 0px;
+        padding-left: 15px;
+        padding-right: 15px;
+        width: calc(100% - 90px);
         animation: appear 1s ease;
-        overflow: visible;
 
         @keyframes appear {
             0% {

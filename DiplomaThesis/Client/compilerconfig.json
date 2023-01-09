@@ -34,5 +34,13 @@
   {
     "outputFile": "Shared/UserGroupMenu.razor.css",
     "inputFile": "Shared/UserGroupMenu.razor.scss"
+  },
+  {
+    "outputFile": "Pages/Metrics.razor.css",
+    "inputFile": "Pages/Metrics.razor.scss"
+  },
+  {
+    "outputFile": "Shared/ReportContainer.razor.css",
+    "inputFile": "Shared/ReportContainer.razor.scss"
   }
 ]

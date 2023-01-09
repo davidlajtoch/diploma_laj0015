@@ -1,7 +1,7 @@
 ﻿@import '../wwwroot/css/variables';
 
 .menu {
-    width: 100%;
+    width: calc(100% - 10px);
     height: 40px;
     font-family: $font_nunito_bold;
     color: $color_grey;

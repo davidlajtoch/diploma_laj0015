@@ -16,17 +16,13 @@
     background-color: $color_white;
     border-radius: 20px;
     transition: all ease-in-out 0.25s;
-    box-shadow: $shadow_normal_grey;
+    box-shadow: $shadow_grey;
     overflow: hidden;
     cursor: default;
     z-index: 10;
 
     &:hover, &:hover .group .item {
         width: 180px;
-    }
-
-    &:hover {
-        box-shadow: $shadow_light_purple;
     }
 
     .group {

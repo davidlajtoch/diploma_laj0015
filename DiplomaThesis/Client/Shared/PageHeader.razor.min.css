@@ -1,1 +1,1 @@
-﻿.header{width:100%;text-align:center;font-family:"Nunito",sans-serif;font-weight:900;font-size:40px;color:#751aff;margin-bottom:10px;}
+﻿.header{width:calc(100% - 10px);text-align:center;font-family:"Nunito",sans-serif;font-weight:900;font-size:40px;color:#751aff;}

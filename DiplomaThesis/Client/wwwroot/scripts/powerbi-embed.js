@@ -12,6 +12,7 @@ export function embedReport(reportContainer, reportId, embedUrl, token) {
         viewMode: models.ViewMode.View,
         settings: {
             navContentPaneEnabled: false,
+            background: models.BackgroundType.Transparent,
             panes: {
                 filters: {expanded: false, visible: true},
                 pageNavagation: {visible: false}

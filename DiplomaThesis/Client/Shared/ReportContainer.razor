@@ -2,11 +2,9 @@
 @implements IAsyncDisposable
 @inject IJSRuntime Js
 
-<div>
-    <h5>
-        <abbr title="@Report?.Id">@Report?.Name</abbr>
-    </h5>
-    <div @ref="@_powerBiElement" class="power-bi-metric"></div>
+<div class ="report_container">
+    <div class="header" title="@Report?.Id">@Report?.Name</div>
+    <div @ref="@_powerBiElement" class="report"></div>
 </div>
 
 @code {

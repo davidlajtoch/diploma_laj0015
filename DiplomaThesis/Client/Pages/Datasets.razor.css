@@ -1,5 +1,5 @@
 ﻿.menu {
-  width: 100%;
+  width: calc(100% - 10px);
   height: 40px;
   font-family: "Nunito", sans-serif;
   color: #424242;

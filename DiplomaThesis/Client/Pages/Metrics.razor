@@ -7,7 +7,7 @@
 
 @attribute [Authorize]
 
-<PageTitle>Metrics</PageTitle>
+<PageTitle>Metrics - ReporTiny</PageTitle>
 <PageHeader Text="Metrics" />
 
 @if (_reports is null || _reports.Length == 0)
@@ -17,23 +17,24 @@
 else
 {
     <div class="animate__animated animate__fadeIn">
-        <div class="row">
+        <AuthorizeView Roles="Architect">
+        <div class="list_reports">
             @foreach (var report in _reports)
             {
-                <div class="col m-4 report-element">
-                    <AuthorizeView Roles="Architect">
-                        <button class="btn btn-outline-primary w-100"
-                                @onclick="() => SelectReport(report)">
-                            Select
+                <div class="item @(_expandedReportId == report.Id ? "item_expanded" : "")">
+                    <ReportContainer Report="@report" />
+                    <div class="menu">
+                        <button class="" @onclick="() => ExpandReport(report.Id)">
+                                @(_expandedReportId == report.Id ? "Shrink" : "Expand")
                         </button>
-                    </AuthorizeView>
-                    <div style="border-radius: 20px;">
-                        <ReportContainer Report="@report" />
+                        <button class="" @onclick="() => SelectReport(report)">
+                                Select
+                        </button>
                     </div>
-                
                 </div>
             }
         </div>
+        </AuthorizeView>
 
         <div>
             <AuthorizeView Roles="Architect">
@@ -45,8 +46,9 @@ else
 
 @code {
     ReportMenu _reportMenu = null!;
-
     ReportContract[]? _reports;
+
+    private Guid? _expandedReportId { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -64,6 +66,16 @@ else
         }
 
         StateHasChanged();
+    }
+
+    private void ExpandReport(Guid reportId)
+    {
+        if(reportId == _expandedReportId)
+        {
+            _expandedReportId = null;
+            return;
+        }
+        _expandedReportId = reportId;
     }
 
     private void SelectReport(ReportContract report)
