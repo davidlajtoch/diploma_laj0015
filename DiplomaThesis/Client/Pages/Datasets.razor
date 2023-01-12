@@ -19,15 +19,15 @@
         <div class="animate__animated animate__fadeIn">
             <div class="menu">
                 <div class="buttons">
-                    <button class="button_settings"><i class="material-icons icon">settings</i></button>
-                    <label class="input_file">
+                    <button class="button_default"><i class="material-icons icon">settings</i></button>
+                    <label class="input_file button_default">
                         New dataset
                         <InputFile OnChange="@(args => LoadFile(args, Guid.Empty))" style="display: none;"/>
                     </label>
                 </div>
 
                 <div class="search">
-                    <input type="text" class="input_text" placeholder="Search by name..."
+                    <input type="text" class="input_search_default" placeholder="Search by name..."
                         @oninput="@((e) => SearchDatasetByName(e.Value!.ToString()!))">
                 </div>
             </div>

@@ -42,5 +42,9 @@
   {
     "outputFile": "Shared/ReportContainer.razor.css",
     "inputFile": "Shared/ReportContainer.razor.scss"
+  },
+  {
+    "outputFile": "wwwroot/css/app.css",
+    "inputFile": "wwwroot/css/app.scss"
   }
 ]

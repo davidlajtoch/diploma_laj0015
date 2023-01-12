@@ -62,7 +62,7 @@
                 </tr>
             </table>
 
-            <input type="text" class="search" placeholder="Search and select User group..."
+            <input type="text" class="input_search_default input_search nohover" placeholder="Search and select User group..."
                @oninput="@((e) => SearchUserGroup(e.Value!.ToString()!))">
             <div class="list_user_groups">
                 @foreach (var userGroup in UserGroupsFiltered!)
@@ -74,11 +74,13 @@
             </div>
         }
         <div class="bottom_menu">
-            <div class="buttons">
-                <button class="button_delete" @onclick="DeleteUserButton" @onmouseout="ResetUserDeleteConfirm">
+            <div class="group_left">
+                <button class="button_warning" @onclick="DeleteUserButton" @onmouseout="ResetUserDeleteConfirm">
                     @(_deleteUserConfirmation ? "Are you sure?" : "Delete user")
                 </button>
-                <button class="button_save" @onclick="ToggleUserMenu">Save and close</button>
+            </div>
+            <div class="group_right">
+                <button class="button_default" @onclick="ToggleUserMenu">Save and close</button>
             </div>
         </div>
     </div>

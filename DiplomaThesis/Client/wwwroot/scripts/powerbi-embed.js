@@ -19,7 +19,13 @@ export function embedReport(reportContainer, reportId, embedUrl, token) {
             }
         }
     }
-
     // Embed the report and display it within the div container
-    powerbi.embed(reportContainer, config)
+    powerbi.embed(reportContainer, config)  
+}
+
+export function removeReportBorder() {
+    var iframes = document.getElementsByTagName("iframe");
+    for (var i = 0; i < iframes.length; i++) {
+        iframes[i].setAttribute("frameborder", "0");
+    }
 }

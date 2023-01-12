@@ -7,88 +7,14 @@
     color: $color_grey;
     margin-bottom: 10px;
 
-    .search {
-        height: 40px;
-        float: right;
-        display: flex;
-        flex-direction: row;
-        background-color: $color_lighter_grey;
-        border-radius: 500px;
-        transition: 0.2s ease-in-out;
-
-        &:hover{
-            padding-left: 10px;
-            padding-right: 10px;
-        }
-
-        .input_text {
-            width: 150px;
-            padding: 0px;
-            padding-left: 20px;
-            padding-right: 20px;
-            font-family: $font_nunito_bold;
-            font-size: 16px;
-            color: $color_purple;
-            background: none;
-            border: none;
-            border-radius: 500px;
-            outline: none;
-        }
-    }
-
     .buttons {
         float: left;
         display: flex;
         flex-direction: row;
 
         .input_file {
-            background-color: $color_lighter_grey;
-            display: block;
-            height: 100%;
-            margin-left: 5px;
-            margin-right: 5px;
-            padding: 10px;
-            padding-left: 20px;
-            padding-right: 20px;
-            border: none;
-            border-radius: 500px;
-            text-align: center;
-            line-height: 20px;
-            cursor: pointer;
-            transition: 0.2s ease-in-out;
-
-            &:hover {
-                color: $color_purple;
-                padding-left: 30px;
-                padding-right: 30px;
-            }
-
             input[type="file"] {
                 display: none;
-            }
-        }
-
-        .button_settings {
-            width: 50px;
-            height: 40px;
-            margin-left: 5px;
-            margin-right: 5px;
-            background-color: $color_lighter_grey;
-            color: $color_grey;
-            display: block;
-            border: none;
-            border-radius: 500px;
-            transition: 0.2s ease-in-out;
-            cursor: pointer;
-
-            &:hover {
-                color: $color_purple;
-                width: 60px;
-            }
-
-            .icon {
-                position: relative;
-                top: 2px;
             }
         }
     }

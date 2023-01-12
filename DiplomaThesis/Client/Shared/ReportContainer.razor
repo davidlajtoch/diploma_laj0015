@@ -13,7 +13,7 @@
     public ReportContract? Report { get; set; }
 
     ElementReference _powerBiElement;
-    IJSObjectReference? _embedModule;
+    IJSObjectReference? _embedModulePowerBi;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -21,7 +21,7 @@
         {
             if (firstRender)
             {
-                _embedModule = await Js.InvokeAsync<IJSObjectReference>("import", "./scripts/powerbi-embed.js");
+                _embedModulePowerBi = await Js.InvokeAsync<IJSObjectReference>("import", "./scripts/powerbi-embed.js");
 
                 await UpdateEmbeddedReport();
             }
@@ -39,13 +39,15 @@
 
     private async Task UpdateEmbeddedReport()
     {
-        if (_embedModule is not null && Report is not null)
+        if (_embedModulePowerBi is not null && Report is not null)
         {
-            await _embedModule.InvokeVoidAsync("embedReport",
+            await _embedModulePowerBi.InvokeVoidAsync("embedReport",
                 _powerBiElement,
                 Report.Id.ToString(),
                 Report.EmbedUrl,
                 Report.EmbedToken);
+
+            await _embedModulePowerBi.InvokeVoidAsync("removeReportBorder");
 
             StateHasChanged();
         }
@@ -53,8 +55,8 @@
 
     public async ValueTask DisposeAsync()
     {
-        if (_embedModule is not null)
-            await _embedModule.DisposeAsync();
+        if (_embedModulePowerBi is not null)
+            await _embedModulePowerBi.DisposeAsync();
     }
 
 }

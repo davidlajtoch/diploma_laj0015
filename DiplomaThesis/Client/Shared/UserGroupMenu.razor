@@ -24,8 +24,9 @@
             </table>
 
             <div class="section_header">Members</div>
-            <input type="text" class="search" placeholder="Search and remove users..."
-               @oninput="@((e) => SearchMember(e.Value!.ToString()!))">
+            <input type="text" class="input_search_default input_search nohover" placeholder="Search and remove users..."
+                @oninput="@((e) => SearchMember(e.Value!.ToString()!))">
+
             <div class="user_list">
                 @foreach (var user in UsersMembersFiltered!)
                 {
@@ -39,8 +40,9 @@
             </div>
 
             <div class="section_header">Non members</div>
-            <input type="text" class="search" placeholder="Search and add users..."
-               @oninput="@((e) => SearchNonMember(e.Value!.ToString()!))">
+            <input type="text" class="input_search_default input_search nohover" placeholder="Search and add users..."
+                @oninput="@((e) => SearchNonMember(e.Value!.ToString()!))">
+
             <div class="user_list">
                 @foreach (var user in UsersNonMembersFiltered!)
                 {
@@ -54,11 +56,13 @@
             </div>
         }
         <div class="bottom_menu">
-            <div class="buttons">
-                <button class="button_delete" @onclick="DeleteUserGroupButton" @onmouseout="ResetUserGroupDeleteConfirm">
+            <div class="group_left">
+                <button class="button_warning" @onclick="DeleteUserGroupButton" @onmouseout="ResetUserGroupDeleteConfirm">
                     @(_deleteUserGroupConfirmation ? "Are you sure?" : "Delete user group")
                 </button>
-                <button class="button_save" @onclick="ToggleUserGroupMenu">Save and close</button>
+            </div>
+            <div class="group_right">
+                <button class="button_default" @onclick="ToggleUserGroupMenu">Save and close</button>
             </div>
         </div>
     </div>

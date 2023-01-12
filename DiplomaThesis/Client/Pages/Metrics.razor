@@ -24,10 +24,10 @@ else
                 <div class="item @(_expandedReportId == report.Id ? "item_expanded" : "")">
                     <ReportContainer Report="@report" />
                     <div class="menu">
-                        <button class="" @onclick="() => ExpandReport(report.Id)">
+                        <button class="button_default" @onclick="() => ExpandReport(report.Id)">
                                 @(_expandedReportId == report.Id ? "Shrink" : "Expand")
                         </button>
-                        <button class="" @onclick="() => SelectReport(report)">
+                            <button class="button_default" @onclick="() => SelectReport(report)">
                                 Select
                         </button>
                     </div>
