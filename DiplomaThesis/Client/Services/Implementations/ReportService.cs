@@ -15,12 +15,12 @@ public class ReportService : IReportService
         _http = http;
     }
 
-    public async Task<ReportContract[]?> GetReportsFromBackend()
+    public async Task<List<ReportContract>?> GetReportsFromBackend()
     {
         try
         {
-            var response = await _http.GetFromJsonAsync<IEnumerable<ReportContract>>("Report/ListReports");
-            return response?.ToArray();
+            var response = await _http.GetFromJsonAsync<List<ReportContract>?>("Report/GetAllReports");
+            return response;
         }
         catch (AccessTokenNotAvailableException exception)
         {

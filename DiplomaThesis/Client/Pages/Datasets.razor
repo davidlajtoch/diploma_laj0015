@@ -10,39 +10,36 @@
 <PageTitle>Datasets</PageTitle>
 <PageHeader Text="Datasets" />
 
-    @if (_datasets is null)
-    {   
-        <Loader />
-    }
-    else
-    {
-        <div class="animate__animated animate__fadeIn">
-            <div class="menu">
-                <div class="buttons">
-                    <button class="button_default"><i class="material-icons icon">settings</i></button>
-                    <label class="input_file button_default">
-                        New dataset
-                        <InputFile OnChange="@(args => LoadFile(args, Guid.Empty))" style="display: none;"/>
-                    </label>
-                </div>
-
-                <div class="search">
-                    <input type="text" class="input_search_default" placeholder="Search by name..."
-                        @oninput="@((e) => SearchDatasetByName(e.Value!.ToString()!))">
-                </div>
+@if (_datasets is null)
+{
+    <Loader />
+}
+else
+{
+    <div class="animate__animated animate__fadeIn">
+        <div class="menu">
+            <div class="group_left">
+                <button class="button_default"><i class="material-icons icon">settings</i></button>
+                <label class="button_input_file button_default">
+                    New dataset
+                    <InputFile OnChange="@(args => LoadFile(args, Guid.Empty))" />
+                </label>
             </div>
-            <div class="datasets">
+
+            <div class="group_right">
+                <input type="text" class="input_search_default" placeholder="Search by name..."
+                   @oninput="@((e) => SearchDatasetByName(e.Value!.ToString()!))">
+            </div>
+        </div>
+        <ul class="list_datasets">
             @foreach (var dataset in _datasets_searched!)
             {
-                <div class="dataset">
-                    <div class="name">@dataset.Name</div>
-                    <table class="table_info">
-                        <tr>
-                            <td>ID</td>
-                            <td>@dataset.Id</td>
-                        </tr>
-                    </table>
-                
+                <li class="row">
+                    <div class="col col-1" data-label="ID">@dataset.Id</div>
+                    <div class="col col-2" data-label="Name">@dataset.Name</div>
+                </li>
+
+                <li class="dataset">
                     @if (dataset.ColumnNames.Any())
                     {
                         <strong>Dataset structure:</strong>
@@ -72,22 +69,17 @@
                     }
                     <strong>Upload more rows:</strong><br />
                     <InputFile OnChange="@(args => LoadFile(args, dataset.Id))" />
-                </div>
+                </li>
             }
+        </ul>
+        @if (_datasets.Count() == 0)
+        {
+            <div class="nothing_found">
+                Nothing found :(
             </div>
-            @if (_datasets.Count() == 0)
-            {
-                <div class="nothing_found">
-                    Nothing found :(
-                </div>
-            }
-        </div>
-
-        
-    }
-
-    
-    
+        }
+    </div>
+}
 
 @code {
     private List<DatasetContract>? _datasets { get; set; }
@@ -138,7 +130,8 @@
 
     private void SearchDatasetByName(string searched_dataset_name)
     {
-        if(searched_dataset_name is null){
+        if (searched_dataset_name is null)
+        {
             return;
         }
         _datasets_searched = _datasets!.FindAll(d => d.Name.Contains(searched_dataset_name));

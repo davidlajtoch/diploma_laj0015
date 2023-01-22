@@ -4,78 +4,81 @@
 @inject IDatasetService DatasetService
 @inject IAdministrationService AdministrationService
 
-<div class="flex-column float-end right-side-menus"
-     style="display: @(ShowMenu ? "block" : "none");">
+<div class="report_menu_container animate__animated animate__fadeIn" style="display: @(ShowMenu ? "block" : "none");">
+    <div class="report_menu">
+        @if (Report is null || UserGroups is null || Datasets is null)
+        {
+            <p>
+                <em>Loading...</em>
+            </p>
+        }
+        else
+        {
+            <table class="table_info">
+                <tr>
+                    <td class="label">ID</td>
+                    <td>@Report.Id</td>
+                </tr>
+                <tr>
+                    <td class="label">Name</td>
+                    <td>@Report.Name</td>
+                </tr>
+            </table>
 
-    @if (Report is null || UserGroups is null || Datasets is null)
-    {
-        <p>
-            <em>Loading...</em>
-        </p>
-    }
-    else
-    {
-        <p><strong>Id:</strong>&nbsp;@Report.Id</p>
-        <p><strong>Name:</strong>&nbsp;@Report.Name</p>
-        <hr/>
-        <strong>User group:</strong>
-        <label>
-            <select id="user_groups"
-                    name="user_groups"
-                    value="@SelectedUserGroupId"
-                    @onchange="SelectedUserGroupChanged">
-                <option value="@Guid.Empty.ToString()">&lt;No group assigned&gt;</option>
-                @foreach (var userGroup in UserGroups)
+            <table class="table_info">
+                <tr>
+                    <td class="label">User group</td>
+                    <td>@AssignedUserGroupName</td>
+                </tr>
+            </table>
+
+            <input type="text" class="input_search_default input_search nohover" placeholder="Search and select User group..."
+               @oninput="@((e) => SearchUserGroup(e.Value!.ToString()!))">
+            <div class="list_user_groups">
+                @foreach (var userGroup in UserGroupsFiltered!)
                 {
-                    <option value="@userGroup.Id.ToString()">
+                    <div class="user_group" @onclick="()=> SelectedUserGroupChanged(userGroup)">
                         @userGroup.Name
-                    </option>
+                    </div>
                 }
-            </select>
-        </label>
-        <hr/>
-        <strong>Dataset:</strong>
-        <label>
-            <select id="data_sets"
-                    name="data_sets"
-                    value="@SelectedDatasetId"
-                    @onchange="SelectedDatasetChanged">
-                <option value="@Guid.Empty.ToString()">&lt;No group assigned&gt;</option>
-                @foreach (var dataset in Datasets)
+            </div>
+
+            <table class="table_info">
+                <tr>
+                    <td class="label">Dataset</td>
+                    <td>@AssignedDatasetName</td>
+                </tr>
+            </table>
+
+            <input type="text" class="input_search_default input_search nohover" placeholder="Search and select Dataset..."
+               @oninput="@((e) => SearchDataset(e.Value!.ToString()!))">
+            <div class="list_datasets">
+                @foreach (var dataset in DatasetsFiltered!)
                 {
-                    <option value="@dataset.Id.ToString()">
+                    <div class="dataset" @onclick="()=> SelectedDatasetChanged(dataset)">
                         @dataset.Name
-                    </option>
+                    </div>
                 }
-            </select>
-        </label>
-        <hr/>
-        <div class="flex-row">
-            <label>
-                <input placeholder="New report name"
-                       @bind="_newReportName"
-                       @bind:event="oninput"/>
-            </label>
-            <button class="btn btn-outline-dark"
-                    @onclick="CloneReportButton">
-                Clone
-            </button>
-        </div>
-        <hr/>
-        <button
-            class="btn btn-outline-danger flex-fill"
-            style="width: 100%"
-            @onclick="DeleteReportButton">
-            Delete report
-        </button>
-        <hr/>
-    }
-    <button
-        class="btn btn-outline-dark flex-fill"
-        style="width: 100%"
-        @onclick="ToggleMenu">
-        Hide
-    </button>
+            </div>
+
+            <div class="section_header">Clone report</div>
+            <div class="input_with_button_default input_with_button">
+                <input class="nohover" @bind="_newReportName" type="text" placeholder="New report name...">
+                <button @onclick="CloneReportButton"><i class="material-icons icon">add</i></button>
+            </div>
+
+            <div class="bottom_menu">
+                <div class="group_left">
+                    <button class="button_warning" @onclick="DeleteReportButton" @onmouseout="ResetReportDeleteConfirm">
+                        @(_deleteReportConfirmation ? "Are you sure?" : "Delete report")
+                    </button>
+                </div>
+                <div class="group_right">
+                    <button class="button_default" @onclick="ToggleReportMenu">Save and close</button>
+                </div>
+            </div>
+        }
+    </div>
 </div>
 
 @code {
@@ -84,6 +87,11 @@
     public EventCallback OnReportChanged { get; set; }
 
     private ReportContract? _report = null;
+
+    private string? AssignedUserGroupName { get; set; }
+    private string? AssignedDatasetName { get; set; }
+
+    private bool _deleteReportConfirmation = false;
 
     public ReportContract? Report
     {
@@ -123,7 +131,9 @@
     }
 
     private List<UserGroupContract>? UserGroups { get; set; }
+    private List<UserGroupContract>? UserGroupsFiltered { get; set; }
     private List<DatasetContract>? Datasets { get; set; }
+    private List<DatasetContract>? DatasetsFiltered { get; set; }
 
     public bool ShowMenu { get; set; }
 
@@ -134,8 +144,14 @@
         await UpdateData();
     }
 
-    public void ToggleMenu()
+    public void ToggleReportMenu()
     {
+        AssignedUserGroupName = UserGroups!.FirstOrDefault(
+                                    UserGroups => UserGroups?.Id.Equals(_report!.UserGroupId) ?? false, null
+                                )?.Name;
+        AssignedDatasetName = Datasets!.FirstOrDefault(
+                                    Datasets => Datasets?.Id.Equals(_report!.DatasetId) ?? false, null
+                                )?.Name;
         ShowMenu = !ShowMenu;
     }
 
@@ -143,50 +159,44 @@
     {
         var userGroups = await AdministrationService.GetAllUserGroups();
         UserGroups = userGroups;
+        UserGroupsFiltered = UserGroups;
 
         var datasets = await DatasetService.GetDatasets();
         Datasets = datasets;
+        DatasetsFiltered = Datasets;
     }
 
-    private async Task SelectedDatasetChanged(ChangeEventArgs e)
+    private async Task SelectedDatasetChanged(DatasetContract dataset)
     {
-        var selectedDatasetId = e.Value?.ToString();
-
-        if (selectedDatasetId is null)
+        if (dataset is null)
         {
             return;
         }
 
-        SelectedDatasetId = selectedDatasetId;
-
-        if (Report is not null && !Report.DatasetId.Equals(Guid.Parse(SelectedDatasetId)))
+        if (Report is not null)
         {
-            if (await ReportService.RebindReportToDataset(Report!.Id, Guid.Parse(SelectedDatasetId)))
+            if (await ReportService.RebindReportToDataset(Report!.Id, dataset.Id))
             {
                 await OnReportChanged.InvokeAsync();
-                ToggleMenu();
+                AssignedDatasetName = dataset.Name;
                 StateHasChanged();
             }
         }
     }
 
-    private async Task SelectedUserGroupChanged(ChangeEventArgs e)
+    private async Task SelectedUserGroupChanged(UserGroupContract userGroup)
     {
-        var selectedUserGroupId = e.Value?.ToString();
-
-        if (selectedUserGroupId is null)
+        if (userGroup is null)
         {
             return;
         }
 
-        SelectedUserGroupId = selectedUserGroupId;
-
-        if (Report is not null && !Report.UserGroupId.Equals(Guid.Parse(SelectedUserGroupId)))
+        if (Report is not null)
         {
-            if (await ReportService.MoveReportToUserGroup(Report!.Id, Guid.Parse(SelectedUserGroupId)))
+            if (await ReportService.MoveReportToUserGroup(Report!.Id, userGroup.Id))
             {
                 await OnReportChanged.InvokeAsync();
-                ToggleMenu();
+                AssignedUserGroupName = userGroup.Name;
                 StateHasChanged();
             }
         }
@@ -203,11 +213,35 @@
 
     private async Task DeleteReportButton()
     {
+        if (_deleteReportConfirmation == false)
+        {
+            _deleteReportConfirmation = true;
+            return;
+        }
         if (await ReportService.DeleteReport(Report?.Id ?? Guid.Empty))
         {
-            ToggleMenu();
+            ToggleReportMenu();
             await OnReportChanged.InvokeAsync();
         }
     }
+
+    private void ResetReportDeleteConfirm()
+    {
+        if (_deleteReportConfirmation == true)
+        {
+            _deleteReportConfirmation = false;
+        }
+    }
+
+    private void SearchUserGroup(string searched_user_group)
+    {
+        UserGroupsFiltered = UserGroups!.FindAll(ug => ug.Name.Contains(searched_user_group));
+    }
+
+    private void SearchDataset(string searched_dataset)
+    {
+        DatasetsFiltered = Datasets!.FindAll(d => d.Name.Contains(searched_dataset));
+    }
+
 
 }

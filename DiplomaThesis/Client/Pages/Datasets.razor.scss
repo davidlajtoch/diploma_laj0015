@@ -7,20 +7,18 @@
     color: $color_grey;
     margin-bottom: 10px;
 
-    .buttons {
+    .group_left {
         float: left;
         display: flex;
         flex-direction: row;
+    }
 
-        .input_file {
-            input[type="file"] {
-                display: none;
-            }
-        }
+    .group_right{
+        float: right;
     }
 }
 
-.datasets {
+.list_datasets {
     width: 100%;
     height: calc(100% - 70px);
     overflow-y: scroll;
@@ -30,7 +28,7 @@
     color: $color_grey;
     padding: 0px;
 
-    .dataset {
+    .row {
         width: calc(100% - 40px);
         height: 200px;
         margin: 0 auto;

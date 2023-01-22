@@ -1,5 +1,23 @@
 ﻿@import '../wwwroot/css/variables';
 
+.menu {
+    width: calc(100% - 10px);
+    height: 40px;
+    font-family: $font_nunito_bold;
+    color: $color_grey;
+    margin-bottom: 10px;
+
+    .group_left {
+        float: left;
+        display: flex;
+        flex-direction: row;
+    }
+
+    .group_right{
+        float: right;
+    }
+}
+
 .list_reports{
     width: 100%;
     display: flex;

@@ -46,5 +46,9 @@
   {
     "outputFile": "wwwroot/css/app.css",
     "inputFile": "wwwroot/css/app.scss"
+  },
+  {
+    "outputFile": "Shared/ReportMenu.razor.css",
+    "inputFile": "Shared/ReportMenu.razor.scss"
   }
 ]

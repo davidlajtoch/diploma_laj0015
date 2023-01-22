@@ -35,6 +35,20 @@
   background-color: #ffebee !important;
 }
 
+.button_input_file {
+  padding: 0px;
+  padding-left: 20px;
+  padding-right: 20px;
+  line-height: 40px;
+}
+.button_input_file:hover {
+  padding-left: 30px;
+  padding-right: 30px;
+}
+.button_input_file input[type=file] {
+  display: none;
+}
+
 .input_search_default {
   height: 40px;
   width: 150px;
@@ -73,7 +87,7 @@
   border-radius: 500px;
   transition: 0.2s ease-in-out;
 }
-.input_with_button_default input:hover {
+.input_with_button_default input:not(.nohover):hover {
   padding-left: 30px;
   padding-right: 55px;
 }

@@ -4,7 +4,7 @@ namespace DiplomaThesis.Client.Services.Interfaces;
 
 public interface IReportService
 {
-    public Task<ReportContract[]?> GetReportsFromBackend();
+    public Task<List<ReportContract>?> GetReportsFromBackend();
     public Task<bool> RebindReportToDataset(Guid reportId, Guid datasetId);
     public Task<bool> MoveReportToUserGroup(Guid reportId, Guid selectedUserGroupId);
     public Task<bool> CloneReport(Guid reportId, string newReportName);

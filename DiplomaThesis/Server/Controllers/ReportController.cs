@@ -69,7 +69,7 @@ public class ReportController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult> ListReports()
+    public async Task<ActionResult> GetAllReports()
     {
         var result = (await _service.GetReports()).ToList();
         var reportsInDb = await _context.Reports.ToListAsync();

@@ -3,6 +3,7 @@
 @using DiplomaThesis.Shared.Contracts
 @using Microsoft.AspNetCore.Authorization
 
+@inject IJSRuntime Js
 @inject IReportService ReportService
 
 @attribute [Authorize]
@@ -10,35 +11,41 @@
 <PageTitle>Metrics - ReporTiny</PageTitle>
 <PageHeader Text="Metrics" />
 
-@if (_reports is null || _reports.Length == 0)
+@if (_reports is null || _reports.Count() == 0)
 {
     <Loader />
 }
 else
 {
     <div class="animate__animated animate__fadeIn">
+        <div class="menu">
+            <div class="group_right">
+                <input type="text" class="input_search_default" placeholder="Search by name..."
+                   @oninput="@((e) => SearchReport(e.Value!.ToString()!))">
+            </div>
+        </div>
         <AuthorizeView Roles="Architect">
-        <div class="list_reports">
-            @foreach (var report in _reports)
-            {
-                <div class="item @(_expandedReportId == report.Id ? "item_expanded" : "")">
-                    <ReportContainer Report="@report" />
-                    <div class="menu">
-                        <button class="button_default" @onclick="() => ExpandReport(report.Id)">
+            <div class="list_reports">
+                @foreach (var report in _reports_searched!)
+                {
+                    <div id="@report.Id" class="item @(_expandedReportId == report.Id ? "item_expanded" : "")">
+                        <ReportContainer Report="@report" />
+                        <div class="menu">
+                            <button class="button_default" @onclick="() => ExpandReport(report.Id)">
                                 @(_expandedReportId == report.Id ? "Shrink" : "Expand")
-                        </button>
+                            </button>
                             <button class="button_default" @onclick="() => SelectReport(report)">
                                 Select
-                        </button>
+                            </button>
+                        </div>
                     </div>
-                </div>
-            }
-        </div>
+                }
+            </div>
         </AuthorizeView>
 
         <div>
             <AuthorizeView Roles="Architect">
-                <ReportMenu @ref="_reportMenu" OnReportChanged="UpdateData"/>
+                <ReportMenu @ref="_reportMenu" OnReportChanged="UpdateData" />
             </AuthorizeView>
         </div>
     </div>
@@ -46,9 +53,27 @@ else
 
 @code {
     ReportMenu _reportMenu = null!;
-    ReportContract[]? _reports;
+    List<ReportContract>? _reports;
+    private List<ReportContract>? _reports_searched { get; set; }
 
     private Guid? _expandedReportId { get; set; }
+
+    IJSObjectReference? _embedModuleJs;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        try
+        {
+            if (firstRender)
+            {
+                _embedModuleJs = await Js.InvokeAsync<IJSObjectReference>("import", "./scripts/app.js");
+            }
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+        }
+    }
 
     protected override async Task OnInitializedAsync()
     {
@@ -63,24 +88,36 @@ else
         if (reports is not null)
         {
             _reports = reports;
+            _reports_searched = reports;
         }
 
         StateHasChanged();
     }
 
-    private void ExpandReport(Guid reportId)
+    private async Task ExpandReport(Guid reportId)
     {
-        if(reportId == _expandedReportId)
+        if (reportId == _expandedReportId)
         {
             _expandedReportId = null;
+            await _embedModuleJs!.InvokeVoidAsync("scrollToElementById", reportId.ToString());
             return;
         }
         _expandedReportId = reportId;
+        await _embedModuleJs!.InvokeVoidAsync("scrollToElementById", reportId.ToString());
     }
 
     private void SelectReport(ReportContract report)
     {
         _reportMenu.Report = report;
+    }
+
+    private void SearchReport(string searched_report)
+    {
+        if (searched_report is null)
+        {
+            return;
+        }
+        _reports_searched = _reports!.FindAll(r => r.Name.Contains(searched_report));
     }
 
 }

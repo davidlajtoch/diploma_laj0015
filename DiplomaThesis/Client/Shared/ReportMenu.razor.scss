@@ -1,0 +1,106 @@
+﻿@import '../wwwroot/css/variables';
+
+.animate__animated.animate__fadeIn {
+    --animate-duration: 0.2s;
+}
+
+.report_menu_container {
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    top: 0px;
+    left: 70px;
+    background-color: rgba(255, 255, 255, 0.8);
+    z-index: 5;
+
+    .report_menu {
+        padding: 15px;
+        margin: 0;
+        position: absolute;
+        top: 50%;
+        left: calc(50% - 35px);
+        -ms-transform: translate(-50%, -50%);
+        transform: translate(-50%, -50%);
+        border-radius: 15px;
+        box-shadow: $shadow_grey;
+        background-color: $color_white;
+
+        .bottom_menu {
+            width: 100%;
+            height: 40px;
+            margin-top: 10px;
+
+            .group_left{
+                margin-left: -5px;
+                float: left;
+            }
+
+            .group_right{
+                margin-right: -5px;
+                float: right;
+            }
+        }
+
+        .table_info {
+            text-align: center;
+            width: 100%;
+            box-sizing: border-box;
+            margin-top: 5px;
+            margin-bottom: 5px;
+
+            td {
+                text-align: right;
+            }
+
+            .label {
+                color: $color_purple;
+                text-align: left;
+            }
+        }
+
+        .section_header {
+            width: 100%;
+            text-align: center;
+            margin-top: 5px;
+            margin-bottom: 5px;
+            color: $color_purple;
+        }
+
+        .input_search {
+            width: calc(100% - 40px) !important;
+        }
+
+        .list_user_groups, .list_datasets {
+            width: 100%;
+            height: 115px;
+            overflow-y: scroll;
+            margin-top: 10px;
+
+            .user_group, .dataset {
+                width: 100%;
+                padding-top: 5px;
+                padding-bottom: 5px;
+                border-bottom: 1px solid $color_lighter_grey;
+                transition: 0.2s ease-in-out;
+                cursor: pointer;
+
+                &:hover {
+                    color: $color_purple;
+                }
+            }
+        }
+
+        .info_no_items{
+            width: 100%;
+            color: $color_light_grey;
+            text-align: center;
+        }
+
+        .input_with_button{
+            input{
+                margin-right: -5px;
+                width: 100% !important;
+            }
+        }
+    }
+}

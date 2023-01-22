@@ -34,12 +34,28 @@ html, body {
     }
 }
 
-.button_warning:hover{
+.button_warning:hover {
     color: $color_red !important;
     background-color: $color_light_red !important;
 }
 
-.input_search_default{
+.button_input_file {
+    padding: 0px;
+    padding-left: 20px;
+    padding-right: 20px;
+    line-height: 40px;
+
+    &:hover {
+        padding-left: 30px;
+        padding-right: 30px;
+    }
+
+    input[type="file"] {
+        display: none;
+    }
+}
+
+.input_search_default {
     height: 40px;
     width: 150px;
     padding-left: 20px;
@@ -59,12 +75,12 @@ html, body {
     }
 }
 
-.input_with_button_default{
+.input_with_button_default {
     display: flex;
     flex-direction: row;
     margin-right: -30px;
-            
-    input{
+
+    input {
         height: 40px;
         width: 140px;
         padding-left: 20px;
@@ -78,13 +94,13 @@ html, body {
         border-radius: 500px;
         transition: 0.2s ease-in-out;
 
-        &:hover {
+        &:not(.nohover):hover {
             padding-left: 30px;
             padding-right: 55px;
         }
     }
 
-    button{
+    button {
         width: 40px;
         height: 40px;
         background: none;
@@ -96,11 +112,11 @@ html, body {
         color: $color_grey;
         transition: 0.2s ease-in-out;
 
-        &:hover{
+        &:hover {
             color: $color_purple;
         }
 
-        .icon{
+        .icon {
             position: relative;
             right: 4px;
             top: 2px;

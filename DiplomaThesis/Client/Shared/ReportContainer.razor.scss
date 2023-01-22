@@ -1,6 +1,7 @@
 ﻿@import '../wwwroot/css/variables';
 
 .report_container{
+    position: relative;
     width: calc(100% - 4px);
     height: calc(100% - 40px);
 
@@ -9,6 +10,14 @@
         height: 40px;
         line-height: 40px;
         text-align: center;
+    }
+
+    .message_cover{
+        position: absolute;
+        top: 40px;
+        width: calc(100% + 1px);
+        height: 41px;
+        background-color: $color_white;
     }
 
     .report{
