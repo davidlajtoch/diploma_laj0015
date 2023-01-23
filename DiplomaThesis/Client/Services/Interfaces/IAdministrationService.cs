@@ -16,10 +16,6 @@ public interface IAdministrationService
 
     public Task<bool> RemoveRole(string userName, string roleName);
 
-    /*public Task<List<RoleContract>?> GetUserRoles();
-
-    public Task<List<RoleContract>?> GetNonUserRoles();*/
-
     public Task<UserGroupContract?> GetUserGroup(Guid user_group_id);
 
     public Task<List<UserGroupContract>?> GetAllUserGroups();

@@ -50,5 +50,9 @@
   {
     "outputFile": "Shared/ReportMenu.razor.css",
     "inputFile": "Shared/ReportMenu.razor.scss"
+  },
+  {
+    "outputFile": "Shared/LogoAnimatedLarge.razor.css",
+    "inputFile": "Shared/LogoAnimatedLarge.razor.scss"
   }
 ]

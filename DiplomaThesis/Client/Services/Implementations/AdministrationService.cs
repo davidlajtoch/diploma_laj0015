@@ -113,34 +113,6 @@ public class AdministrationService : IAdministrationService
         return false;
     }
 
-    /*public async Task<List<RoleContract>?> GetUserRoles()
-    {
-        try
-        {
-            var response = await _http.GetFromJsonAsync<List<RoleContract>>("Administration/GetUserRoles");
-            return response;
-        }
-        catch (AccessTokenNotAvailableException exception)
-        {
-            exception.Redirect();
-            return null;
-        }
-    }
-
-    public async Task<List<RoleContract>?> GetNonUserRoles()
-    {
-        try
-        {
-            var response = await _http.GetFromJsonAsync<List<RoleContract>>("Administration/GetNonUserRoles");
-            return response;
-        }
-        catch (AccessTokenNotAvailableException exception)
-        {
-            exception.Redirect();
-            return null;
-        }
-    }*/
-
     public async Task<UserGroupContract?> GetUserGroup(Guid user_group_id)
     {
         try
@@ -246,6 +218,19 @@ public class AdministrationService : IAdministrationService
             var response = await _http.PutAsJsonAsync(
                 "Administration/MoveUserToUserGroup",
                 new MoveUserToUserGroupCommand { UserId = userId, UserGroupId = userGroupId }
+            );
+            if (!response.IsSuccessStatusCode)
+            {
+                return response.IsSuccessStatusCode;
+            }
+            response = await _http.PostAsJsonAsync(
+                "Activity/MoveUserToUserGroup",
+                new ActivityCommand { 
+                    Message = "moved to", 
+                    ObjectId1 = userId,
+                    ObjectId2 = userGroupId,
+                    UserGroupId = userGroupId
+                }
             );
             return response.IsSuccessStatusCode;
         }

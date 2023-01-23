@@ -21,6 +21,7 @@ builder.Services.AddScoped(sp => sp.GetRequiredService<IHttpClientFactory>().Cre
 builder.Services.AddScoped<IDatasetService, DatasetService>();
 builder.Services.AddScoped<IReportService, ReportService>();
 builder.Services.AddScoped<IAdministrationService, AdministrationService>();
+builder.Services.AddScoped<IActivityService, ActivityService>();
 
 builder.Services.AddApiAuthorization()
     .AddAccountClaimsPrincipalFactory<UserWithRolesFactory>();

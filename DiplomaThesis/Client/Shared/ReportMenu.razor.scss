@@ -14,6 +14,7 @@
     z-index: 5;
 
     .report_menu {
+        width: 390px;
         padding: 15px;
         margin: 0;
         position: absolute;
@@ -94,6 +95,19 @@
             width: 100%;
             color: $color_light_grey;
             text-align: center;
+        }
+
+        .user_group_selected, .dataset_selected {
+            display: inline-block;
+            width: 100%;
+            padding-top: 5px;
+            padding-bottom: 5px;
+            transition: 0.2s ease-in-out;
+
+            .name {
+                float: left;
+                width: 50%;
+            }
         }
 
         .input_with_button{

@@ -55,6 +55,25 @@ html, body {
     }
 }
 
+.button_tiny_default {
+    height: 25px;
+    float: right;
+    position: relative;
+    top: -2px;
+    cursor: pointer;
+    background-color: $color_lighter_grey;
+    color: $color_grey;
+    border: none;
+    border-radius: 500px;
+    transition: 0.2s ease-in-out;
+
+    &:hover {
+        color: $color_purple;
+        padding-left: 12px;
+        padding-right: 12px;
+    }
+}
+
 .input_search_default {
     height: 40px;
     width: 150px;
@@ -122,6 +141,10 @@ html, body {
             top: 2px;
         }
     }
+}
+
+.text_light {
+    color: $color_light_grey;
 }
 
 h1:focus {

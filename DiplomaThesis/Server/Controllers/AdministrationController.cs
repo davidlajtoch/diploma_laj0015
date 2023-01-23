@@ -1,7 +1,7 @@
 using System.Linq;
 using System.Security.Claims;
 using DiplomaThesis.Server.Data;
-using DiplomaThesis.Server.Data.Migrations;
+//using DiplomaThesis.Server.Data.Migrations;
 using DiplomaThesis.Server.Models;
 using DiplomaThesis.Shared.Commands;
 using DiplomaThesis.Shared.Contracts;

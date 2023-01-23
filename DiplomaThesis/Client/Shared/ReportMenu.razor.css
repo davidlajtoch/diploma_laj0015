@@ -12,6 +12,7 @@
   z-index: 5;
 }
 .report_menu_container .report_menu {
+  width: 390px;
   padding: 15px;
   margin: 0;
   position: absolute;
@@ -81,6 +82,17 @@
   width: 100%;
   color: #bdbdbd;
   text-align: center;
+}
+.report_menu_container .report_menu .user_group_selected, .report_menu_container .report_menu .dataset_selected {
+  display: inline-block;
+  width: 100%;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  transition: 0.2s ease-in-out;
+}
+.report_menu_container .report_menu .user_group_selected .name, .report_menu_container .report_menu .dataset_selected .name {
+  float: left;
+  width: 50%;
 }
 .report_menu_container .report_menu .input_with_button input {
   margin-right: -5px;

@@ -49,6 +49,24 @@
   display: none;
 }
 
+.button_tiny_default {
+  height: 25px;
+  float: right;
+  position: relative;
+  top: -2px;
+  cursor: pointer;
+  background-color: #f5f5f5;
+  color: #424242;
+  border: none;
+  border-radius: 500px;
+  transition: 0.2s ease-in-out;
+}
+.button_tiny_default:hover {
+  color: #751aff;
+  padding-left: 12px;
+  padding-right: 12px;
+}
+
 .input_search_default {
   height: 40px;
   width: 150px;
@@ -110,6 +128,10 @@
   position: relative;
   right: 4px;
   top: 2px;
+}
+
+.text_light {
+  color: #bdbdbd;
 }
 
 h1:focus {

@@ -25,30 +25,48 @@
                 </tr>
             </table>
 
-            <table class="table_info">
-                <tr>
-                    <td class="label">User group</td>
-                    <td>@AssignedUserGroupName</td>
-                </tr>
-            </table>
+            <div class="section_header">User group</div>
+            <div class="user_group_selected">
+                @if (AssignedUserGroupName == null)
+                {
+                    <div class="name text_light animate__animated animate__fadeInDown">No user group assigned</div>
+                }
+                else
+                {
+                    <div class="animate__animated animate__fadeInUp">
+                        <div class="name">@AssignedUserGroupName</div>
+                        <button class="button_tiny_default" @onclick="() => RemoveReportFromUserGroup(Report)">
+                            <i class="material-icons icon">remove</i>
+                        </button>
+                    </div>
+                }
+            </div>
 
             <input type="text" class="input_search_default input_search nohover" placeholder="Search and select User group..."
                @oninput="@((e) => SearchUserGroup(e.Value!.ToString()!))">
             <div class="list_user_groups">
                 @foreach (var userGroup in UserGroupsFiltered!)
                 {
+                    if (userGroup.Id == Report.UserGroupId) { continue; }
                     <div class="user_group" @onclick="()=> SelectedUserGroupChanged(userGroup)">
                         @userGroup.Name
                     </div>
                 }
             </div>
 
-            <table class="table_info">
-                <tr>
-                    <td class="label">Dataset</td>
-                    <td>@AssignedDatasetName</td>
-                </tr>
-            </table>
+            <div class="section_header">Dataset</div>
+            <div class="dataset_selected">
+                @if (AssignedDatasetName == null)
+                {
+                    <div class="name text_light animate__animated animate__fadeInDown">No dataset assigned</div>
+                }
+                else
+                {
+                    <div class="animate__animated animate__fadeInUp">
+                        <div class="name">@AssignedDatasetName</div>
+                    </div>
+                }
+            </div>
 
             <input type="text" class="input_search_default input_search nohover" placeholder="Search and select Dataset..."
                @oninput="@((e) => SearchDataset(e.Value!.ToString()!))">
@@ -199,6 +217,21 @@
                 AssignedUserGroupName = userGroup.Name;
                 StateHasChanged();
             }
+        }
+    }
+
+    private async Task RemoveReportFromUserGroup(ReportContract report)
+    {
+        if (report is null || Report is null)
+        {
+            return;
+        }
+
+        if (await ReportService.MoveReportToUserGroup(Report!.Id, Report.UserGroupId))
+        {
+            await OnReportChanged.InvokeAsync();
+            AssignedUserGroupName = null;
+            StateHasChanged();
         }
     }
 

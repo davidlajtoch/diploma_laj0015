@@ -65,6 +65,24 @@ public class ReportService : IReportService
         return false;
     }
 
+    public async Task<bool> RemoveReportFromUserGroup(Guid reportId, Guid selectedUserGroupId)
+    {
+        try
+        {
+            var response = await _http.PutAsJsonAsync(
+                "Report/RemoveReportFromUserGroup",
+                new RemoveReportFromUserGroupCommand { ReportId = reportId, UserGroupId = selectedUserGroupId }
+            );
+            return response.IsSuccessStatusCode;
+        }
+        catch (AccessTokenNotAvailableException exception)
+        {
+            exception.Redirect();
+        }
+
+        return false;
+    }
+
     public async Task<bool> CloneReport(Guid reportId, string newReportName)
     {
         if (newReportName.Length == 0) return false;

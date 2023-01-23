@@ -1,4 +1,5 @@
 @page "/administration"
+
 @using DiplomaThesis.Client.Services.Interfaces
 @using DiplomaThesis.Shared.Contracts
 @using Microsoft.AspNetCore.Authorization
@@ -6,105 +7,109 @@
 
 @inject IAdministrationService AdministrationService
 
-    <PageTitle>ReporTiny - Administration</PageTitle>
-    <PageHeader Text="Administration" />
+<PageTitle>ReporTiny - Administration</PageTitle>
+<PageHeader Text="Administration" />
 
-    @if (_users is null || _user_groups is null)
-    {
-        <Loader />
-    }
-    else
-    {
-        <div class="animate__animated animate__fadeIn">
-            <div class="menu">
-                <div class="group_left">
-                    <button class="button_default @(_showUsers ? "selected" : "")" @onclick="() => _showUsers = true">Users</button>
-                    <button class="button_default @(!_showUsers ? "selected" : "")" @onclick="() => _showUsers = false">User groups</button>
-                </div>
-
-                <div class="group_right">
-                    @if (_showUsers)
-                    {
-                        <input type="text" class="input_search_default" placeholder="Search by name..."
-                            @oninput="@((e) => SearchUser(e.Value!.ToString()!))">
-                    }
-                    else
-                    {
-                        <div class="input_with_button_default">
-                            <input @bind="_new_user_group_name" type="text" placeholder="Create new group...">
-                            <button @onclick="CreateUserGroupButton"><i class="material-icons icon">add</i></button>
-                        </div>
-                        <input type="text" class="input_search_default" placeholder="Search by name..."
-                            @oninput="@((e) => SearchUserGroup(e.Value!.ToString()!))">
-                    }
-                </div>
+@if (_users is null || _user_groups is null)
+{
+    <Loader />
+}
+else
+{
+    <div class="animate__animated animate__fadeIn">
+        <div class="menu">
+            <div class="group_left">
+                <button class="button_default @(_showUsers ? "selected" : "")" @onclick="() => _showUsers = true">Users</button>
+                <button class="button_default @(!_showUsers ? "selected" : "")" @onclick="() => _showUsers = false">User groups</button>
             </div>
 
-            @if (_showUsers)
-            {
-                <ul class="list_users">
-                    <li class="header">
-                        <div class="col col-1">ID</div>
-                        <div class="col col-2">Name</div>
-                        <div class="col col-3">Group</div>
-                        <div class="col col-4">Roles</div>
-                    </li>
-                    @foreach (var user in _users_searched!)
-                    {
-                        <li class="row" @onclick="() => _userMenu.ShowUser(user)">
-                            <div class="col col-1" data-label="ID">@user.Id</div>
-                            <div class="col col-2" data-label="Name">@user.Name</div>
-                            <div class="col col-3" data-label="Group">
-                                @if (user.UserGroupId.ToString() == Guid.Empty.ToString()){
-                                    <div class="info_light">No group</div>
-                                }
-                                else{
-                                    @_user_groups.FirstOrDefault(
-                                        userGroup => userGroup?.Id.Equals(user.UserGroupId) ?? false, null
-                                    )?.Name
-                                }
-                                    
-                            </div>
-                            <div class="col col-4" data-label="Roles">
-                                @if(user.Roles.Count() == 0){
-                                    <div class="info_light">No roles</div>
-                                }
-                                else{
-                                    @foreach (var role in user.Roles)
-                                    {
-                                        <text>@role.Name&nbsp;</text>
-                                    }
-                                }
-                                    
-                            </div>
-                        </li>
-                            
-                    }
-                </ul>
-                <UserMenu @ref="_userMenu" OnUserChanged="UpdateData" />
-            }
-            else
-            {
-                <ul class="list_groups">
-                    <li class="header">
-                        <div class="col col-1">ID</div>
-                        <div class="col col-2">Name</div>
-                        <div class="col col-3">Users</div>
-                    </li>
-                    @foreach (var user_group in _user_groups_searched!)
-                    {
-                        <li class="row" @onclick="() => _userGroupMenu.ShowUserGroup(user_group)">
-                            <div class="col col-1" data-label="ID">@user_group.Id</div>
-                            <div class="col col-2" data-label="Name">@user_group.Name</div>
-                            <div class="col col-3" data-label="Users">@user_group.Users.Count()</div>
-                        </li>
-                            
-                    }
-                </ul>
-                <UserGroupMenu @ref="_userGroupMenu" OnUserGroupChanged="UpdateData" />
-            }
+            <div class="group_right">
+                @if (_showUsers)
+                {
+                    <input type="text" class="input_search_default" placeholder="Search by name..."
+                   @oninput="@((e) => SearchUser(e.Value!.ToString()!))">
+                }
+                else
+                {
+                    <div class="input_with_button_default">
+                        <input @bind="_new_user_group_name" type="text" placeholder="Create new group...">
+                        <button @onclick="CreateUserGroupButton"><i class="material-icons icon">add</i></button>
+                    </div>
+                    <input type="text" class="input_search_default" placeholder="Search by name..."
+                   @oninput="@((e) => SearchUserGroup(e.Value!.ToString()!))">
+                }
+            </div>
         </div>
-    }
+
+        @if (_showUsers)
+        {
+            <ul class="list_users">
+                <li class="header">
+                    <div class="col col-1">ID</div>
+                    <div class="col col-2">Name</div>
+                    <div class="col col-3">Group</div>
+                    <div class="col col-4">Roles</div>
+                </li>
+                @foreach (var user in _users_searched!)
+                {
+                    <li class="row" @onclick="() => _userMenu.ShowUser(user)">
+                        <div class="col col-1" data-label="ID">@user.Id</div>
+                        <div class="col col-2" data-label="Name">@user.Name</div>
+                        <div class="col col-3" data-label="Group">
+                            @if (user.UserGroupId.ToString() == Guid.Empty.ToString())
+                            {
+                                <div class="info_light">No group</div>
+                            }
+                            else
+                            {
+                                @_user_groups.FirstOrDefault(
+                userGroup => userGroup?.Id.Equals(user.UserGroupId) ?? false, null
+                )?.Name
+                            }
+
+                        </div>
+                        <div class="col col-4" data-label="Roles">
+                            @if (user.Roles.Count() == 0)
+                            {
+                                <div class="info_light">No roles</div>
+                            }
+                            else
+                            {
+                                @foreach (var role in user.Roles)
+                                {
+                                    <text>@role.Name&nbsp;</text>
+                                }
+                            }
+
+                        </div>
+                    </li>
+
+                }
+            </ul>
+            <UserMenu @ref="_userMenu" OnUserChanged="UpdateData" />
+        }
+        else
+        {
+            <ul class="list_groups">
+                <li class="header">
+                    <div class="col col-1">ID</div>
+                    <div class="col col-2">Name</div>
+                    <div class="col col-3">Users</div>
+                </li>
+                @foreach (var user_group in _user_groups_searched!)
+                {
+                    <li class="row" @onclick="() => _userGroupMenu.ShowUserGroup(user_group)">
+                        <div class="col col-1" data-label="ID">@user_group.Id</div>
+                        <div class="col col-2" data-label="Name">@user_group.Name</div>
+                        <div class="col col-3" data-label="Users">@user_group.Users.Count()</div>
+                    </li>
+
+                }
+            </ul>
+            <UserGroupMenu @ref="_userGroupMenu" OnUserGroupChanged="UpdateData" />
+        }
+    </div>
+}
 
 
 @code {
@@ -142,17 +147,12 @@
             _user_groups_searched = userGroups;
         }
 
-        foreach(var userGroup in _user_groups)
-        {
-            Console.WriteLine(userGroup.Id);
-        }
-
         StateHasChanged();
     }
 
     private async Task CreateUserGroupButton()
     {
-        if(_new_user_group_name == "" || _new_user_group_name == null)
+        if (_new_user_group_name == "" || _new_user_group_name == null)
         {
             return;
         }

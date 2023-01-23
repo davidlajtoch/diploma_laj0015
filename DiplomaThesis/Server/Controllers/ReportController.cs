@@ -199,6 +199,25 @@ public class ReportController : ControllerBase
         return Ok();
     }
 
+    [Authorize(Roles = "Admin")]
+    [HttpPut]
+    public async Task<ActionResult> RemoveReportFromUserGroup(
+        [FromBody] RemoveReportFromUserGroupCommand removeReportFromUserGroupCommand)
+    {
+        var report = await _context.Reports.FindAsync(removeReportFromUserGroupCommand.ReportId);
+        if (report is null) return NotFound();
+
+        var user_group = await _context.UserGroups.FindAsync(removeReportFromUserGroupCommand.UserGroupId);
+        if (user_group is null) return NotFound();
+
+        report.UserGroup = null;
+        user_group.Reports!.Remove(report);
+
+        _context.SaveChanges();
+
+        return Ok();
+    }
+
     [Authorize(Roles = "Architect")]
     [HttpPut]
     public async Task<ActionResult> RebindReportToDataset(
