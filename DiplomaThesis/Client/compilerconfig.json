@@ -54,5 +54,9 @@
   {
     "outputFile": "Shared/LogoAnimatedLarge.razor.css",
     "inputFile": "Shared/LogoAnimatedLarge.razor.scss"
+  },
+  {
+    "outputFile": "Shared/ScrollIcon.razor.css",
+    "inputFile": "Shared/ScrollIcon.razor.scss"
   }
 ]

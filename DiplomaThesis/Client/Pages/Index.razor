@@ -17,88 +17,97 @@
 else
 {
     <div class="animate__animated animate__fadeIn">
-        <LogoAnimatedLarge />
+        <div class="section_top">
+            <div class="centered_container">
+                <LogoAnimatedLarge />
 
-        <div class="about">
-            The tiniest PowerBI client
-        </div>
+                <div class="about">
+                    The tiniest PowerBI client
+                </div>
 
-        <div class="buttons">
-            <AuthorizeView>
-                <Authorized>
-                    <a @onclick="BeginSignOut">Log out</a>
-                </Authorized>
-                <NotAuthorized>
-                    <a href="authentication/register">Register</a>
-                    <a href="authentication/login">Log in</a>
-                </NotAuthorized>
-            </AuthorizeView>
+                <div class="buttons">
+                    <AuthorizeView>
+                        <Authorized>
+                            <a @onclick="BeginSignOut">Log out</a>
+                        </Authorized>
+                        <NotAuthorized>
+                            <a href="authentication/register">Register</a>
+                            <a href="authentication/login">Log in</a>
+                        </NotAuthorized>
+                    </AuthorizeView>
+                </div>
+            </div>
+            <div class="scroll_icon_container">
+                <ScrollIcon />
+            </div>
         </div>
 
         <AuthorizeView>
             <Authorized>
+                
+                <div class="section_bottom">
+                    
+                    <PageHeader Text="Recent activity" />
+                    <div class="menu">
+                        <div class="group_left">
+                            <button class="button_default @(_showUserGroupActivity ? "selected" : "")" @onclick="() => _showUserGroupActivity = true">Activity in my group</button>
+                            <button class="button_default @(!_showUserGroupActivity ? "selected" : "")" @onclick="() => _showUserGroupActivity = false">All activity</button>
+                        </div>
+
+                        <div class="group_right">
+                            @if (_showUserGroupActivity)
+                            {
+                                <input type="text" class="input_search_default" placeholder="Search..."
+                               @oninput="@((e) => SearchAllActivity(e.Value!.ToString()!))">
+                            }
+                            else
+                            {
+                                <input type="text" class="input_search_default" placeholder="Search..."
+                               @oninput="@((e) => SearchAllActivity(e.Value!.ToString()!))">
+                            }
+                        </div>
+                    </div>
+
+                    @if (_showUserGroupActivity)
+                    {
+                        <ul class="list_activity animate__animated animate__fadeIn">
+                            <li class="header">
+                                <div class="col col-1">Activity</div>
+                                <div class="col col-2">User Group</div>
+                                <div class="col col-3">Created</div>
+                            </li>
+                            @foreach (var activity in _activityUserGroupSearched!)
+                            {
+                                <li class="row">
+                                    <div class="col col-1" data-label="Activity">@activity.Message</div>
+                                    <div class="col col-2" data-label="User Group">@activity.UserGroup!</div>
+                                    <div class="col col-3" data-label="Created">@activity.Created</div>
+                                </li>
+
+                            }
+                        </ul>
+                    }
+                    else
+                    {
+                        <ul class="list_activity animate__animated animate__fadeIn">
+                            <li class="header">
+                                <div class="col col-1">Activity</div>
+
+                                <div class="col col-3">Created</div>
+                            </li>
+                            @foreach (var activity in _activityAllSearched!)
+                            {
+                                <li class="row">
+                                    <div class="col col-1" data-label="Activity">@activity.Message</div>
+
+                                    <div class="col col-3" data-label="Created">@activity.Created</div>
+                                </li>
+                            }
+                        </ul>
+                    }
+                </div>
             </Authorized>
         </AuthorizeView>
-
-        <PageHeader Text="Recent activity" />
-
-        <div class="menu">
-            <div class="group_left">
-                <button class="button_default @(_showUserGroupActivity ? "selected" : "")" @onclick="() => _showUserGroupActivity = true">Activity in my group</button>
-                <button class="button_default @(!_showUserGroupActivity ? "selected" : "")" @onclick="() => _showUserGroupActivity = false">All activity</button>
-            </div>
-
-            <div class="group_right">
-                @if (_showUserGroupActivity)
-                {
-                    <input type="text" class="input_search_default" placeholder="Search by name..."
-                   @oninput="@((e) => SearchAllActivity(e.Value!.ToString()!))">
-                }
-                else
-                {
-                    <input type="text" class="input_search_default" placeholder="Search by name..."
-                   @oninput="@((e) => SearchAllActivity(e.Value!.ToString()!))">
-                }
-            </div>
-        </div>
-
-        @if (_showUserGroupActivity)
-        {
-            <ul class="list_activity">
-                <li class="header">
-                    <div class="col col-1">Activity</div>
-                    <div class="col col-2">User Group</div>
-                    <div class="col col-3">Created</div>
-                </li>
-                @foreach (var activity in _activityUserGroupSearched!)
-                {
-                    <li class="row">
-                        <div class="col col-1" data-label="Activity">@activity.Message</div>
-                        <div class="col col-2" data-label="User Group">@activity.UserGroup!.Name</div>
-                        <div class="col col-3" data-label="Created">@activity.Created</div>
-                    </li>
-
-                }
-            </ul>
-        }
-        else
-        {
-            <ul class="list_activity">
-                <li class="header">
-                    <div class="col col-1">Activity</div>
-
-                    <div class="col col-3">Created</div>
-                </li>
-                @foreach (var activity in _activityAllSearched!)
-                {
-                    <li class="row">
-                        <div class="col col-1" data-label="Activity">@activity.Message</div>
-
-                        <div class="col col-3" data-label="Created">@activity.Created</div>
-                    </li>
-                }
-            </ul>
-        }
     </div>
 }
 
@@ -119,13 +128,10 @@ else
     {
         var activityAll = await ActivityService.GetAllActivity();
 
-        if (activityAll is not null)
-        {
-            _activityAll = activityAll;
-            _activityAllSearched = activityAll;
-            _activityUserGroup = activityAll;
-            _activityUserGroupSearched = activityAll;
-        }
+        _activityAll = activityAll;
+        _activityAllSearched = activityAll;
+        _activityUserGroup = activityAll;
+        _activityUserGroupSearched = activityAll;
 
         StateHasChanged();
     }
@@ -136,8 +142,9 @@ else
         {
             return;
         }
-        _activityAllSearched = _activityAll!.FindAll(a => 
-            a.Message.Contains(searched_string) || 
+
+        _activityAllSearched = _activityAll!.FindAll(a =>
+            a.Message.Contains(searched_string) ||
             a.UserGroup!.Name.Contains(searched_string) ||
             a.Created.ToString()!.Contains(searched_string));
     }

@@ -57,7 +57,7 @@
         }
         <div class="bottom_menu">
             <div class="group_left">
-                <button class="button_warning" @onclick="DeleteUserGroupButton" @onmouseout="ResetUserGroupDeleteConfirm">
+                <button class="button_warning" @onclick="DeleteUserGroup" @onmouseout="ResetUserGroupDeleteConfirm">
                     @(_deleteUserGroupConfirmation ? "Are you sure?" : "Delete user group")
                 </button>
             </div>
@@ -92,7 +92,6 @@
     public async Task ShowUserGroup(UserGroupContract userGroup)
     {
         UserGroup = userGroup;
-        ShowUserGroupMenu = true;
 
         var users = await AdministrationService.GetAllUsers();
 
@@ -102,70 +101,59 @@
         UsersNonMembers = users!.FindAll(u => u.UserGroupId != UserGroup.Id);
         UsersNonMembersFiltered = UsersNonMembers;
 
-        /*UsersMembers = await AdministrationService.GetUserGroupMembers(UserGroup!.Id);
-        UsersMembersFiltered = UsersMembers;
-
-        UsersNonMembers = await AdministrationService.GetUserGroupNonMembers(UserGroup!.Id);
-        UsersNonMembersFiltered = UsersNonMembers;*/
-
+        ShowUserGroupMenu = true;
         StateHasChanged();
-    }
-
-    private void SearchMember(string searched_user)
-    {
-        UsersMembersFiltered = UsersMembers!.FindAll(u => u.Name.Contains(searched_user));
-    }
-
-    private void SearchNonMember(string searched_user)
-    {
-        UsersNonMembersFiltered = UsersNonMembers!.FindAll(u => u.Name.Contains(searched_user));
     }
 
     private async Task MoveUserToUserGroup(UserContract user)
     {
-        Console.WriteLine(UserGroup!.Id);
+        if (user is null || UserGroup is null)
+        {
+            return;
+        }
+
         if (await AdministrationService.MoveUserToUserGroup(user.Id, UserGroup!.Id))
         {
             await OnUserGroupChanged.InvokeAsync();
-            var user_group = await AdministrationService.GetUserGroup(UserGroup!.Id);
-            if (user_group is not null)
-            {
-                
-                UserGroup = user_group;
-                UsersNonMembers!.Remove(user);
-                UsersNonMembersFiltered = UsersNonMembers;
-                UsersMembers!.Add(user);
-                UsersMembersFiltered = UsersMembers;
-                StateHasChanged();
-            }
+            UsersNonMembers!.Remove(user);
+            UsersNonMembersFiltered = UsersNonMembers;
+            UsersMembers!.Add(user);
+            UsersMembersFiltered = UsersMembers;
+            StateHasChanged();
         }
     }
 
     private async Task RemoveUserFromUserGroup(UserContract user)
     {
+        if (user is null || UserGroup is null)
+        {
+            return;
+        }
+
         if (await AdministrationService.RemoveUserFromUserGroup(user.Id, UserGroup!.Id))
         {
             await OnUserGroupChanged.InvokeAsync();
-            var user_group = await AdministrationService.GetUserGroup(UserGroup!.Id);
-            if (user_group is not null)
-            {
-                UserGroup = user_group;
-                UsersMembers!.Remove(user);
-                UsersMembersFiltered = UsersMembers;
-                UsersNonMembers!.Add(user);
-                UsersNonMembersFiltered = UsersNonMembers;
-                StateHasChanged();
-            }
+            UsersMembers!.Remove(user);
+            UsersMembersFiltered = UsersMembers;
+            UsersNonMembers!.Add(user);
+            UsersNonMembersFiltered = UsersNonMembers;
+            StateHasChanged();
         }
     }
 
-    private async Task DeleteUserGroupButton()
+    private async Task DeleteUserGroup()
     {
         if (_deleteUserGroupConfirmation == false)
         {
             _deleteUserGroupConfirmation = true;
             return;
         }
+
+        if (UserGroup is null)
+        {
+            return;
+        }
+
         if (await AdministrationService.DeleteUserGroup(UserGroup!.Id))
         {
             ToggleUserGroupMenu();
@@ -176,6 +164,16 @@
     private void ResetUserGroupDeleteConfirm()
     {
         _deleteUserGroupConfirmation = false;
+    }
+
+    private void SearchMember(string searched_user)
+    {
+        UsersMembersFiltered = UsersMembers!.FindAll(u => u.Name.Contains(searched_user));
+    }
+
+    private void SearchNonMember(string searched_user)
+    {
+        UsersNonMembersFiltered = UsersNonMembers!.FindAll(u => u.Name.Contains(searched_user));
     }
     
 }

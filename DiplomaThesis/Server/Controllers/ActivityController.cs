@@ -61,6 +61,7 @@ public class ActivityController : ControllerBase
 
         Activity activity = new Activity{
             Message = message_complete,
+            UserGroupId = object2.Id,
             UserGroup = object2,
             Created = DateTime.Now
         };

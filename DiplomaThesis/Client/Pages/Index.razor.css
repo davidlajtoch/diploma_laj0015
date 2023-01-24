@@ -1,19 +1,31 @@
-﻿.about {
+﻿.section_top {
+  position: fixed;
+  width: 100%;
+  height: 100vh;
+  z-index: -1;
+}
+.section_top .centered_container {
+  margin: 0;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+.section_top .centered_container .about {
   width: 100%;
   margin-top: 10px;
   text-align: center;
   color: #bdbdbd;
   font-family: "Nunito", sans-serif;
 }
-
-.buttons {
+.section_top .centered_container .buttons {
   width: 100%;
   margin-top: 20px;
   margin-bottom: 20px;
   text-align: center;
   font-family: "Nunito", sans-serif;
 }
-.buttons a {
+.section_top .centered_container .buttons a {
   padding: 10px;
   padding-left: 20px;
   padding-right: 20px;
@@ -26,38 +38,50 @@
   transition: 0.2s ease-in-out;
   cursor: pointer;
 }
-.buttons a:hover {
+.section_top .centered_container .buttons a:hover {
   color: #751aff;
   padding-left: 30px;
   padding-right: 30px;
 }
+.section_top .scroll_icon_container {
+  width: 100%;
+  position: fixed;
+  left: 50%;
+  top: calc(100vh - 80px);
+  transform: translate(-50%, 0%);
+}
 
-.menu {
+.section_bottom {
+  background-color: #fff;
+  padding-top: 20px;
+  position: relative;
+  top: 100vh;
+  padding-bottom: 30px;
+}
+.section_bottom .menu {
   width: calc(100% - 10px);
   height: 40px;
 }
-.menu .group_right {
+.section_bottom .menu .group_right {
   float: right;
   display: flex;
   flex-direction: row;
 }
-.menu .group_left {
+.section_bottom .menu .group_left {
   float: left;
   display: flex;
   flex-direction: row;
 }
-.menu .group_left .selected {
+.section_bottom .menu .group_left .selected {
   color: #751aff;
   padding-left: 30px;
   padding-right: 30px;
 }
-
-.list_activity {
+.section_bottom .list_activity {
   width: 100%;
   padding-left: 10px;
-  overflow-y: scroll;
 }
-.list_activity li {
+.section_bottom .list_activity li {
   border-radius: 15px;
   padding: 20px 10px;
   display: flex;
@@ -67,50 +91,46 @@
   width: calc(100% - 40px);
   text-align: center;
 }
-.list_activity .header {
+.section_bottom .list_activity .header {
   font-size: 16px;
   color: #751aff;
   padding: 10px 10px;
   margin-top: 0px;
 }
-.list_activity .row {
+.section_bottom .list_activity .row {
   background-color: #ffffff;
   box-shadow: 0px 0px 9px 0px rgba(0, 0, 0, 0.1);
   transition: all 0.2s ease-in-out;
   padding: 20px 10px;
-  cursor: pointer;
 }
-.list_activity .row:hover {
-  color: #751aff;
-}
-.list_activity .col-1 {
+.section_bottom .list_activity .col-1 {
   flex-basis: 20%;
 }
-.list_activity .col-2 {
+.section_bottom .list_activity .col-2 {
   flex-basis: 30%;
 }
-.list_activity .col-3 {
+.section_bottom .list_activity .col-3 {
   flex-basis: 25%;
 }
-.list_activity .col-4 {
+.section_bottom .list_activity .col-4 {
   flex-basis: 25%;
 }
 @media all and (max-width: 767px) {
-  .list_activity .header {
+  .section_bottom .list_activity .header {
     display: none;
   }
-  .list_activity li {
+  .section_bottom .list_activity li {
     display: block;
   }
-  .list_activity .col {
+  .section_bottom .list_activity .col {
     flex-basis: 100%;
     text-align: left;
   }
-  .list_activity .col {
+  .section_bottom .list_activity .col {
     display: flex;
     padding: 10px 0;
   }
-  .list_activity .col:before {
+  .section_bottom .list_activity .col:before {
     color: #751aff;
     padding-right: 10px;
     padding-left: 10px;

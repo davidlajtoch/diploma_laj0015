@@ -4,7 +4,7 @@
 
 <div class="user_menu_container animate__animated animate__fadeIn" style="display: @(ShowUserMenu ? "block" : "none");">
     <div class="user_menu">
-        @if (User is null || Roles is null || UserGroups is null)
+        @if (User is null || RolesUser is null || RolesOther is null || UserGroups is null)
         {
             <p>
                 <em>Loading...</em>
@@ -25,13 +25,13 @@
 
             <div class="section_header">User roles</div>
             <div class="list_roles">
-                @foreach (var role in User.Roles)
+                @foreach (var role in RolesUser)
                 {
                     <div class="role animate__animated animate__fadeInUp">
                         <div class="name">@role.Name</div>
                         @if (role.Name != "Admin")
                         {
-                            <button class="button_tiny_default" @onclick="() => RemoveRole(User.Name, role.Name)">
+                            <button class="button_tiny_default" @onclick="() => RemoveRole(User, role)">
                                 <i class="material-icons icon">remove</i>
                             </button>
                         }
@@ -41,13 +41,13 @@
 
             <div class="section_header">Available roles</div>
             <div class="list_roles">
-                @foreach (var role in UserRolesOther!)
+                @foreach (var role in RolesOther!)
                 {
                     @if (role.Name != "Admin")
                     {
                         <div class="role animate__animated animate__fadeInDown">
                             <div class="name">@role.Name</div>
-                            <button class="button_tiny_default" @onclick="() => AddRole(User.Name, role.Name)">
+                            <button class="button_tiny_default" @onclick="() => AddRole(User, role)">
                                 <i class="material-icons icon">add</i>
                             </button>
                         </div>
@@ -57,14 +57,14 @@
 
             <div class="section_header">User group</div>
             <div class="user_group_selected">
-                @if (AssignedUserGroupName == null)
+                @if (_assignedUserGroupName == null)
                 {
                     <div class="name text_light animate__animated animate__fadeInDown">No user group assigned</div>
                 }
                 else
                 {
                     <div class="animate__animated animate__fadeInUp">
-                        <div class="name">@AssignedUserGroupName</div>
+                        <div class="name">@_assignedUserGroupName</div>
                         <button class="button_tiny_default" @onclick="() => RemoveUserFromUserGroup(User)">
                             <i class="material-icons icon">remove</i>
                         </button>
@@ -77,8 +77,8 @@
             <div class="list_user_groups">
                 @foreach (var userGroup in UserGroupsFiltered!)
                 {
-                    if (userGroup.Id == User.UserGroupId) { continue; }
-                    <div class="user_group" @onclick="()=> SelectedUserGroupChanged(userGroup)">
+                    if (User.UserGroupId == userGroup.Id) { continue; }
+                    <div class="user_group" @onclick="()=> MoveUserToUserGroup(userGroup)">
                         @userGroup.Name
                     </div>
                 }
@@ -86,7 +86,7 @@
         }
         <div class="bottom_menu">
             <div class="group_left">
-                <button class="button_warning" @onclick="DeleteUserButton" @onmouseout="ResetUserDeleteConfirm">
+                <button class="button_warning" @onclick="DeleteUser" @onmouseout="ResetUserDeleteConfirm">
                     @(_deleteUserConfirmation ? "Are you sure?" : "Delete user")
                 </button>
             </div>
@@ -104,8 +104,8 @@
     public EventCallback OnUserChanged { get; set; }
 
     private UserContract? User { get; set; }
-    private List<RoleContract>? Roles { get; set; }
-    private List<RoleContract>? UserRolesOther { get; set; }
+    private List<RoleContract>? RolesUser { get; set; }
+    private List<RoleContract>? RolesOther { get; set; }
     private List<UserGroupContract>? UserGroups { get; set; }
     private List<UserGroupContract>? UserGroupsFiltered { get; set; }
 
@@ -113,18 +113,8 @@
 
     private bool _deleteUserConfirmation = false;
 
-    private string? AssignedUserGroupName { get; set; }
-    private string? SearchedUserGroupName { get; set; }
-
-    protected override async Task OnInitializedAsync()
-    {
-        var roles = await AdministrationService.GetAllRoles();
-        Roles = roles;
-
-        var userGroups = await AdministrationService.GetAllUserGroups();
-        UserGroups = userGroups;
-        UserGroupsFiltered = userGroups;
-    }
+    private string? _assignedUserGroupName { get; set; }
+    private string? _searchedUserGroupName { get; set; }
 
     public void ToggleUserMenu()
     {
@@ -132,19 +122,27 @@
         _deleteUserConfirmation = false;
     }
 
-    public void ShowUser(UserContract user)
+    public async Task ShowUser(UserContract user)
     {
         User = user;
-        ShowUserMenu = true;
 
-        AssignedUserGroupName = UserGroups!.FirstOrDefault(
+        var roles = await AdministrationService.GetAllRoles();
+        RolesUser = User.Roles;
+        RolesOther = roles!.FindAll(r1 => User!.Roles.All(r2 => r2.Name != r1.Name));
+
+        var userGroups = await AdministrationService.GetAllUserGroups();
+        UserGroups = userGroups;
+        UserGroupsFiltered = userGroups;
+
+        _assignedUserGroupName = UserGroups!.FirstOrDefault(
                                     UserGroups => UserGroups?.Id.Equals(user.UserGroupId) ?? false, null
                                 )?.Name;
-        UserRolesOther = Roles!.Where(r1 => User.Roles.All(r2 => r2.Name != r1.Name)).ToList();
+
+        ShowUserMenu = true;
         StateHasChanged();
     }
 
-    private async Task SelectedUserGroupChanged(UserGroupContract? userGroup)
+    private async Task MoveUserToUserGroup(UserGroupContract? userGroup)
     {
         if (userGroup is null || User is null)
         {
@@ -153,14 +151,11 @@
 
         if (await AdministrationService.MoveUserToUserGroup(User!.Id, userGroup.Id))
         {
-            var user = await AdministrationService.GetUser(User!.Id);
-            if (user is not null)
-            {
-                await OnUserChanged.InvokeAsync();
-                User = user;
-                AssignedUserGroupName = userGroup.Name;
-                StateHasChanged();
-            }
+            
+            User.UserGroupId = userGroup.Id;
+            _assignedUserGroupName = userGroup.Name;
+            await OnUserChanged.InvokeAsync();
+            StateHasChanged();
         }
     }
 
@@ -170,74 +165,76 @@
         {
             return;
         }
+
         if (await AdministrationService.RemoveUserFromUserGroup(user.Id, user.UserGroupId))
         {
-            user = await AdministrationService.GetUser(User!.Id);
-            if (user is not null)
-            {
-                await OnUserChanged.InvokeAsync();
-                User = user;
-                AssignedUserGroupName = null;
-                StateHasChanged();
-            }
+            await OnUserChanged.InvokeAsync();
+            User.UserGroupId = Guid.Empty;
+            _assignedUserGroupName = null;
+            StateHasChanged();
         }
     }
 
-    private async Task AddRole(string userName, string roleName)
+    private async Task AddRole(UserContract user, RoleContract role)
     {
-        if (await AdministrationService.AddRole(userName, roleName))
+        if (user is null || role is null || User is null)
+        {
+            return;
+        }
+
+        if (await AdministrationService.AddRole(user.Name, role.Name))
         {
             await OnUserChanged.InvokeAsync();
-            var user = await AdministrationService.GetUser(User!.Id);
-            if (user is not null)
-            {
-                User = user;
-                UserRolesOther = UserRolesOther!.FindAll(r => r.Name != roleName);
-                StateHasChanged();
-            }
+            RolesOther!.Remove(role);
+            RolesUser!.Add(role);
+            StateHasChanged();
         }
     }
 
-    private async Task RemoveRole(string userName, string roleName)
+    private async Task RemoveRole(UserContract user, RoleContract role)
     {
-        if (await AdministrationService.RemoveRole(userName, roleName))
+        if (user is null || role is null || User is null)
+        {
+            return;
+        }
+
+        if (await AdministrationService.RemoveRole(user.Name, role.Name))
         {
             await OnUserChanged.InvokeAsync();
-            var user = await AdministrationService.GetUser(User!.Id);
-            if (user is not null)
-            {
-                User = user;
-                UserRolesOther!.Add((Roles!.FirstOrDefault(r => r.Name == roleName)!));
-                StateHasChanged();
-            }
+            RolesUser!.Remove(role);
+            RolesOther!.Add(role);
+            StateHasChanged();
         }
     }
 
-    private void ResetUserDeleteConfirm()
-    {
-        if (_deleteUserConfirmation == true)
-        {
-            _deleteUserConfirmation = false;
-        }
-    }
-
-    private void SearchUserGroup(string searched_user_group)
-    {
-        UserGroupsFiltered = UserGroups!.FindAll(ug => ug.Name.Contains(searched_user_group));
-    }
-
-    private async Task DeleteUserButton()
+    private async Task DeleteUser()
     {
         if (_deleteUserConfirmation == false)
         {
             _deleteUserConfirmation = true;
             return;
         }
+
+        if (User is null)
+        {
+            return;
+        }
+
         if (await AdministrationService.DeleteUser(User!.Name))
         {
             ToggleUserMenu();
             await OnUserChanged.InvokeAsync();
         }
+    }
+
+    private void ResetUserDeleteConfirm()
+    {
+        _deleteUserConfirmation = false;
+    }
+
+    private void SearchUserGroup(string searched_user_group)
+    {
+        UserGroupsFiltered = UserGroups!.FindAll(ug => ug.Name.Contains(searched_user_group));
     }
 
 }
