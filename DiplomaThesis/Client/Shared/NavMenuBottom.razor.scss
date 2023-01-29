@@ -1,0 +1,82 @@
+﻿@import '../wwwroot/css/variables';
+
+.nav {
+    height: 40px;
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    -ms-transform: translateX(-50%);
+    transform: translateX(-50%);
+    padding: 5px;
+    padding-left: 0px;
+    padding-right: 0px;
+    display: flex;
+    flex-direction: row;
+    font-family: $font_nunito_bold;
+    background-color: $color_white;
+    border-radius: 20px;
+    transition: all ease-in-out 0.25s;
+    box-shadow: $shadow_grey;
+    cursor: default;
+    z-index: 10;
+
+    .group {
+        margin-left: 5px;
+        margin-right: 5px;
+        display: flex;
+        flex-direction: row;
+
+        .item {
+            width: 40px;
+            height: 30px;
+            display: flex;
+            flex-direction: row;
+            padding-left: 5px;
+            padding-right: 5px;
+            color: $color_grey;
+            transition: all ease-in-out 0.1s;
+            overflow: hidden;
+            cursor: pointer;
+
+            &:hover {
+                color: $color_purple;
+            }
+
+            &:hover .tooltip {
+                display: block;
+            }
+
+            .icon {
+                position: relative;
+                top: 8px;
+                left: 7px;
+            }
+
+            .tooltip {
+                display: none;
+                width: 120px;
+                background-color: $color_purple;
+                color: $color_white;
+                text-align: center;
+                border-radius: 6px;
+                padding: 5px 0;
+                /* Position the tooltip */
+                position: absolute;
+                top: -45px;
+                margin-left: -41px;
+                z-index: 1;
+
+                &::after {
+                    content: " ";
+                    position: absolute;
+                    top: 100%; /* At the bottom of the tooltip */
+                    left: 50%;
+                    margin-left: -5px;
+                    border-width: 5px;
+                    border-style: solid;
+                    border-color: $color_purple transparent transparent transparent;
+                }
+            }
+        }
+    }
+}

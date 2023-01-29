@@ -24,21 +24,6 @@ else
                 <div class="about">
                     The tiniest PowerBI client
                 </div>
-
-                <div class="buttons">
-                    <AuthorizeView>
-                        <Authorized>
-                            <a @onclick="BeginSignOut">Log out</a>
-                        </Authorized>
-                        <NotAuthorized>
-                            <a href="authentication/register">Register</a>
-                            <a href="authentication/login">Log in</a>
-                        </NotAuthorized>
-                    </AuthorizeView>
-                </div>
-            </div>
-            <div class="scroll_icon_container">
-                <ScrollIcon />
             </div>
         </div>
 
@@ -80,7 +65,7 @@ else
                             {
                                 <li class="row">
                                     <div class="col col-1" data-label="Activity">@activity.Message</div>
-                                    <div class="col col-2" data-label="User Group">@activity.UserGroup!</div>
+                                    <div class="col col-2" data-label="User Group">@activity.UserGroupName</div>
                                     <div class="col col-3" data-label="Created">@activity.Created</div>
                                 </li>
 
@@ -92,14 +77,14 @@ else
                         <ul class="list_activity animate__animated animate__fadeIn">
                             <li class="header">
                                 <div class="col col-1">Activity</div>
-
+                                        <div class="col col-2">User Group</div>
                                 <div class="col col-3">Created</div>
                             </li>
                             @foreach (var activity in _activityAllSearched!)
                             {
                                 <li class="row">
                                     <div class="col col-1" data-label="Activity">@activity.Message</div>
-
+                                    <div class="col col-2" data-label="User Group">@activity.UserGroupName</div>
                                     <div class="col col-3" data-label="Created">@activity.Created</div>
                                 </li>
                             }
@@ -127,11 +112,12 @@ else
     private async Task UpdateData()
     {
         var activityAll = await ActivityService.GetAllActivity();
+        var activityUserGroup = await ActivityService.GetCurrentUserUserGroupActivity();
 
         _activityAll = activityAll;
         _activityAllSearched = activityAll;
-        _activityUserGroup = activityAll;
-        _activityUserGroupSearched = activityAll;
+        _activityUserGroup = activityUserGroup;
+        _activityUserGroupSearched = activityUserGroup;
 
         StateHasChanged();
     }
@@ -145,7 +131,20 @@ else
 
         _activityAllSearched = _activityAll!.FindAll(a =>
             a.Message.Contains(searched_string) ||
-            a.UserGroup!.Name.Contains(searched_string) ||
+            a.UserGroupName.Contains(searched_string) ||
+            a.Created.ToString()!.Contains(searched_string));
+    }
+
+    private void SearchUserGroupActivity(string searched_string)
+    {
+        if (searched_string is null)
+        {
+            return;
+        }
+
+        _activityUserGroupSearched = _activityUserGroup!.FindAll(a =>
+            a.Message.Contains(searched_string) ||
+            a.UserGroupName.Contains(searched_string) ||
             a.Created.ToString()!.Contains(searched_string));
     }
 

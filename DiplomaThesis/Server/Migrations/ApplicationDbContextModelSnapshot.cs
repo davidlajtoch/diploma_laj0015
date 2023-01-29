@@ -38,6 +38,9 @@ namespace DiplomaThesis.Server.Migrations
                     b.Property<Guid?>("UserGroupId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("UserGroupName")
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("Id");
 
                     b.HasIndex("UserGroupId");

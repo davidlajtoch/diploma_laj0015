@@ -3,10 +3,11 @@
     public class Activity
     {
         public Guid Id { get; set; }
-        public string Message { get; init; }
-        public DateTime? Created { get; init; }
-        public Guid? UserGroupId { get; init; }
-        public UserGroup? UserGroup { get; init; }
+        public string Message { get; set; }
+        public DateTime? Created { get; set; }
+        public string? UserGroupName { get; set; }
+        public Guid? UserGroupId { get; set; }
+        public UserGroup? UserGroup { get; set; }
         
     }
 }

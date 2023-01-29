@@ -1,0 +1,81 @@
+﻿@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+@inject NavigationManager Navigation
+@inject SignOutSessionStateManager SignOutManager
+
+<div class="@NavMenuCssClass nav_container" @onclick="ToggleNavMenu">
+    <nav class="nav">
+        <div class="group">
+            <NavLink style="text-decoration: none;" class="link" href="" Match="NavLinkMatch.All">
+                <div class="item">
+                    <i class="material-icons icon">home</i>
+                    <span class="tooltip animate__animated animate__bounceIn animate__delay-1s">Home</span>
+                </div>
+            </NavLink>
+        </div>
+
+        <div class="group">
+            <AuthorizeView>
+                <NavLink style="text-decoration: none;" class="link" href="metrics">
+                    <div class="item">
+                        <i class="material-icons icon">timeline</i>
+                        <span class="tooltip animate__animated animate__bounceIn animate__delay-1s">Metrics</span>
+                    </div>
+                </NavLink>
+            </AuthorizeView>
+
+            <AuthorizeView Roles="Architect">
+                <NavLink style="text-decoration: none;" class="link" href="data-sources">
+                    <div class="item">
+                        <i class="material-icons icon">storage</i>
+                        <span class="tooltip animate__animated animate__bounceIn animate__delay-1s">Datasets</span>
+                    </div>
+                </NavLink>
+            </AuthorizeView>
+
+            <AuthorizeView Roles="Admin">
+                <NavLink style="text-decoration: none;" class="link" href="administration">
+                    <div class="item">
+                        <i class="material-icons icon">supervisor_account</i>
+                        <span class="tooltip animate__animated animate__bounceIn animate__delay-1s">Administration</span>
+                    </div>
+                </NavLink>
+            </AuthorizeView>
+        </div>
+        <div class="group">
+            <AuthorizeView>
+                <NavLink style="text-decoration: none;" class="link" href="authentication/profile">
+                    <div class="item">
+                        <i class="material-icons icon">face</i>
+                        <span class="tooltip animate__animated animate__bounceIn animate__delay-1s">@context.User.Identity?.Name.Split("@")[0]</span>
+                    </div>
+                </NavLink>
+            </AuthorizeView>
+
+            <AuthorizeView>
+                <NavLink style="text-decoration: none;" class="link" @onclick="BeginSignOut">
+                    <div class="item">
+                        <i class="material-icons icon">https</i>
+                        <span class="tooltip animate__animated animate__bounceIn animate__delay-1s">Log out</span>
+                    </div>
+                </NavLink>
+            </AuthorizeView>
+        </div>
+    </nav>
+</div>
+
+@code {
+    private bool _collapseNavMenu = true;
+
+    private string? NavMenuCssClass => _collapseNavMenu ? "collapse" : null;
+
+    private void ToggleNavMenu()
+    {
+        _collapseNavMenu = !_collapseNavMenu;
+    }
+
+    private async Task BeginSignOut(MouseEventArgs args)
+    {
+        await SignOutManager.SetSignOutState();
+        Navigation.NavigateTo("authentication/logout");
+    }
+}

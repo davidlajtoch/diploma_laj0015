@@ -58,5 +58,9 @@
   {
     "outputFile": "Shared/ScrollIcon.razor.css",
     "inputFile": "Shared/ScrollIcon.razor.scss"
+  },
+  {
+    "outputFile": "Shared/NavMenuBottom.razor.css",
+    "inputFile": "Shared/NavMenuBottom.razor.scss"
   }
 ]

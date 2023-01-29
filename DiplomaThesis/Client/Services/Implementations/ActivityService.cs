@@ -29,4 +29,18 @@ public class ActivityService : IActivityService
             return null;
         }
     }
+
+    public async Task<List<ActivityContract>?> GetCurrentUserUserGroupActivity()
+    {
+        try
+        {
+            var response = await _http.GetFromJsonAsync<List<ActivityContract>>("Activity/GetCurrentUserUserGroupActivity");
+            return response;
+        }
+        catch (AccessTokenNotAvailableException exception)
+        {
+            exception.Redirect();
+            return null;
+        }
+    }
 }

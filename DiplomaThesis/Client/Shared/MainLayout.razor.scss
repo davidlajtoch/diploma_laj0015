@@ -1,18 +1,12 @@
 ﻿.page {
+    width: 100%;
+    padding-bottom: 90px;
     .main_container {
-        position: relative;
-        left: 60px;
-        top: 0px;
-        padding-left: 15px;
-        padding-right: 15px;
-        width: calc(100% - 90px);
         animation: appear 1s ease;
-
         @keyframes appear {
             0% {
                 opacity: 0;
             }
-
             100% {
                 opacity: 1;
             }

@@ -3,6 +3,14 @@
 html, body {
     font-family: 'Nunito', sans-serif;
     color: $color_grey;
+    width: calc(100vw - 80px);
+    margin: 0 auto;
+    margin-top: 10px;
+    overflow: visible;
+}
+
+html{
+    overflow-y: scroll;
 }
 
 .button_default, .button_warning {

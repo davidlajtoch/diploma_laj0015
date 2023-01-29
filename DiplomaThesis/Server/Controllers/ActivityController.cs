@@ -20,11 +20,17 @@ namespace DiplomaThesis.Server.Controllers;
 public class ActivityController : ControllerBase
 {
     private readonly ApplicationDbContext _context;
+    private readonly RoleManager<IdentityRole> _roleManager;
+    private readonly UserManager<ApplicationUser> _userManager;
 
     public ActivityController(
+        UserManager<ApplicationUser> userManager,
+        RoleManager<IdentityRole> roleManager,
         ApplicationDbContext context
     )
     {
+        _userManager = userManager;
+        _roleManager = roleManager;
         _context = context;
     }
 
@@ -38,6 +44,24 @@ public class ActivityController : ControllerBase
     {
         var result = await _context.Activities.ToListAsync();
         var resultOrdered = result.OrderByDescending(r=>r.Created).ToList().Take(30);
+        return Ok(resultOrdered);
+    }
+
+    [HttpGet]
+    public async Task<ActionResult> GetCurrentUserUserGroupActivity()
+    {
+        var activityAll = await _context.Activities.ToListAsync();
+
+        var loggedInUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var loggedInUser = await _context.Users.FindAsync(loggedInUserId);
+
+        if(loggedInUser.UserGroupId == null || loggedInUser.UserGroupId == Guid.Empty) { 
+            return Ok(new List<ActivityContract>());
+        }
+
+        var result = activityAll.FindAll(a => a.UserGroupId == loggedInUser.UserGroupId);
+        var resultOrdered = result.OrderByDescending(r=>r.Created).ToList().Take(30);
+
         return Ok(resultOrdered);
     }
 
@@ -61,9 +85,10 @@ public class ActivityController : ControllerBase
 
         Activity activity = new Activity{
             Message = message_complete,
+            Created = DateTime.Now,
+            UserGroupName = object2.Name,
             UserGroupId = object2.Id,
-            UserGroup = object2,
-            Created = DateTime.Now
+            UserGroup = object2
         };
         _context.Activities.Add(activity);
         _context.SaveChanges();

@@ -3,7 +3,7 @@
 @inject NavigationManager navigationManager
 
 <div style="display: none;">
-    <RemoteAuthenticatorView Action="@Action" OnLogOutSucceeded=@this.OnLogOutSucceeded />
+    <RemoteAuthenticatorView Action="@Action" OnLogOutSucceeded=@this.OnLogOutSucceeded OnLogInSucceeded=@this.OnLogInSucceeded/>
 </div>
 
 @code{
@@ -16,4 +16,8 @@
         navigationManager.NavigateTo("/");
     }
 
+    public void OnLogInSucceeded()
+    {
+        navigationManager.NavigateTo("/");
+    }
 }
