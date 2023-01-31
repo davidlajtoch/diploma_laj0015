@@ -12,9 +12,9 @@ public interface IAdministrationService
 
     public Task<List<RoleContract>?> GetAllRoles();
 
-    public Task<bool> AddRole(string userName, string roleName);
+    public Task<bool> AddRole(Guid userId, string roleName);
 
-    public Task<bool> RemoveRole(string userName, string roleName);
+    public Task<bool> RemoveRole(Guid userId, string roleName);
 
     public Task<UserGroupContract?> GetUserGroup(Guid user_group_id);
 

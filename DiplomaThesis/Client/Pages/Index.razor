@@ -27,11 +27,74 @@ else
             </div>
         </div>
 
+
+
+        <div class="section_middle">
+            <div class="grid_links">
+                <NavLink style="text-decoration: none;" href="" Match="NavLinkMatch.All">
+                    <div class="tile">
+                        <i class="material-icons icon">home</i>
+                        <span class="name">Home</span>
+                        <span class="description">Go to the home page and view the recent activity</span>
+                    </div>
+                </NavLink>
+                <AuthorizeView>
+                    <NavLink style="text-decoration: none;" href="metrics">
+                        <div class="tile">
+                            <i class="material-icons icon">timeline</i>
+                            <span class="name">Metrics</span>
+                            <span class="description">View the metrics and edit their settings</span>
+                        </div>
+                    </NavLink>
+                </AuthorizeView>
+
+                <AuthorizeView Roles="Architect">
+                    <NavLink style="text-decoration: none;" href="data-sources">
+                        <div class="tile">
+                            <i class="material-icons icon">storage</i>
+                            <span class="name">Datasets</span>
+                            <span class="description">View the datasets, assign them to the metrics or upload new dataset</span>
+                        </div>
+                    </NavLink>
+                </AuthorizeView>
+
+                <AuthorizeView Roles="Admin">
+                    <NavLink style="text-decoration: none;" href="administration">
+                        <div class="tile">
+                            <i class="material-icons icon">supervisor_account</i>
+                            <span class="name">Administration</span>
+                            <span class="description">View and manage users and user groups</span>
+                        </div>
+                    </NavLink>
+                </AuthorizeView>
+
+                <AuthorizeView>
+                    <NavLink style="text-decoration: none;" href="authentication/profile">
+                        <div class="tile">
+                            <i class="material-icons icon">face</i>
+                            <span class="name">@context.User.Identity?.Name</span>
+                            <span class="description">Edit your account information</span>
+                        </div>
+                    </NavLink>
+                </AuthorizeView>
+
+                <AuthorizeView>
+                    <NavLink style="text-decoration: none;" @onclick="BeginSignOut">
+                        <div class="tile">
+                            <i class="material-icons icon">https</i>
+                            <span class="name">Log out</span>
+                            <span class="description">End your session and switch to another user.</span>
+                        </div>
+                    </NavLink>
+                </AuthorizeView>
+            </div>
+        </div>
+
         <AuthorizeView>
             <Authorized>
-                
+
                 <div class="section_bottom">
-                    
+
                     <PageHeader Text="Recent activity" />
                     <div class="menu">
                         <div class="group_left">
@@ -77,7 +140,7 @@ else
                         <ul class="list_activity animate__animated animate__fadeIn">
                             <li class="header">
                                 <div class="col col-1">Activity</div>
-                                        <div class="col col-2">User Group</div>
+                                <div class="col col-2">User Group</div>
                                 <div class="col col-3">Created</div>
                             </li>
                             @foreach (var activity in _activityAllSearched!)
@@ -102,7 +165,7 @@ else
     private List<ActivityContract>? _activityUserGroup;
     private List<ActivityContract>? _activityUserGroupSearched;
 
-    private bool _showUserGroupActivity = false;
+    private bool _showUserGroupActivity = true;
 
     protected override async Task OnInitializedAsync()
     {

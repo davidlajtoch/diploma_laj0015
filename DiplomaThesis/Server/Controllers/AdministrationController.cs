@@ -140,7 +140,7 @@ public class AdministrationController : ControllerBase
         var checkRoleExists = await _roleManager.RoleExistsAsync(addRoleCommand.RoleName);
         if (!checkRoleExists) return BadRequest();
 
-        var user = await _userManager.FindByNameAsync(addRoleCommand.UserName);
+        var user = await _userManager.FindByIdAsync(addRoleCommand.UserId.ToString());
         if (user is null) return NotFound();
 
         var checkUserHasRole = await _userManager.IsInRoleAsync(user, addRoleCommand.RoleName);
@@ -159,7 +159,7 @@ public class AdministrationController : ControllerBase
     {
         if (removeRoleCommand.RoleName == "Admin") return BadRequest();
 
-        var user = await _userManager.FindByNameAsync(removeRoleCommand.UserName);
+        var user = await _userManager.FindByIdAsync(removeRoleCommand.UserId.ToString());
         if (user is null) return NotFound();
 
         var checkUserHasRole = await _userManager.IsInRoleAsync(user, removeRoleCommand.RoleName);

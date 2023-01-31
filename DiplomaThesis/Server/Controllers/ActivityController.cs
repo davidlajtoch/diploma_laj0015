@@ -43,7 +43,7 @@ public class ActivityController : ControllerBase
     public async Task<ActionResult> GetAllActivity()
     {
         var result = await _context.Activities.ToListAsync();
-        var resultOrdered = result.OrderByDescending(r=>r.Created).ToList().Take(30);
+        var resultOrdered = result.OrderByDescending(r => r.Created).ToList().Take(30);
         return Ok(resultOrdered);
     }
 
@@ -55,40 +55,194 @@ public class ActivityController : ControllerBase
         var loggedInUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         var loggedInUser = await _context.Users.FindAsync(loggedInUserId);
 
-        if(loggedInUser.UserGroupId == null || loggedInUser.UserGroupId == Guid.Empty) { 
+        if (loggedInUser == null || loggedInUser.UserGroupId == null || loggedInUser.UserGroupId == Guid.Empty)
+        {
             return Ok(new List<ActivityContract>());
         }
 
         var result = activityAll.FindAll(a => a.UserGroupId == loggedInUser.UserGroupId);
-        var resultOrdered = result.OrderByDescending(r=>r.Created).ToList().Take(30);
+        var resultOrdered = result.OrderByDescending(r => r.Created).ToList().Take(30);
 
         return Ok(resultOrdered);
+    }
+
+    [HttpPost]
+    public ActionResult AddRole(
+        [FromBody] ActivityCommand activityCommand)
+    {
+        var user = _context.Users.Find(activityCommand.ObjectId1.ToString());
+        if (user == null)
+        {
+            return NotFound();
+        }
+
+        var userUserGroup = _context.UserGroups.Find(user.UserGroupId);
+
+        var userUserGroupName = "";
+        if (userUserGroup != null)
+        {
+            userUserGroupName = userUserGroup.Name;
+        }
+
+        string message_complete = BuildMessage(user.UserName, activityCommand.Message, activityCommand.ObjectName2!);
+
+        Activity activity = new Activity
+        {
+            Message = message_complete,
+            Created = DateTime.Now,
+            UserGroupName = userUserGroupName,
+            UserGroupId = user.UserGroupId,
+            UserGroup = userUserGroup
+        };
+        _context.Activities.Add(activity);
+        _context.SaveChanges();
+
+        return Ok();
+    }
+
+    [HttpPost]
+    public ActionResult RemoveRole(
+        [FromBody] ActivityCommand activityCommand)
+    {
+        var user = _context.Users.Find(activityCommand.ObjectId1.ToString());
+        if (user == null)
+        {
+            return NotFound();
+        }
+
+        var userUserGroup = _context.UserGroups.Find(user.UserGroupId);
+
+        var userUserGroupName = "";
+        if (userUserGroup != null)
+        {
+            userUserGroupName = userUserGroup.Name;
+        }
+
+        string message_complete = BuildMessage(user.UserName, activityCommand.Message, activityCommand.ObjectName2!);
+
+        Activity activity = new Activity
+        {
+            Message = message_complete,
+            Created = DateTime.Now,
+            UserGroupName = userUserGroupName,
+            UserGroupId = user.UserGroupId,
+            UserGroup = userUserGroup
+        };
+        _context.Activities.Add(activity);
+        _context.SaveChanges();
+
+        return Ok();
     }
 
     [HttpPost]
     public ActionResult MoveUserToUserGroup(
         [FromBody] ActivityCommand activityCommand)
     {
-        var object1 = _context.Users.Find(activityCommand.ObjectId1.ToString());
-        if (object1 == null)
+        var user = _context.Users.Find(activityCommand.ObjectId1.ToString());
+        if (user == null)
         {
             return NotFound();
         }
 
-        var object2 =  _context.UserGroups.Find(activityCommand.ObjectId2);
-        if (object2 == null)
+        var userGroup = _context.UserGroups.Find(activityCommand.ObjectId2);
+        if (userGroup == null)
         {
             return NotFound();
         }
 
-        string message_complete = BuildMessage(object1.UserName, activityCommand.Message, object2.Name);
+        string message_complete = BuildMessage(user.UserName, activityCommand.Message, userGroup.Name);
 
-        Activity activity = new Activity{
+        Activity activity = new Activity
+        {
             Message = message_complete,
             Created = DateTime.Now,
-            UserGroupName = object2.Name,
-            UserGroupId = object2.Id,
-            UserGroup = object2
+            UserGroupName = userGroup.Name,
+            UserGroupId = userGroup.Id,
+            UserGroup = userGroup
+        };
+        _context.Activities.Add(activity);
+        _context.SaveChanges();
+
+        return Ok();
+    }
+
+    [HttpPost]
+    public ActionResult RemoveUserFromUserGroup(
+        [FromBody] ActivityCommand activityCommand)
+    {
+        var user = _context.Users.Find(activityCommand.ObjectId1.ToString());
+        if (user == null)
+        {
+            return NotFound();
+        }
+
+        var userGroup = _context.UserGroups.Find(activityCommand.ObjectId2);
+        if (userGroup == null)
+        {
+            return NotFound();
+        }
+
+        string message_complete = BuildMessage(user.UserName, activityCommand.Message, userGroup.Name);
+
+        Activity activity = new Activity
+        {
+            Message = message_complete,
+            Created = DateTime.Now,
+            UserGroupName = userGroup.Name,
+            UserGroupId = userGroup.Id,
+            UserGroup = userGroup
+        };
+        _context.Activities.Add(activity);
+        _context.SaveChanges();
+
+        return Ok();
+    }
+
+    [HttpPost]
+    public ActionResult UserGroupCreated(
+        [FromBody] ActivityCommand activityCommand)
+    {
+        var userGroup = _context.UserGroups.Find(activityCommand.ObjectId1);
+        if (userGroup == null)
+        {
+            return NotFound();
+        }
+
+        string message_complete = BuildMessage(userGroup.Name, activityCommand.Message, "");
+
+        Activity activity = new Activity
+        {
+            Message = message_complete,
+            Created = DateTime.Now,
+            UserGroupName = userGroup.Name,
+            UserGroupId = userGroup.Id,
+            UserGroup = userGroup
+        };
+        _context.Activities.Add(activity);
+        _context.SaveChanges();
+
+        return Ok();
+    }
+
+    [HttpPost]
+    public ActionResult UserGroupDeleted(
+    [FromBody] ActivityCommand activityCommand)
+    {
+        var userGroup = _context.UserGroups.Find(activityCommand.ObjectId1);
+        if (userGroup == null)
+        {
+            return NotFound();
+        }
+
+        string message_complete = BuildMessage(userGroup.Name, activityCommand.Message, "");
+
+        Activity activity = new Activity
+        {
+            Message = message_complete,
+            Created = DateTime.Now,
+            UserGroupName = userGroup.Name,
+            UserGroupId = null,
+            UserGroup = null
         };
         _context.Activities.Add(activity);
         _context.SaveChanges();

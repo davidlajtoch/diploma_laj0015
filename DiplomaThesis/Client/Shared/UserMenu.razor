@@ -182,7 +182,7 @@
             return;
         }
 
-        if (await AdministrationService.AddRole(user.Name, role.Name))
+        if (await AdministrationService.AddRole(user.Id, role.Name))
         {
             await OnUserChanged.InvokeAsync();
             RolesOther!.Remove(role);
@@ -198,7 +198,7 @@
             return;
         }
 
-        if (await AdministrationService.RemoveRole(user.Name, role.Name))
+        if (await AdministrationService.RemoveRole(user.Id, role.Name))
         {
             await OnUserChanged.InvokeAsync();
             RolesUser!.Remove(role);

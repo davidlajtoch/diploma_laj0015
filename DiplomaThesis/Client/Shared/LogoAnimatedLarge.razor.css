@@ -65,7 +65,7 @@
   height: 40px;
   background-color: #751aff;
   border-radius: 10px;
-  animation: increaseSize 4s ease-in-out infinite;
+  animation: increaseSize 5s ease-in-out infinite;
 }
 @keyframes increaseSize {
   0% {

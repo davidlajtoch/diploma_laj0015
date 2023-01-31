@@ -6,31 +6,31 @@
   -ms-transform: translateX(-50%);
   transform: translateX(-50%);
   padding: 5px;
-  padding-left: 0px;
-  padding-right: 0px;
   display: flex;
   flex-direction: row;
-  font-family: "Nunito", sans-serif;
   background-color: #fff;
   border-radius: 20px;
   transition: all ease-in-out 0.25s;
   box-shadow: 0px 0px 9px 0px rgba(0, 0, 0, 0.15);
   cursor: default;
   z-index: 10;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  outline: none;
 }
 .nav .group {
-  margin-left: 5px;
-  margin-right: 5px;
-  display: flex;
-  flex-direction: row;
-}
-.nav .group .item {
-  width: 40px;
-  height: 30px;
   display: flex;
   flex-direction: row;
   padding-left: 5px;
   padding-right: 5px;
+}
+.nav .group .item {
+  height: 100%;
+  padding-left: 10px;
+  padding-right: 10px;
   color: #424242;
   transition: all ease-in-out 0.1s;
   overflow: hidden;
@@ -45,7 +45,7 @@
 .nav .group .item .icon {
   position: relative;
   top: 8px;
-  left: 7px;
+  left: 1px;
 }
 .nav .group .item .tooltip {
   display: none;
@@ -53,12 +53,12 @@
   background-color: #751aff;
   color: #fff;
   text-align: center;
-  border-radius: 6px;
-  padding: 5px 0;
+  border-radius: 10px;
+  padding: 5px 5px;
   /* Position the tooltip */
   position: absolute;
   top: -45px;
-  margin-left: -41px;
+  margin-left: -47px;
   z-index: 1;
 }
 .nav .group .item .tooltip::after {

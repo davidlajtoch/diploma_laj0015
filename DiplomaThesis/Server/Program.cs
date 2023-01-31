@@ -5,6 +5,7 @@ using DiplomaThesis.Server.Models.Options;
 using DiplomaThesis.Server.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -68,6 +69,13 @@ builder.Services.AddScoped(typeof(AadService))
 builder.Services.Configure<AzureAdOptions>(builder.Configuration.GetSection("AzureAd"))
     .Configure<PowerBiOptions>(builder.Configuration.GetSection("PowerBI"));
 
+//Compresses data between server and client to make SignalR communication faster
+//builder.Services.AddResponseCompression(options =>
+//    {
+//        options.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(new[] { "application/octet-stream" } );
+//    }   
+//);
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -95,6 +103,12 @@ app.UseRouting();
 app.UseIdentityServer();
 app.UseAuthentication();
 app.UseAuthorization();
+
+//app.UseEndpoints(endpoints =>
+//    { 
+//        endpoints
+//    }
+//);
 
 
 app.MapRazorPages();
