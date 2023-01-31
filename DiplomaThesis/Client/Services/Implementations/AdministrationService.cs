@@ -143,8 +143,7 @@ public class AdministrationService : IAdministrationService
     {
         try
         {
-            var response =
-                await _http.GetFromJsonAsync<UserGroupContract>($"Administration/GetUserGroup/{user_group_id}");
+            var response = await _http.GetFromJsonAsync<UserGroupContract>($"Administration/GetUserGroup/{user_group_id}");
             return response!;
         }
         catch (AccessTokenNotAvailableException exception)
@@ -167,6 +166,20 @@ public class AdministrationService : IAdministrationService
             exception.Redirect();
             return null;
         }
+    }
+
+    public async Task<UserGroupContract?> GetUserUserGroup(Guid userId)
+    {
+        try
+        {
+            var response = await _http.GetFromJsonAsync<UserGroupContract?>($"Administration/GetUserGroupByUserId/{userId}");
+            return response;
+        }
+        catch (AccessTokenNotAvailableException exception)
+        {
+            exception.Redirect();
+        }
+        return null;
     }
 
     public async Task<bool> CreateUserGroup(string newUserGroupName)

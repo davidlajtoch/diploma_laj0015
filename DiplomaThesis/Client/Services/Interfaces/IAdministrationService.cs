@@ -20,6 +20,8 @@ public interface IAdministrationService
 
     public Task<List<UserGroupContract>?> GetAllUserGroups();
 
+    public Task<UserGroupContract?> GetUserUserGroup(Guid userId);
+
     public Task<bool> CreateUserGroup(string newUserGroupName);
 
     public Task<bool> DeleteUserGroup(Guid userGroupId);

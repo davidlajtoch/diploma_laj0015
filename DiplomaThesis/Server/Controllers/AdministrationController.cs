@@ -5,6 +5,7 @@ using DiplomaThesis.Server.Data;
 using DiplomaThesis.Server.Models;
 using DiplomaThesis.Shared.Commands;
 using DiplomaThesis.Shared.Contracts;
+using Duende.IdentityServer.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -34,12 +35,17 @@ public class AdministrationController : ControllerBase
         _context = context;
     }
 
-    private async Task<List<UserContract>> ApplicationUsersToUserContracts(List<ApplicationUser> applicationUsers)
+    private async Task<List<UserContract>> ApplicationUsersToUserContracts(List<ApplicationUser>? applicationUsers)
     {
+        if (applicationUsers.IsNullOrEmpty())
+        {
+            return new List<UserContract>();
+        }
+
         var userGroups = await _context.UserGroups.ToListAsync();
 
         var result = new List<UserContract>();
-        foreach (var user in applicationUsers)
+        foreach (var user in applicationUsers!)
         {
             var roles = await _userManager.GetRolesAsync(user);
 
@@ -215,6 +221,34 @@ public class AdministrationController : ControllerBase
                 }    
             );
         }
+        return Ok(result);
+    }
+
+    [HttpGet("{userId}")]
+    public async Task<ActionResult> GetUserGroupByUserId(
+        [FromRoute] Guid userId   
+    )
+    {
+        var user = await _context.Users.FindAsync(userId.ToString());
+        if (user is null) return NotFound();
+        if (user.UserGroupId == null || user.UserGroupId == Guid.Empty)
+        {
+            return Ok(new JsonResult(new object()));
+        }
+
+        var userGroup = await _context.UserGroups.FindAsync(user.UserGroupId);
+
+        if (userGroup is null) return NotFound();
+
+        var userGroupUsers = await ApplicationUsersToUserContracts(userGroup.Users);
+
+        var result = new UserGroupContract
+        {
+              Id = userGroup.Id,
+              Name = userGroup.Name,
+              Users = userGroupUsers
+        };
+
         return Ok(result);
     }
 

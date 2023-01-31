@@ -62,5 +62,9 @@
   {
     "outputFile": "Shared/NavMenuBottom.razor.css",
     "inputFile": "Shared/NavMenuBottom.razor.scss"
+  },
+  {
+    "outputFile": "Pages/Chat.razor.css",
+    "inputFile": "Pages/Chat.razor.scss"
   }
 ]

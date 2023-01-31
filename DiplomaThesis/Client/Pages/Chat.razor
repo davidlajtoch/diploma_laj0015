@@ -1,0 +1,133 @@
+﻿@page "/chat"
+
+@using DiplomaThesis.Client.Services.Interfaces;
+@using Microsoft.AspNetCore.SignalR.Client;
+@using DiplomaThesis.Shared.Contracts;
+@using Microsoft.AspNetCore.Authorization;
+
+@inject NavigationManager Navigation;
+@inject AuthenticationStateProvider AuthenticationStateProvider;
+@inject IAdministrationService AdministrationService
+
+@implements IAsyncDisposable;
+
+@attribute [Authorize]
+
+<PageTitle>Chat - ReporTiny</PageTitle>
+
+<div class="animate__animated animate__fadeIn">
+    @if (!UserInUserGroup)
+    {
+        <p>Not in user group</p>
+    }
+    else
+    {
+        <div class="list_messages">
+            @if (!UserMessages.Any())
+            {
+                <p>No messages</p>
+            }
+            else
+            {
+                @foreach (var userMessage in UserMessages)
+                {
+                    <div>
+                        @userMessage.DateSent <br />
+                        @userMessage.UserId <br />
+                        @userMessage.UserName <br />
+                        @userMessage.Message <br /> <br />
+                    </div>
+                }
+            }
+        </div>
+        <div class="inputs">
+            <input type="text" class="input_search_default" placeholder="Type a message..."
+               @bind="MessageInput" />
+            <button class="button_default" @onclick="SendMessage" disabled="@(!IsConnected)">Send</button>
+        </div>
+    }
+</div>
+
+@code {
+    private HubConnection HubConnection;
+    private List<UserMessageContract> UserMessages = new();
+    private Guid UserId;
+    private string? UserName = null;
+    private UserGroupContract? UserGroup = null;
+    private string MessageInput = string.Empty;
+
+    private bool IsConnected = false;
+    private bool UserInUserGroup = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        UserId = GetUserId().Result;
+        UserName = GetUserName().Result;
+        UserGroup = await AdministrationService.GetUserUserGroup(UserId);
+
+        if (UserGroup!.Id == Guid.Empty)
+        {
+            return;
+        }
+
+        UserInUserGroup = true;
+
+        HubConnection = new HubConnectionBuilder()
+        .WithUrl(Navigation.ToAbsoluteUri("/chathub"))
+        .Build();
+
+        HubConnection.On<UserMessageContract>("RecieveMessage", (UserMessageContract userMessage) =>
+        {
+            UserMessages.Add(userMessage);
+            StateHasChanged();
+        });
+
+        await HubConnection.StartAsync();
+
+        await AddUserToHubGroup();
+
+        if (HubConnection.State == HubConnectionState.Connected)
+        {
+            IsConnected = true;
+        }
+    }
+
+    private async Task<Guid> GetUserId()
+    {
+        var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
+        var userId = user.FindFirst(u => u.Type.Contains("sub"))?.Value;
+        return Guid.Parse(userId!);
+    }
+
+    private async Task<string> GetUserName()
+    {
+        var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
+        var userName = user.Identity.Name;
+        return userName!;
+    }
+
+    private async Task AddUserToHubGroup()
+    {
+        await HubConnection.SendAsync("AddToGroup", UserGroup.Id.ToString());
+    }
+
+    private async Task SendMessage()
+    {
+
+        if (!string.IsNullOrEmpty(MessageInput))
+        {
+            var userMessage = new UserMessageContract { UserId = UserId, UserName = UserName, Message = MessageInput, DateSent = DateTime.Now };
+            await HubConnection.SendAsync("SendMessage", userMessage, UserGroup.Id.ToString());
+
+            MessageInput = string.Empty;
+        }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (HubConnection is not null)
+        {
+            await HubConnection.DisposeAsync();
+        }
+    }
+}

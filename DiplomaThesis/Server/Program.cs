@@ -1,5 +1,6 @@
 using System.IdentityModel.Tokens.Jwt;
 using DiplomaThesis.Server.Data;
+using DiplomaThesis.Server.Hubs;
 using DiplomaThesis.Server.Models;
 using DiplomaThesis.Server.Models.Options;
 using DiplomaThesis.Server.Services;
@@ -63,20 +64,26 @@ builder.Services.AddControllersWithViews().AddNewtonsoftJson();
 builder.Services.AddRazorPages();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddSignalR();
+
 builder.Services.AddScoped(typeof(AadService))
     .AddScoped(typeof(PowerBiService));
 
 builder.Services.Configure<AzureAdOptions>(builder.Configuration.GetSection("AzureAd"))
     .Configure<PowerBiOptions>(builder.Configuration.GetSection("PowerBI"));
 
+
+
 //Compresses data between server and client to make SignalR communication faster
-//builder.Services.AddResponseCompression(options =>
-//    {
-//        options.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(new[] { "application/octet-stream" } );
-//    }   
-//);
+builder.Services.AddResponseCompression(options =>
+    {
+        options.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(new[] { "application/octet-stream" });
+    }
+);
 
 var app = builder.Build();
+
+app.UseResponseCompression();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -104,15 +111,9 @@ app.UseIdentityServer();
 app.UseAuthentication();
 app.UseAuthorization();
 
-//app.UseEndpoints(endpoints =>
-//    { 
-//        endpoints
-//    }
-//);
-
-
 app.MapRazorPages();
 app.MapControllers();
+app.MapHub<ChatHub>("/chathub");
 app.MapFallbackToFile("index.html");
 
 app.UseSwaggerUI(options =>
