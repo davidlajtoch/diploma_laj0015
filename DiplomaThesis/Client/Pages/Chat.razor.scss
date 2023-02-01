@@ -1,7 +1,57 @@
 ﻿@import '../wwwroot/css/variables';
 
-.list_messages{
-    width: 800px;
-    height: 800px;
-    border: 1px solid purple;
+.warning_no_user_group {
+    width: 200px;
+    padding: 10px;
+    background-color: $color_light_red;
+    text-align: center;
+    color: $color_red;
+    border-radius: 15px;
+    margin: 0;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+
+    .icon {
+        width: 100%;
+    }
+}
+
+.container {
+    height: calc(100vh - 80px);
+    border: 1px solid blue;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: row;
+
+    .section_left {
+        width: 300px;
+        display: flex;
+        flex-direction: column;
+        border: 1px solid green;
+
+        .list_users {
+            height: 100%;
+            border: 1px solid black;
+        }
+    }
+
+    .section_right {
+        height: 100%;
+        background-color: green;
+        display: flex;
+        flex-direction: column;
+        flex-grow: 100;
+
+        .list_messages {
+            width: 100%;
+            flex-grow: 100;
+            border: 1px solid purple;
+        }
+
+        .inputs{
+            height: 70px;
+        }
+    }
 }

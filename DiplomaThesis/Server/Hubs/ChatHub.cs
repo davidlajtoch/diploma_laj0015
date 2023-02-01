@@ -5,7 +5,7 @@ namespace DiplomaThesis.Server.Hubs
 {
     public class ChatHub : Hub
     {
-        public async Task SendMessage(UserMessageContract userMessage, string groupName)
+        public async Task SendMessage(UserGroupMessageContract userMessage, string groupName)
         {
             await Clients.Group(groupName).SendAsync("RecieveMessage", userMessage);
         }

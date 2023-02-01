@@ -2,14 +2,3 @@
   width: 100%;
   padding-bottom: 90px;
 }
-.page .main_container {
-  animation: appear 1s ease;
-}
-@keyframes appear {
-  0% {
-    opacity: 0;
-  }
-  100% {
-    opacity: 1;
-  }
-}

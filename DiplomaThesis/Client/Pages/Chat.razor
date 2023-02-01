@@ -8,6 +8,7 @@
 @inject NavigationManager Navigation;
 @inject AuthenticationStateProvider AuthenticationStateProvider;
 @inject IAdministrationService AdministrationService
+@inject IChatService ChatService
 
 @implements IAsyncDisposable;
 
@@ -15,49 +16,68 @@
 
 <PageTitle>Chat - ReporTiny</PageTitle>
 
-<div class="animate__animated animate__fadeIn">
-    @if (!UserInUserGroup)
-    {
-        <p>Not in user group</p>
-    }
-    else
-    {
-        <div class="list_messages">
-            @if (!UserMessages.Any())
-            {
-                <p>No messages</p>
-            }
-            else
-            {
-                @foreach (var userMessage in UserMessages)
+@if (!UserInUserGroup)
+{
+    <div class="warning_no_user_group animate__animated animate__bounceIn animate__delay-2s">
+        <i class="material-icons icon">report</i><br />
+        You need to be in a user group to chat.
+    </div>
+}
+else
+{
+    <div class="container animate__animated animate__fadeIn">
+        <div class="section_left">
+            <div class="list_users">
+                @foreach (var user in UserGroup!.Users!)
                 {
-                    <div>
-                        @userMessage.DateSent <br />
-                        @userMessage.UserId <br />
-                        @userMessage.UserName <br />
-                        @userMessage.Message <br /> <br />
+                    <div class="user">
+                        @user.Name
                     </div>
                 }
-            }
+            </div>
         </div>
-        <div class="inputs">
-            <input type="text" class="input_search_default" placeholder="Type a message..."
-               @bind="MessageInput" />
-            <button class="button_default" @onclick="SendMessage" disabled="@(!IsConnected)">Send</button>
+
+        <div class="section_right">
+            <div class="list_messages">
+                @if (!UserMessages.Any())
+                {
+                    <p>No messages</p>
+                }
+                else
+                {
+                    @foreach (var userMessage in UserMessages)
+                    {
+                        <div>
+                            @userMessage.DateSent <br />
+                            @userMessage.UserId <br />
+                            @userMessage.UserName <br />
+                            @userMessage.Message <br /> <br />
+                        </div>
+                    }
+                }
+            </div>
+            <div class="inputs">
+                <input type="text" class="input_search_default" placeholder="Type a message..."
+                   @bind="MessageInput" />
+                <button class="button_default" @onclick="SendMessage" disabled="@IsConnected"><i class="material-icons icon">send</i></button>
+            </div>
         </div>
-    }
-</div>
+
+    </div>
+}
+
 
 @code {
     private HubConnection HubConnection;
-    private List<UserMessageContract> UserMessages = new();
+    private List<UserGroupMessageContract> UserMessages = new();
     private Guid UserId;
     private string? UserName = null;
     private UserGroupContract? UserGroup = null;
+
     private string MessageInput = string.Empty;
 
-    private bool IsConnected = false;
     private bool UserInUserGroup = false;
+    public bool IsConnected => HubConnection.State == HubConnectionState.Connected;
 
     protected override async Task OnInitializedAsync()
     {
@@ -69,14 +89,13 @@
         {
             return;
         }
-
         UserInUserGroup = true;
 
         HubConnection = new HubConnectionBuilder()
         .WithUrl(Navigation.ToAbsoluteUri("/chathub"))
         .Build();
 
-        HubConnection.On<UserMessageContract>("RecieveMessage", (UserMessageContract userMessage) =>
+        HubConnection.On<UserGroupMessageContract>("RecieveMessage", (UserGroupMessageContract userMessage) =>
         {
             UserMessages.Add(userMessage);
             StateHasChanged();
@@ -86,10 +105,7 @@
 
         await AddUserToHubGroup();
 
-        if (HubConnection.State == HubConnectionState.Connected)
-        {
-            IsConnected = true;
-        }
+        UserMessages = await ChatService.GetUserGroupMessages(UserGroup.Id);
     }
 
     private async Task<Guid> GetUserId()
@@ -116,8 +132,10 @@
 
         if (!string.IsNullOrEmpty(MessageInput))
         {
-            var userMessage = new UserMessageContract { UserId = UserId, UserName = UserName, Message = MessageInput, DateSent = DateTime.Now };
+            var userMessage = new UserGroupMessageContract { UserId = UserId, UserName = UserName, Message = MessageInput, DateSent = DateTime.Now, UserGroupId = UserGroup.Id };
             await HubConnection.SendAsync("SendMessage", userMessage, UserGroup.Id.ToString());
+
+            await ChatService.AddUserGroupMessage(userMessage);
 
             MessageInput = string.Empty;
         }

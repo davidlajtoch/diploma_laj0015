@@ -184,7 +184,7 @@ public class AdministrationService : IAdministrationService
 
     public async Task<bool> CreateUserGroup(string newUserGroupName)
     {
-        if (newUserGroupName.Length == 0) return false;
+        if (newUserGroupName == string.Empty) return false;
 
         try
         {

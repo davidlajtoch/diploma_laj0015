@@ -78,19 +78,13 @@ public class ActivityController : ControllerBase
 
         var userUserGroup = _context.UserGroups.Find(user.UserGroupId);
 
-        var userUserGroupName = "";
-        if (userUserGroup != null)
-        {
-            userUserGroupName = userUserGroup.Name;
-        }
-
         string message_complete = BuildMessage(user.UserName, activityCommand.Message, activityCommand.ObjectName2!);
 
         Activity activity = new Activity
         {
             Message = message_complete,
             Created = DateTime.Now,
-            UserGroupName = userUserGroupName,
+            UserGroupName = (userUserGroup == null)? string.Empty : userUserGroup.Name,
             UserGroupId = user.UserGroupId,
             UserGroup = userUserGroup
         };
@@ -112,19 +106,13 @@ public class ActivityController : ControllerBase
 
         var userUserGroup = _context.UserGroups.Find(user.UserGroupId);
 
-        var userUserGroupName = "";
-        if (userUserGroup != null)
-        {
-            userUserGroupName = userUserGroup.Name;
-        }
-
         string message_complete = BuildMessage(user.UserName, activityCommand.Message, activityCommand.ObjectName2!);
 
         Activity activity = new Activity
         {
             Message = message_complete,
             Created = DateTime.Now,
-            UserGroupName = userUserGroupName,
+            UserGroupName = (userUserGroup == null)? string.Empty : userUserGroup.Name,
             UserGroupId = user.UserGroupId,
             UserGroup = userUserGroup
         };
@@ -199,7 +187,7 @@ public class ActivityController : ControllerBase
     }
 
     [HttpPost]
-    public ActionResult UserGroupCreated(
+    public ActionResult CreateUserGroup(
         [FromBody] ActivityCommand activityCommand)
     {
         var userGroup = _context.UserGroups.Find(activityCommand.ObjectId1);
