@@ -97,11 +97,10 @@ html {
 .input_with_button_default {
   display: flex;
   flex-direction: row;
-  margin-right: -30px;
+  position: relative;
 }
 .input_with_button_default input {
   height: 40px;
-  width: 140px;
   padding-left: 20px;
   padding-right: 45px;
   border: none;
@@ -121,13 +120,13 @@ html {
   width: 40px;
   height: 40px;
   background: none;
-  position: relative;
-  right: 40px;
+  position: absolute;
+  right: 0px;
   outline: none;
   border: none;
   cursor: pointer;
   color: #424242;
-  transition: 0.2s ease-in-out;
+  transition: 0.1s ease-in-out;
 }
 .input_with_button_default button:hover {
   color: #751aff;
@@ -142,6 +141,21 @@ html {
   color: #bdbdbd;
 }
 
+.animation_custom_gelatine {
+  animation: gelatine 0.5s;
+}
+
+@keyframes gelatine {
+  from, to {
+    transform: scale(1, 1);
+  }
+  25% {
+    transform: scale(0.95, 1.05);
+  }
+  50% {
+    transform: scale(1.05, 0.95);
+  }
+}
 h1:focus {
   outline: none;
 }

@@ -38,31 +38,36 @@ else
         </div>
 
         <div class="section_right">
-            <div class="list_messages">
-                @if (!UserMessages.Any())
-                {
-                    <p>No messages</p>
-                }
-                else
-                {
-                    @foreach (var userMessage in UserMessages)
+            <div class="container_list_messages">
+                <div class="list_messages">
+                    @if (!UserMessages.Any())
                     {
-                        <div>
-                            @userMessage.DateSent <br />
-                            @userMessage.UserId <br />
-                            @userMessage.UserName <br />
-                            @userMessage.Message <br /> <br />
-                        </div>
+                        <div class="notification_no_messages">No messages yet...</div>
                     }
-                }
+                    else
+                    {
+                        @for (int i = UserMessages.Count-1; i >= 0; i--)
+                        {
+                            <div class="row">
+                                <div class="message @((UserMessages[i].UserId == UserId) ? "message_current_user" : "message_other_user")">
+                                    <div class="info">
+                                        <div class="user_name">@UserMessages[i].UserName</div>
+                                        <div class="time_sent">@UserMessages[i].DateSent</div>
+                                    </div>
+                                    <div class="text">@UserMessages[i].Message</div>
+                                </div>
+                            </div>
+                        }
+                    }
+                </div>
             </div>
             <div class="inputs">
-                <input type="text" class="input_search_default" placeholder="Type a message..."
-                   @bind="MessageInput" />
-                <button class="button_default" @onclick="SendMessage" disabled="@IsConnected"><i class="material-icons icon">send</i></button>
+                <div class="input_with_button_default input_with_button">
+                    <input class="nohover" @bind="MessageInput" type="text" placeholder="Write a message...">
+                    <button @onclick="SendMessage"><i class="material-icons icon">send</i></button>
+                </div>
             </div>
         </div>
-
     </div>
 }
 

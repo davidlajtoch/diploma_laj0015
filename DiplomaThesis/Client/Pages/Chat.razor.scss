@@ -19,39 +19,132 @@
 }
 
 .container {
-    height: calc(100vh - 80px);
-    border: 1px solid blue;
+    height: calc(100vh - 110px);
     margin: 0 auto;
     display: flex;
     flex-direction: row;
 
     .section_left {
         width: 300px;
+        margin-right: 10px;
         display: flex;
         flex-direction: column;
-        border: 1px solid green;
 
         .list_users {
+            padding: 15px;
             height: 100%;
-            border: 1px solid black;
+            border-radius: 15px;
+            box-shadow: $shadow_grey;
         }
     }
 
     .section_right {
         height: 100%;
-        background-color: green;
         display: flex;
         flex-direction: column;
         flex-grow: 100;
 
-        .list_messages {
-            width: 100%;
+        .container_list_messages {
+            max-height: calc(100% - 10px);
+            display: flex;
             flex-grow: 100;
-            border: 1px solid purple;
+            margin-bottom: 10px;
+            padding: 5px;
+            border-radius: 15px;
+            box-shadow: $shadow_grey;
+
+            .list_messages {
+                position: relative;
+                width: calc(100% - 25px);
+                padding: 10px;
+                overflow-y: scroll;
+                display: flex;
+                flex-direction: column-reverse;
+
+                .notification_no_messages {
+                    position: absolute;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                    color: $color_light_grey;
+                }
+
+                .row {
+                    .message {
+                        display: flex;
+                        flex-direction: column;
+                        min-width: 210px;
+                        max-width: calc(50% + 50px);
+                        margin-bottom: 10px;
+
+                        .info {
+                            display: flex;
+
+                            .user_name, .time_sent {
+                                font-size: 11px;
+                            }
+
+                            .time_sent{
+                                color: $color_light_grey;
+                            }
+                        }
+
+                        .text {
+                            padding: 10px;
+                            padding-top: 5px;
+                            padding-bottom: 5px;
+                            border-radius: 15px;
+                            word-break: break-word;
+                        }
+                    }
+
+                    .message_current_user {
+                        float: right;
+
+                        .info {
+                            justify-content: end;
+                            flex-direction: row-reverse;
+
+                            .user_name {
+                                margin-left: 15px;
+                            }
+                        }
+                        .text {
+                            border-top-right-radius: 0px;
+                            background-color: $color_purple;
+                            color: $color_white;
+                        }
+                    }
+
+                    .message_other_user {
+                        float: left;
+
+                        .info {
+
+                            .user_name {
+                                margin-right: 15px;
+                            }
+                        }
+
+                        .text {
+                            border-top-left-radius: 0px;
+                            background-color: $color_lighter_grey;
+                        }
+                    }
+                }
+            }
         }
 
-        .inputs{
-            height: 70px;
+        .inputs {
+            width: 100%;
+            height: 40px;
+
+            .input_with_button {
+                input {
+                    width: 100%;
+                    color: $color_grey;
+                }
+            }
         }
     }
 }

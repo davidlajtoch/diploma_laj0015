@@ -8,6 +8,13 @@
         float: right;
         display: flex;
         flex-direction: row;
+
+        .input_with_button{
+            margin-right: 10px;
+            input{
+                width: 140px;
+            }
+        }
     }
 
     .group_left {

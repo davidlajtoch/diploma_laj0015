@@ -75,15 +75,15 @@ builder.Services.Configure<AzureAdOptions>(builder.Configuration.GetSection("Azu
 
 
 //Compresses data between server and client to make SignalR communication faster
-builder.Services.AddResponseCompression(options =>
-    {
-        options.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(new[] { "application/octet-stream" });
-    }
-);
+//builder.Services.AddResponseCompression(options =>
+//    {
+//        options.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(new[] { "application/octet-stream" });
+//    }
+//);
 
 var app = builder.Build();
 
-app.UseResponseCompression();
+//app.UseResponseCompression();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

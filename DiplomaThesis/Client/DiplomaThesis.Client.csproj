@@ -6,7 +6,6 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <ApplicationIcon>wwwroot\favicon.ico</ApplicationIcon>
     <UserSecretsId>1729afda-48bf-4f8c-b211-68cd81327af8</UserSecretsId>
-	<UseRazorSourceGenerator>true</UseRazorSourceGenerator>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

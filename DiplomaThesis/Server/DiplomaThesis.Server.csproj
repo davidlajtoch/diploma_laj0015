@@ -5,7 +5,6 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UserSecretsId>DiplomaThesis.Server-FB7E473E-3852-4358-8740-64960B8E033E</UserSecretsId>
-	<UseRazorSourceGenerator>true</UseRazorSourceGenerator>
   </PropertyGroup>
 
   <ItemGroup>
