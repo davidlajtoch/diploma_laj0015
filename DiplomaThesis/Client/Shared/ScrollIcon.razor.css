@@ -28,7 +28,7 @@
   position: relative;
   height: 3em;
   width: 1.5em;
-  border: 0.25em solid #751aff;
+  border: 0.25em solid #651fff;
   border-radius: 1em;
 }
 .container .scroll-icon__wheel-outer {
@@ -47,6 +47,6 @@
   height: 100%;
   width: 100%;
   border-radius: inherit;
-  background: #751aff;
+  background: #651fff;
   animation: scroll_1 2.75s ease-in-out infinite;
 }

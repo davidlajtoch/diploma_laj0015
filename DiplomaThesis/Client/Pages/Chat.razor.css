@@ -16,22 +16,64 @@
 }
 
 .container {
-  height: calc(100vh - 110px);
+  height: calc(100vh - 165px);
   margin: 0 auto;
   display: flex;
   flex-direction: row;
 }
 .container .section_left {
-  width: 300px;
+  height: 100%;
+  width: 280px;
   margin-right: 10px;
+  border-radius: 15px;
+  box-shadow: 0px 0px 9px 0px rgba(0, 0, 0, 0.15);
   display: flex;
   flex-direction: column;
 }
-.container .section_left .list_users {
-  padding: 15px;
+.container .section_left .container_list_users {
+  width: calc(100% - 20px);
+  overflow-y: scroll;
+  padding-left: 10px;
+}
+.container .section_left .container_list_users .section_subheader {
+  width: 100%;
+  text-align: center;
+  color: #651fff;
+  border-bottom: 1px solid #bdbdbd;
+}
+.container .section_left .container_list_users .list_users {
+  width: 100%;
+}
+.container .section_left .container_list_users .list_users .user {
+  height: 40px;
+  display: flex;
+}
+.container .section_left .container_list_users .list_users .user .name {
+  flex-grow: 100;
+  line-height: 40px;
+}
+.container .section_left .container_list_users .list_users .user .status {
+  width: 30px;
   height: 100%;
-  border-radius: 15px;
-  box-shadow: 0px 0px 9px 0px rgba(0, 0, 0, 0.15);
+  position: relative;
+}
+.container .section_left .container_list_users .list_users .user .status span {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  margin: 0;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+.container .section_left .container_list_users .list_users .user .status .connected {
+  background-color: #651fff;
+  border: 5px solid #dcccff;
+}
+.container .section_left .container_list_users .list_users .user .status .disconnected {
+  background-color: #bdbdbd;
+  border: 5px solid #f5f5f5;
 }
 .container .section_right {
   height: 100%;
@@ -98,7 +140,7 @@
 }
 .container .section_right .container_list_messages .list_messages .row .message_current_user .text {
   border-top-right-radius: 0px;
-  background-color: #751aff;
+  background-color: #651fff;
   color: #fff;
 }
 .container .section_right .container_list_messages .list_messages .row .message_other_user {

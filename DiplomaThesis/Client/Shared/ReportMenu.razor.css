@@ -48,7 +48,7 @@
   text-align: right;
 }
 .report_menu_container .report_menu .table_info .label {
-  color: #751aff;
+  color: #651fff;
   text-align: left;
 }
 .report_menu_container .report_menu .section_header {
@@ -56,7 +56,7 @@
   text-align: center;
   margin-top: 5px;
   margin-bottom: 5px;
-  color: #751aff;
+  color: #651fff;
 }
 .report_menu_container .report_menu .input_search {
   width: calc(100% - 40px) !important;
@@ -76,7 +76,7 @@
   cursor: pointer;
 }
 .report_menu_container .report_menu .list_user_groups .user_group:hover, .report_menu_container .report_menu .list_user_groups .dataset:hover, .report_menu_container .report_menu .list_datasets .user_group:hover, .report_menu_container .report_menu .list_datasets .dataset:hover {
-  color: #751aff;
+  color: #651fff;
 }
 .report_menu_container .report_menu .info_no_items {
   width: 100%;

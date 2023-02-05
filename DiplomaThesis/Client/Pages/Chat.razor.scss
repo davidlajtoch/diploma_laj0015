@@ -19,22 +19,71 @@
 }
 
 .container {
-    height: calc(100vh - 110px);
+    height: calc(100vh - 165px);
     margin: 0 auto;
     display: flex;
     flex-direction: row;
 
     .section_left {
-        width: 300px;
+        height: 100%;
+        width: 280px;
         margin-right: 10px;
+        border-radius: 15px;
+        box-shadow: $shadow_grey;
         display: flex;
         flex-direction: column;
 
-        .list_users {
-            padding: 15px;
-            height: 100%;
-            border-radius: 15px;
-            box-shadow: $shadow_grey;
+        .container_list_users {
+            width: calc(100% - 20px);
+            overflow-y: scroll;
+            padding-left: 10px;
+
+            .section_subheader {
+                width: 100%;
+                text-align: center;
+                color: $color_purple;
+                border-bottom: 1px solid $color_light_grey;
+            }
+
+            .list_users {
+                width: 100%;
+
+                .user {
+                    height: 40px;
+                    display: flex;
+
+                    .name {
+                        flex-grow: 100;
+                        line-height: 40px;
+                    }
+
+                    .status {
+                        width: 30px;
+                        height: 100%;
+                        position: relative;
+
+                        span {
+                            width: 10px;
+                            height: 10px;
+                            border-radius: 50%;
+                            margin: 0;
+                            position: absolute;
+                            top: 50%;
+                            left: 50%;
+                            transform: translate(-50%, -50%);
+                        }
+
+                        .connected{
+                            background-color: $color_purple;
+                            border: 5px solid $color_light_purple;
+                        }
+                        .disconnected{
+                            background-color: $color_light_grey;
+                            border: 5px solid $color_lighter_grey;
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -84,7 +133,7 @@
                                 font-size: 11px;
                             }
 
-                            .time_sent{
+                            .time_sent {
                                 color: $color_light_grey;
                             }
                         }
@@ -109,6 +158,7 @@
                                 margin-left: 15px;
                             }
                         }
+
                         .text {
                             border-top-right-radius: 0px;
                             background-color: $color_purple;

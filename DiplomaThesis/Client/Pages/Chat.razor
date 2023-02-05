@@ -27,13 +27,37 @@ else
 {
     <div class="container animate__animated animate__fadeIn">
         <div class="section_left">
-            <div class="list_users">
-                @foreach (var user in UserGroup!.Users!)
-                {
-                    <div class="user">
-                        @user.Name
-                    </div>
-                }
+            <div class="container_list_users">
+                <div class="section_subheader">Connected group members</div>
+                <div class="list_users">
+                    @foreach (var user in UserGroupMembers!)
+                    {
+                        if (UsersChatConnected.Contains(user.Id))
+                        {
+                            <div class="user">
+                                <div class="name">@user.Name</div>
+                                <div class="status">
+                                    <span class="connected"></span>
+                                </div>
+                            </div>
+                        }
+                    }
+                </div>
+                <div class="section_subheader">Disconnected group members</div>
+                <div class="list_users">
+                    @foreach (var user in UserGroupMembers!)
+                    {
+                        if (!UsersChatConnected.Contains(user.Id))
+                        {
+                            <div class="user">
+                                <div class="name">@user.Name</div>
+                                <div class="status">
+                                    <span class="disconnected"></span>
+                                </div>
+                            </div>
+                        }
+                    }
+                </div>
             </div>
         </div>
 
@@ -46,7 +70,7 @@ else
                     }
                     else
                     {
-                        @for (int i = UserMessages.Count-1; i >= 0; i--)
+                        @for (int i = UserMessages.Count - 1; i >= 0; i--)
                         {
                             <div class="row">
                                 <div class="message @((UserMessages[i].UserId == UserId) ? "message_current_user" : "message_other_user")">
@@ -63,7 +87,7 @@ else
             </div>
             <div class="inputs">
                 <div class="input_with_button_default input_with_button">
-                    <input class="nohover" @bind="MessageInput" type="text" placeholder="Write a message...">
+                    <input class="nohover" @bind="MessageInput" @onkeydown="@SendMessage" type="text" placeholder="Write a message...">
                     <button @onclick="SendMessage"><i class="material-icons icon">send</i></button>
                 </div>
             </div>
@@ -71,30 +95,33 @@ else
     </div>
 }
 
-
 @code {
     private HubConnection HubConnection;
     private List<UserGroupMessageContract> UserMessages = new();
-    private Guid UserId;
-    private string? UserName = null;
+    private List<UserContract> UserGroupMembers = new();
+    private List<Guid> UsersChatConnected = new();
     private UserGroupContract? UserGroup = null;
+    private Guid UserId = new();
+    private string? UserName = null;
 
     private string MessageInput = string.Empty;
 
     private bool UserInUserGroup = false;
-    public bool IsConnected => HubConnection.State == HubConnectionState.Connected;
+    private bool IsConnected => HubConnection.State == HubConnectionState.Connected;
+
+    private PeriodicTimer RequestConnectedUsersTimer = new PeriodicTimer(TimeSpan.FromSeconds(5));
 
     protected override async Task OnInitializedAsync()
     {
-        UserId = GetUserId().Result;
-        UserName = GetUserName().Result;
+        GetSetUserIdAndName();
         UserGroup = await AdministrationService.GetUserUserGroup(UserId);
 
         if (UserGroup!.Id == Guid.Empty)
         {
             return;
         }
-        UserInUserGroup = true;
+
+        GetSetUserGroupMembers();
 
         HubConnection = new HubConnectionBuilder()
         .WithUrl(Navigation.ToAbsoluteUri("/chathub"))
@@ -105,31 +132,67 @@ else
             UserMessages.Add(userMessage);
             StateHasChanged();
         });
+        HubConnection.On("SendConnectedUserId", () =>
+        {
+            SendConnectedUserId();
+        });
+        HubConnection.On<Guid>("RecieveConnectedUserId", (Guid userId) =>
+        {
+            if (!UsersChatConnected.Contains(userId))
+            {
+                UsersChatConnected.Add(userId);
+                StateHasChanged();
+            }
+        });
 
         await HubConnection.StartAsync();
 
         await AddUserToHubGroup();
+        await RequestConnectedUserId();
+        await SendConnectedUserId();
 
         UserMessages = await ChatService.GetUserGroupMessages(UserGroup.Id);
+
+        RunRequestConnectedUsersTimer();
+
+        UserInUserGroup = true;
     }
 
-    private async Task<Guid> GetUserId()
+    private async void GetSetUserIdAndName()
     {
         var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
         var userId = user.FindFirst(u => u.Type.Contains("sub"))?.Value;
-        return Guid.Parse(userId!);
+        UserId = Guid.Parse(userId!);
+        UserName = user.Identity.Name;
     }
 
-    private async Task<string> GetUserName()
+    private async void GetSetUserGroupMembers()
     {
-        var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
-        var userName = user.Identity.Name;
-        return userName!;
+        UserGroupMembers = await AdministrationService.GetUserGroupMembers(UserGroup.Id);
+        UserGroupMembers = UserGroupMembers!.FindAll(u => u.Id != UserId);
     }
 
     private async Task AddUserToHubGroup()
     {
-        await HubConnection.SendAsync("AddToGroup", UserGroup.Id.ToString());
+        await HubConnection.SendAsync("AddToGroup", UserGroup!.Id.ToString());
+    }
+
+    private async Task RequestConnectedUserId()
+    {
+        await HubConnection.SendAsync("RequestConnectedUserId", UserGroup!.Id.ToString());
+    }
+
+    private async Task SendConnectedUserId()
+    {
+        await HubConnection.SendAsync("SendConnectedUserId", UserId, UserGroup!.Id.ToString());
+    }
+
+    private async void SendMessageWithEnter(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter")
+        {
+            await SendMessage();
+        }
     }
 
     private async Task SendMessage()
@@ -137,7 +200,7 @@ else
 
         if (!string.IsNullOrEmpty(MessageInput))
         {
-            var userMessage = new UserGroupMessageContract { UserId = UserId, UserName = UserName, Message = MessageInput, DateSent = DateTime.Now, UserGroupId = UserGroup.Id };
+            var userMessage = new UserGroupMessageContract { UserId = UserId, UserName = UserName!, Message = MessageInput, DateSent = DateTime.Now, UserGroupId = UserGroup!.Id };
             await HubConnection.SendAsync("SendMessage", userMessage, UserGroup.Id.ToString());
 
             await ChatService.AddUserGroupMessage(userMessage);
@@ -146,8 +209,18 @@ else
         }
     }
 
+    private async void RunRequestConnectedUsersTimer()
+    {
+        while (await RequestConnectedUsersTimer.WaitForNextTickAsync())
+        {
+            UsersChatConnected.Clear();
+            await RequestConnectedUserId();
+        }
+    }
+
     public async ValueTask DisposeAsync()
     {
+        RequestConnectedUsersTimer.Dispose();
         if (HubConnection is not null)
         {
             await HubConnection.DisposeAsync();

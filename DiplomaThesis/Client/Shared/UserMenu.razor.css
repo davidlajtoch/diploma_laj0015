@@ -45,7 +45,7 @@
   text-align: right;
 }
 .user_menu_container .user_menu .table_info .label {
-  color: #751aff;
+  color: #651fff;
   text-align: left;
 }
 .user_menu_container .user_menu .section_header {
@@ -53,7 +53,7 @@
   text-align: center;
   margin-top: 5px;
   margin-bottom: 5px;
-  color: #751aff;
+  color: #651fff;
 }
 .user_menu_container .user_menu .input_search {
   width: calc(100% - 40px) !important;
@@ -73,7 +73,7 @@
   cursor: pointer;
 }
 .user_menu_container .user_menu .list_user_groups .user_group:hover, .user_menu_container .user_menu .list_user_groups .role:hover, .user_menu_container .user_menu .list_roles .user_group:hover, .user_menu_container .user_menu .list_roles .role:hover {
-  color: #751aff;
+  color: #651fff;
 }
 .user_menu_container .user_menu .list_user_groups .role, .user_menu_container .user_menu .list_roles .role {
   display: inline-block;

@@ -37,7 +37,7 @@
   cursor: pointer;
 }
 .section_top .centered_container .buttons a:hover {
-  color: #751aff;
+  color: #651fff;
   padding-left: 30px;
   padding-right: 30px;
 }
@@ -76,7 +76,7 @@
   cursor: pointer;
 }
 .section_middle .grid_links .tile:hover {
-  color: #751aff;
+  color: #651fff;
 }
 .section_middle .grid_links .tile .icon, .section_middle .grid_links .tile .name, .section_middle .grid_links .tile .description {
   width: 100%;
@@ -111,7 +111,7 @@
   flex-direction: row;
 }
 .section_bottom .menu .group_left .selected {
-  color: #751aff;
+  color: #651fff;
   padding-left: 30px;
   padding-right: 30px;
 }
@@ -131,7 +131,7 @@
   text-align: center;
 }
 .section_bottom .list_activity .header {
-  color: #751aff;
+  color: #651fff;
   padding-top: 10px;
   padding-bottom: 10px;
   margin-top: 0px;
@@ -169,7 +169,7 @@
     padding: 10px 0;
   }
   .section_bottom .list_activity .col:before {
-    color: #751aff;
+    color: #651fff;
     padding-right: 10px;
     padding-left: 10px;
     content: attr(data-label);

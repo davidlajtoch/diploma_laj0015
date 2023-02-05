@@ -37,7 +37,7 @@
   cursor: pointer;
 }
 .nav .group .item:hover {
-  color: #751aff;
+  color: #651fff;
 }
 .nav .group .item:hover .tooltip {
   display: block;
@@ -50,7 +50,7 @@
 .nav .group .item .tooltip {
   display: none;
   width: 120px;
-  background-color: #751aff;
+  background-color: #651fff;
   color: #fff;
   text-align: center;
   border-radius: 10px;
@@ -69,5 +69,5 @@
   margin-left: -5px;
   border-width: 5px;
   border-style: solid;
-  border-color: #751aff transparent transparent transparent;
+  border-color: #651fff transparent transparent transparent;
 }

@@ -10,6 +10,18 @@ namespace DiplomaThesis.Server.Hubs
             await Clients.Group(groupName).SendAsync("RecieveMessage", userMessage);
         }
 
+        public async Task SendConnectedUserId(Guid userId, string groupName)
+        {
+            await Clients.OthersInGroup(groupName).SendAsync("RecieveConnectedUserId", userId);
+        }
+
+
+
+        public async Task RequestConnectedUserId(string groupName)
+        {
+            await Clients.OthersInGroup(groupName).SendAsync("SendConnectedUserId");
+        }
+
         public async Task AddToGroup(string groupName)
         {
             await Groups.AddToGroupAsync(Context.ConnectionId, groupName);
@@ -19,5 +31,7 @@ namespace DiplomaThesis.Server.Hubs
         {
             await Groups.RemoveFromGroupAsync(Context.ConnectionId, groupName);
         }
+
+        
     }
 }

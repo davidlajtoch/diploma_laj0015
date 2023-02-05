@@ -107,6 +107,7 @@ public class AdministrationController : ControllerBase
     {
         var users = await _userManager.Users.ToListAsync();
         var result = await ApplicationUsersToUserContracts(users);
+        result = result.OrderBy(r => r.Name).ToList();
         return Ok(result);
     }
 
@@ -221,6 +222,8 @@ public class AdministrationController : ControllerBase
                 }    
             );
         }
+
+        result = result.OrderBy(r => r.Name).ToList();
         return Ok(result);
     }
 
@@ -324,6 +327,8 @@ public class AdministrationController : ControllerBase
                 Roles = resultRoles
             });
         }
+
+        result = result.OrderBy(r => r.Name).ToList();
         return Ok(result);
     }
 
@@ -355,6 +360,7 @@ public class AdministrationController : ControllerBase
             });
         }
 
+        result = result.OrderBy(r => r.Name).ToList();
         return Ok(result);
     }
 
