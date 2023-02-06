@@ -25,6 +25,7 @@
 }
 else
 {
+    <PageHeader Text="@(UserGroup!.Name + " chat room")" />
     <div class="container animate__animated animate__fadeIn">
         <div class="section_left">
             <div class="container_list_users">
@@ -86,10 +87,24 @@ else
                 </div>
             </div>
             <div class="inputs">
-                <div class="input_with_button_default input_with_button">
-                    <input class="nohover" @bind="MessageInput" @onkeydown="@SendMessage" type="text" placeholder="Write a message...">
-                    <button @onclick="SendMessage"><i class="material-icons icon">send</i></button>
-                </div>
+                @if (ShowEmojiMenu)
+                {
+                    <div class="menu_emoji animate__animated animate__bounceIn">
+                        @foreach (var emoji in emojiCodes)
+                        {
+                            <button class="emoji" @onclick="(() => InsertEmoji(emoji))">@emoji</button>
+                        }
+                    </div>
+                }
+                
+                <form @onsubmit="SendMessage">
+                    <div class="input_with_button_default input_with_button">
+                        <input class="nohover" @bind="MessageInput" type="text" placeholder="Write a message...">
+                        <button role="button" @onclick="ToggleEmojiMenu"><i class="material-icons icon">insert_emoticon</i></button>
+                        <button><i class="material-icons icon">send</i></button>
+                        
+                    </div>
+                </form>
             </div>
         </div>
     </div>
@@ -100,16 +115,21 @@ else
     private List<UserGroupMessageContract> UserMessages = new();
     private List<UserContract> UserGroupMembers = new();
     private List<Guid> UsersChatConnected = new();
+    private List<Guid> UsersChatConnectedTmp = new();
     private UserGroupContract? UserGroup = null;
     private Guid UserId = new();
     private string? UserName = null;
 
     private string MessageInput = string.Empty;
+    private bool ShowEmojiMenu = false;
+    string[] emojiCodes = new string[] { "\U0001F642", "\U0001F604", "\U0001F643",
+                                        "\U0001F641", "\U0001F62D", "\U0001F620", 
+                                        "\U0001F44D", "\U0001F44E", "\U0001F4A9" };
 
     private bool UserInUserGroup = false;
     private bool IsConnected => HubConnection.State == HubConnectionState.Connected;
 
-    private PeriodicTimer RequestConnectedUsersTimer = new PeriodicTimer(TimeSpan.FromSeconds(5));
+    private PeriodicTimer RequestConnectedUsersTimer = new PeriodicTimer(TimeSpan.FromSeconds(20));
 
     protected override async Task OnInitializedAsync()
     {
@@ -129,6 +149,7 @@ else
 
         HubConnection.On<UserGroupMessageContract>("RecieveMessage", (UserGroupMessageContract userMessage) =>
         {
+
             UserMessages.Add(userMessage);
             StateHasChanged();
         });
@@ -138,9 +159,10 @@ else
         });
         HubConnection.On<Guid>("RecieveConnectedUserId", (Guid userId) =>
         {
-            if (!UsersChatConnected.Contains(userId))
+            if (!UsersChatConnectedTmp.Contains(userId))
             {
-                UsersChatConnected.Add(userId);
+                UsersChatConnectedTmp.Add(userId);
+                UsersChatConnected = UsersChatConnectedTmp;
                 StateHasChanged();
             }
         });
@@ -187,17 +209,8 @@ else
         await HubConnection.SendAsync("SendConnectedUserId", UserId, UserGroup!.Id.ToString());
     }
 
-    private async void SendMessageWithEnter(KeyboardEventArgs e)
-    {
-        if (e.Key == "Enter")
-        {
-            await SendMessage();
-        }
-    }
-
     private async Task SendMessage()
     {
-
         if (!string.IsNullOrEmpty(MessageInput))
         {
             var userMessage = new UserGroupMessageContract { UserId = UserId, UserName = UserName!, Message = MessageInput, DateSent = DateTime.Now, UserGroupId = UserGroup!.Id };
@@ -212,10 +225,22 @@ else
     private async void RunRequestConnectedUsersTimer()
     {
         while (await RequestConnectedUsersTimer.WaitForNextTickAsync())
-        {
-            UsersChatConnected.Clear();
+        { 
+            UsersChatConnectedTmp.Clear();
             await RequestConnectedUserId();
+            StateHasChanged();
         }
+    }
+
+    private void ToggleEmojiMenu()
+    {
+        Console.WriteLine("xd");
+        ShowEmojiMenu = !ShowEmojiMenu;
+    }
+
+    private void InsertEmoji(string emojiCode)
+    {
+        MessageInput = MessageInput += emojiCode;
     }
 
     public async ValueTask DisposeAsync()

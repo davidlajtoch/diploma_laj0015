@@ -129,9 +129,8 @@ html{
     button {
         width: 40px;
         height: 40px;
-        background: none;
         position: absolute;
-        right: 0px;
+        background: none;
         outline: none;
         border: none;
         cursor: pointer;
@@ -146,6 +145,12 @@ html{
             position: relative;
             right: 4px;
             top: 2px;
+        }
+    }
+
+    @for $i from 1 through 2 {
+        button:nth-child(#{$i}n){
+            right: $i * 40px - 40px;
         }
     }
 }
