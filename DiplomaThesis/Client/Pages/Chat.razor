@@ -1,9 +1,11 @@
 ﻿@page "/chat"
 
 @using DiplomaThesis.Client.Services.Interfaces;
-@using Microsoft.AspNetCore.SignalR.Client;
 @using DiplomaThesis.Shared.Contracts;
+@using Microsoft.AspNetCore.SignalR.Client;
 @using Microsoft.AspNetCore.Authorization;
+
+@using System.Text;
 
 @inject NavigationManager Navigation;
 @inject AuthenticationStateProvider AuthenticationStateProvider;
@@ -90,19 +92,21 @@ else
                 @if (ShowEmojiMenu)
                 {
                     <div class="menu_emoji animate__animated animate__bounceIn">
-                        @foreach (var emoji in emojiCodes)
+                        @foreach (var emoji in emojiMap)
                         {
-                            <button class="emoji" @onclick="(() => InsertEmoji(emoji))">@emoji</button>
+                            <button class="button_emoji" @onclick="(() => InsertEmoji(emoji.Value))">
+                                <span class="emoji">@emoji.Value</span><br />
+                                <span class="text">@emoji.Key</span>
+                            </button>
                         }
                     </div>
                 }
-                
+
                 <form @onsubmit="SendMessage">
                     <div class="input_with_button_default input_with_button">
-                        <input class="nohover" @bind="MessageInput" type="text" placeholder="Write a message...">
-                        <button role="button" @onclick="ToggleEmojiMenu"><i class="material-icons icon">insert_emoticon</i></button>
+                        <input class="nohover" @bind="MessageInput" @bind:event="oninput" @onkeypress="FindAndReplaceEmoji" type="text" placeholder="Write a message...">
+                        <button type="button" @onclick="ToggleEmojiMenu"><i class="material-icons icon">insert_emoticon</i></button>
                         <button><i class="material-icons icon">send</i></button>
-                        
                     </div>
                 </form>
             </div>
@@ -118,13 +122,16 @@ else
     private List<Guid> UsersChatConnectedTmp = new();
     private UserGroupContract? UserGroup = null;
     private Guid UserId = new();
-    private string? UserName = null;
+    private string? UserName = string.Empty;
 
     private string MessageInput = string.Empty;
     private bool ShowEmojiMenu = false;
-    string[] emojiCodes = new string[] { "\U0001F642", "\U0001F604", "\U0001F643",
-                                        "\U0001F641", "\U0001F62D", "\U0001F620", 
-                                        "\U0001F44D", "\U0001F44E", "\U0001F4A9" };
+    private Dictionary<string, string> emojiMap = new Dictionary<string, string>
+                                        {
+                                            {":)", "\U0001F642"},  {":D", "\U0001F604" }, {"(:", "\U0001F643" },
+                                            {":(", "\U0001F641" }, { "T_T", "\U0001F62D" }, { ">:(", "\U0001F620" },
+                                            {":thumbsup:", "\U0001F44D" }, {":thumbsdown:", "\U0001F44E" }, {":poop:", "\U0001F4A9" }
+                                        };
 
     private bool UserInUserGroup = false;
     private bool IsConnected => HubConnection.State == HubConnectionState.Connected;
@@ -225,7 +232,7 @@ else
     private async void RunRequestConnectedUsersTimer()
     {
         while (await RequestConnectedUsersTimer.WaitForNextTickAsync())
-        { 
+        {
             UsersChatConnectedTmp.Clear();
             await RequestConnectedUserId();
             StateHasChanged();
@@ -234,13 +241,21 @@ else
 
     private void ToggleEmojiMenu()
     {
-        Console.WriteLine("xd");
         ShowEmojiMenu = !ShowEmojiMenu;
     }
 
     private void InsertEmoji(string emojiCode)
     {
         MessageInput = MessageInput += emojiCode;
+    }
+
+    private void FindAndReplaceEmoji()
+    {
+        var output = new StringBuilder(MessageInput);
+        foreach (var kvp in emojiMap)
+            output.Replace(kvp.Key, kvp.Value);
+
+        MessageInput = output.ToString();
     }
 
     public async ValueTask DisposeAsync()

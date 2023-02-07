@@ -199,29 +199,37 @@
             }
 
             .menu_emoji {
-                width: 120px;
-                height: 100px;
+                width: 190px;
+                height: 135px;
                 padding: 5px;
                 display: grid;
-                grid-template-columns: auto auto auto;
+                grid-template-columns: repeat(3, minmax(0, 1fr));
                 grid-template-rows: auto auto;
                 justify-content: center;
                 position: absolute;
                 right: 0px;
-                top: -120px;
+                top: -155px;
                 background-color: $color_white;
                 border-radius: 15px;
                 box-shadow: $shadow_grey;
                 z-index: 2;
 
-                .emoji{
-                    font-size: 20px;
+                .button_emoji {
                     background: none;
                     border: none;
                     transition: transform .1s;
                     cursor: pointer;
 
-                    &:hover{
+                    .emoji {
+                        font-size: 20px;
+                    }
+
+                    .text {
+                        font-size: 10px;
+                        color: $color_light_grey;
+                    }
+
+                    &:hover {
                         transform: scale(1.2);
                     }
                 }
@@ -231,15 +239,11 @@
                     position: absolute;
                     top: 100%;
                     left: 50%;
-                    margin-left: -5px;
+                    margin-left: 30px;
                     border-width: 5px;
                     border-style: solid;
                     border-color: $color_white transparent transparent transparent;
                 }
-            }
-
-            .tile_emoji {
-
             }
         }
     }
