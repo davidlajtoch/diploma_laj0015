@@ -105,8 +105,8 @@ else
                 <form @onsubmit="SendMessage">
                     <div class="input_with_button_default input_with_button">
                         <input class="nohover" @bind="MessageInput" @bind:event="oninput" @onkeypress="FindAndReplaceEmoji" type="text" placeholder="Write a message...">
-                        <button type="button" @onclick="ToggleEmojiMenu"><i class="material-icons icon">insert_emoticon</i></button>
-                        <button><i class="material-icons icon">send</i></button>
+                        <button type="button" class="button1" @onclick="ToggleEmojiMenu"><i class="material-icons icon">insert_emoticon</i></button>
+                        <button class="button2"><i class="material-icons icon">send</i></button>
                     </div>
                 </form>
             </div>
@@ -187,7 +187,7 @@ else
         UserInUserGroup = true;
     }
 
-    private async void GetSetUserIdAndName()
+    private async Task GetSetUserIdAndName()
     {
         var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
         var userId = user.FindFirst(u => u.Type.Contains("sub"))?.Value;
@@ -195,7 +195,7 @@ else
         UserName = user.Identity.Name;
     }
 
-    private async void GetSetUserGroupMembers()
+    private async Task GetSetUserGroupMembers()
     {
         UserGroupMembers = await AdministrationService.GetUserGroupMembers(UserGroup.Id);
         UserGroupMembers = UserGroupMembers!.FindAll(u => u.Id != UserId);

@@ -343,4 +343,22 @@ public class AdministrationService : IAdministrationService
 
         return false;
     }
+
+    public async Task<bool> UpdateUserGroupDescription(Guid userGroupId, string description)
+    {
+        try
+        {
+            var response = await _http.PutAsJsonAsync(
+                "Administration/UpdateUserGroupDescription",
+                new UpdateUserGroupDescriptionCommand { UserGroupId = userGroupId, Description = description }
+            );
+            return response.IsSuccessStatusCode;
+        }
+        catch (AccessTokenNotAvailableException exception)
+        {
+            exception.Redirect();
+        }
+
+        return false;
+    }
 }

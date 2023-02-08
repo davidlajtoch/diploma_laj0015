@@ -195,6 +195,7 @@ public class AdministrationController : ControllerBase
         {
             Id = userGroup.Id,
             Name = userGroup.Name,
+            Description = userGroup.Description,
             Users = usersMembers
         };
         return Ok(result);
@@ -218,6 +219,7 @@ public class AdministrationController : ControllerBase
                 {
                     Id = userGroup.Id,
                     Name = userGroup.Name,
+                    Description = userGroup.Description,
                     Users = usersMembers
                 }    
             );
@@ -249,6 +251,7 @@ public class AdministrationController : ControllerBase
         {
               Id = userGroup.Id,
               Name = userGroup.Name,
+              Description = userGroup.Description,
               Users = userGroupUsers
         };
 
@@ -414,6 +417,22 @@ public class AdministrationController : ControllerBase
         user.UserGroupId = null;
         user_group.Users!.Remove(user);
 
+        _context.SaveChanges();
+
+        return Ok();
+    }
+
+    [Authorize(Roles = "Admin")]
+    [HttpPut]
+    public async Task<ActionResult> UpdateUserGroupDescription(
+        [FromBody] UpdateUserGroupDescriptionCommand updateUserGroupDescriptionCommand)
+    {
+        if (updateUserGroupDescriptionCommand.UserGroupId == Guid.Empty ) return BadRequest();
+
+        var userGroup = await _context.UserGroups.FindAsync(updateUserGroupDescriptionCommand.UserGroupId);
+        if (userGroup is null) return NotFound();
+
+        userGroup.Description = updateUserGroupDescriptionCommand.Description;
         _context.SaveChanges();
 
         return Ok();

@@ -53,7 +53,7 @@ else
                         <div class="tile">
                             <i class="material-icons icon">storage</i>
                             <span class="name">Datasets</span>
-                            <span class="description">View the datasets, assign them to the metrics or upload new dataset</span>
+                            <span class="description">View the datasets and edit their settings</span>
                         </div>
                     </NavLink>
                 </AuthorizeView>
@@ -64,6 +64,16 @@ else
                             <i class="material-icons icon">supervisor_account</i>
                             <span class="name">Administration</span>
                             <span class="description">View and manage users and user groups</span>
+                        </div>
+                    </NavLink>
+                </AuthorizeView>
+
+                <AuthorizeView>
+                    <NavLink style="text-decoration: none;" href="/chat">
+                        <div class="tile">
+                            <i class="material-icons icon">chat</i>
+                            <span class="name">Chat</span>
+                            <span class="description">Chat with the members of your user group</span>
                         </div>
                     </NavLink>
                 </AuthorizeView>
@@ -87,6 +97,7 @@ else
                         </div>
                     </NavLink>
                 </AuthorizeView>
+
             </div>
         </div>
 

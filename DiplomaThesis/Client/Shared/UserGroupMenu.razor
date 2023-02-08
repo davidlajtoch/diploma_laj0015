@@ -23,6 +23,10 @@
                 </tr>
             </table>
 
+            <div class="section_header">Description</div>
+            <input type="text" class="input_search_default input_search nohover" placeholder="Describe this group..."
+                @bind="UserGroupDescriptionInput">
+
             <div class="section_header">Members</div>
             <input type="text" class="input_search_default input_search nohover" placeholder="Search and remove users..."
                 @oninput="@((e) => SearchMember(e.Value!.ToString()!))">
@@ -62,7 +66,7 @@
                 </button>
             </div>
             <div class="group_right">
-                <button class="button_default" @onclick="ToggleUserGroupMenu">Save and close</button>
+                <button class="button_default" @onclick="SaveAndToggleUserGroupMenu">Save and close</button>
             </div>
         </div>
     </div>
@@ -78,13 +82,20 @@
     private List<UserContract>? UsersMembersFiltered { get; set; }
     private List<UserContract>? UsersNonMembers { get; set; }
     private List<UserContract>? UsersNonMembersFiltered { get; set; }
+    private string UserGroupDescriptionInput = string.Empty;
 
     public bool ShowUserGroupMenu { get; set; }
 
     private bool _deleteUserGroupConfirmation = false;
 
-    public void ToggleUserGroupMenu()
+    public async Task SaveAndToggleUserGroupMenu()
     {
+        if (!UserGroupDescriptionInput.Equals(UserGroup!.Description))
+        {
+            await AdministrationService.UpdateUserGroupDescription(UserGroup.Id, UserGroupDescriptionInput);
+            await OnUserGroupChanged.InvokeAsync();
+        }
+
         ShowUserGroupMenu = !ShowUserGroupMenu;
         _deleteUserGroupConfirmation = false;
     }
@@ -92,6 +103,10 @@
     public async Task ShowUserGroup(UserGroupContract userGroup)
     {
         UserGroup = userGroup;
+        UserGroupDescriptionInput = userGroup.Description;
+
+        Console.WriteLine(UserGroup.Description);
+        Console.WriteLine(UserGroupDescriptionInput);
 
         var users = await AdministrationService.GetAllUsers();
 
@@ -156,7 +171,7 @@
 
         if (await AdministrationService.DeleteUserGroup(UserGroup!.Id))
         {
-            ToggleUserGroupMenu();
+            SaveAndToggleUserGroupMenu();
             await OnUserGroupChanged.InvokeAsync();
         }
     }

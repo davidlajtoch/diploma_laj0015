@@ -5,5 +5,4 @@ export function scrollToElementById(element_id) {
     setTimeout(function () {
         element.scrollIntoView({ behavior: "smooth" });
     }, 500);
-    
 }

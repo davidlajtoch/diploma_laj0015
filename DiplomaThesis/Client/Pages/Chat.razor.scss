@@ -19,7 +19,7 @@
 }
 
 .container {
-    height: calc(100vh - 235px);
+    height: calc(100vh - 185px);
     margin: 0 auto;
     display: flex;
     flex-direction: row;
@@ -42,7 +42,7 @@
                 width: 100%;
                 text-align: center;
                 color: $color_purple;
-                border-bottom: 1px solid $color_light_grey;
+                border-bottom: 1px solid $color_lighter_grey;
             }
 
             .list_users {

@@ -135,10 +135,10 @@ html {
   right: 4px;
   top: 2px;
 }
-.input_with_button_default button:nth-child(1n) {
+.input_with_button_default .button1 {
   right: 0px;
 }
-.input_with_button_default button:nth-child(2n) {
+.input_with_button_default .button2 {
   right: 40px;
 }
 

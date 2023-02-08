@@ -43,19 +43,19 @@
         </div>
         <div class="group">
             <AuthorizeView>
-                <NavLink style="text-decoration: none;" class="link" href="authentication/profile">
+                <NavLink style="text-decoration: none;" class="link" href="chat">
                     <div class="item">
-                        <i class="material-icons icon">face</i>
-                        <span class="tooltip animate__animated animate__bounceIn animate__delay-1s">@context.User.Identity?.Name.Split("@")[0]</span>
+                        <i class="material-icons icon">chat</i>
+                        <span class="tooltip animate__animated animate__bounceIn animate__delay-1s">Chat</span>
                     </div>
                 </NavLink>
             </AuthorizeView>
 
             <AuthorizeView>
-                <NavLink style="text-decoration: none;" class="link" href="chat">
+                <NavLink style="text-decoration: none;" class="link" href="authentication/profile">
                     <div class="item">
-                        <i class="material-icons icon">chat</i>
-                        <span class="tooltip animate__animated animate__bounceIn animate__delay-1s">Chat</span>
+                        <i class="material-icons icon">face</i>
+                        <span class="tooltip animate__animated animate__bounceIn animate__delay-1s">@context.User.Identity?.Name.Split("@")[0]</span>
                     </div>
                 </NavLink>
             </AuthorizeView>

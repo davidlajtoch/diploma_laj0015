@@ -33,5 +33,7 @@ public interface IAdministrationService
     public Task<bool> MoveUserToUserGroup(Guid userId, Guid userGroupId);
 
     public Task<bool> RemoveUserFromUserGroup(Guid userId, Guid userGroupId);
+
+    public Task<bool> UpdateUserGroupDescription(Guid userGroupId, string description);
    
 }

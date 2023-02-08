@@ -148,11 +148,8 @@ html{
         }
     }
 
-    @for $i from 1 through 2 {
-        button:nth-child(#{$i}n){
-            right: $i * 40px - 40px;
-        }
-    }
+    .button1{ right: 0px; }
+    .button2{ right: 40px; }
 }
 
 .text_light {
