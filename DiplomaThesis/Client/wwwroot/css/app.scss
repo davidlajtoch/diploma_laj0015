@@ -9,8 +9,13 @@ html, body {
     overflow: visible;
 }
 
-html{
+html {
     overflow-y: scroll;
+}
+
+.card_light_transparent {
+    background-color: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.12);
 }
 
 .button_default, .button_warning {
@@ -148,15 +153,20 @@ html{
         }
     }
 
-    .button1{ right: 0px; }
-    .button2{ right: 40px; }
+    .button1 {
+        right: 0px;
+    }
+
+    .button2 {
+        right: 40px;
+    }
 }
 
 .text_light {
     color: $color_light_grey;
 }
 
-.animation_custom_gelatine{
+.animation_custom_gelatine {
     animation: gelatine 0.5s;
 }
 
@@ -171,6 +181,18 @@ html{
 
     50% {
         transform: scale(1.05, 0.95);
+    }
+}
+
+.effect_clicky {
+    transition: transform ease-in-out 0.1s;
+
+    &:hover {
+        transform: scale(1.03);
+    }
+
+    &:active {
+        transform: scale(1);
     }
 }
 

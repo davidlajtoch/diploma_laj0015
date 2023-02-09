@@ -194,6 +194,9 @@
 .container .section_right .inputs .menu_emoji .button_emoji:hover {
   transform: scale(1.2);
 }
+.container .section_right .inputs .menu_emoji .button_emoji:active {
+  transform: scale(0.95);
+}
 .container .section_right .inputs .menu_emoji::after {
   content: " ";
   position: absolute;

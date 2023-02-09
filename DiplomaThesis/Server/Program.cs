@@ -72,8 +72,6 @@ builder.Services.AddScoped(typeof(AadService))
 builder.Services.Configure<AzureAdOptions>(builder.Configuration.GetSection("AzureAd"))
     .Configure<PowerBiOptions>(builder.Configuration.GetSection("PowerBI"));
 
-
-
 //Compresses data between server and client to make SignalR communication faster
 //builder.Services.AddResponseCompression(options =>
 //    {
@@ -115,6 +113,7 @@ app.UseAuthorization();
 app.MapRazorPages();
 app.MapControllers();
 app.MapHub<ChatHub>("/chathub");
+app.MapHub<DrawHub>("/drawhub");
 app.MapFallbackToFile("index.html");
 
 app.UseSwaggerUI(options =>
