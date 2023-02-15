@@ -70,5 +70,9 @@
   {
     "outputFile": "Pages/Draw.razor.css",
     "inputFile": "Pages/Draw.razor.scss"
+  },
+  {
+    "outputFile": "Pages/Assignments.razor.css",
+    "inputFile": "Pages/Assignments.razor.scss"
   }
 ]

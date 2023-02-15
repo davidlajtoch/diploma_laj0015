@@ -4,5 +4,7 @@ namespace DiplomaThesis.Client.Services.Interfaces;
 
 public interface IAssignmentService
 {
-    
+    public Task<List<AssignmentContract>> GetUserGroupAssignments(Guid userGroupId);
+
+    public Task<AssignmentContract> CreateAssignment(string newAssignmentName, Guid userGroupId);
 }

@@ -91,22 +91,7 @@
 
                 .buttons {
                     button {
-                        height: 25px;
                         margin-left: 5px;
-                        position: relative;
-                        top: -2px;
-                        cursor: pointer;
-                        background-color: $color_lighter_grey;
-                        color: $color_grey;
-                        border: none;
-                        border-radius: 500px;
-                        transition: 0.2s ease-in-out;
-
-                        &:hover {
-                            color: $color_purple;
-                            padding-left: 12px;
-                            padding-right: 12px;
-                        }
                     }
                 }
             }

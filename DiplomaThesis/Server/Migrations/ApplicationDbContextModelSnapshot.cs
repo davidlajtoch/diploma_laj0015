@@ -124,22 +124,30 @@ namespace DiplomaThesis.Server.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("Description")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid?>("UserGroupId")
+                    b.Property<int>("Step")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Urgency")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("UserGroupId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("UserId")
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("UserGroupId");
 
                     b.HasIndex("UserId");
 
@@ -551,17 +559,11 @@ namespace DiplomaThesis.Server.Migrations
 
             modelBuilder.Entity("DiplomaThesis.Server.Models.Assignment", b =>
                 {
-                    b.HasOne("DiplomaThesis.Server.Models.UserGroup", "UserGroup")
-                        .WithMany()
-                        .HasForeignKey("UserGroupId");
-
                     b.HasOne("DiplomaThesis.Server.Models.ApplicationUser", "User")
                         .WithMany()
                         .HasForeignKey("UserId");
 
                     b.Navigation("User");
-
-                    b.Navigation("UserGroup");
                 });
 
             modelBuilder.Entity("DiplomaThesis.Server.Models.ReportDb", b =>

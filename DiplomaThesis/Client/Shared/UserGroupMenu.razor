@@ -48,11 +48,11 @@
                         <div class="buttons">
                             @if (user.Id != UserGroup.LeaderId)
                             {
-                                <button @onclick="() => UpdateUserGroupLeader(user)">
+                                <button class="button_tiny_default" @onclick="() => UpdateUserGroupLeader(user)">
                                     <i class="material-icons icon">person</i>
                                 </button>
                             }
-                            <button @onclick="() => RemoveUserFromUserGroup(user)">
+                            <button class="button_tiny_default" @onclick="() => RemoveUserFromUserGroup(user)">
                                 <i class="material-icons icon">remove</i>
                             </button>
                         </div>
@@ -70,7 +70,7 @@
                     <div class="user animate__animated animate__fadeInDown">
                         <div class="name">@user.Name</div>
                         <div class="buttons">
-                            <button @onclick="() => MoveUserToUserGroup(user)">
+                            <button class="button_tiny_default" @onclick="() => MoveUserToUserGroup(user)">
                                 <i class="material-icons icon">add</i>
                             </button>
                         </div>
