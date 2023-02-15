@@ -361,4 +361,22 @@ public class AdministrationService : IAdministrationService
 
         return false;
     }
+
+    public async Task<bool> UpdateUserGroupLeader(Guid userId, Guid userGroupId)
+    {
+        try
+        {
+            var response = await _http.PutAsJsonAsync(
+                "Administration/UpdateUserGroupLeader",
+                new UpdateUserGroupLeaderCommand { UserId = userId, UserGroupId = userGroupId }
+            );
+            return response.IsSuccessStatusCode;
+        }
+        catch (AccessTokenNotAvailableException exception)
+        {
+            exception.Redirect();
+        }
+
+        return false;
+    }
 }

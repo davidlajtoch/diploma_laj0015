@@ -21,40 +21,59 @@
                     <td class="label">Name</td>
                     <td>@UserGroup.Name</td>
                 </tr>
+                <tr>
+                    <td class="label">Leader</td>
+                    <td>
+                        @if (UserGroup.Users != null)
+                        {
+                            @UserGroup.Users.Where(u => u.Id == UserGroup.LeaderId).Select(u => u.Name).DefaultIfEmpty(string.Empty).First()
+                        }
+                    </td>
+                </tr>
             </table>
 
             <div class="section_header">Description</div>
             <input type="text" class="input_search_default input_search nohover" placeholder="Describe this group..."
-                @bind="UserGroupDescriptionInput">
+               @bind="UserGroupDescriptionInput">
 
             <div class="section_header">Members</div>
             <input type="text" class="input_search_default input_search nohover" placeholder="Search and remove users..."
-                @oninput="@((e) => SearchMember(e.Value!.ToString()!))">
+               @oninput="@((e) => SearchMember(e.Value!.ToString()!))">
 
             <div class="user_list">
                 @foreach (var user in UsersMembersFiltered!)
                 {
                     <div class="user animate__animated animate__fadeInUp">
                         <div class="name">@user.Name</div>
-                        <button @onclick="() => RemoveUserFromUserGroup(user)">
-                            <i class="material-icons icon">remove</i>
-                        </button>
+                        <div class="buttons">
+                            @if (user.Id != UserGroup.LeaderId)
+                            {
+                                <button @onclick="() => UpdateUserGroupLeader(user)">
+                                    <i class="material-icons icon">person</i>
+                                </button>
+                            }
+                            <button @onclick="() => RemoveUserFromUserGroup(user)">
+                                <i class="material-icons icon">remove</i>
+                            </button>
+                        </div>
                     </div>
                 }
             </div>
 
             <div class="section_header">Non members</div>
             <input type="text" class="input_search_default input_search nohover" placeholder="Search and add users..."
-                @oninput="@((e) => SearchNonMember(e.Value!.ToString()!))">
+               @oninput="@((e) => SearchNonMember(e.Value!.ToString()!))">
 
             <div class="user_list">
                 @foreach (var user in UsersNonMembersFiltered!)
                 {
                     <div class="user animate__animated animate__fadeInDown">
                         <div class="name">@user.Name</div>
-                        <button @onclick="() => MoveUserToUserGroup(user)">
-                            <i class="material-icons icon">add</i>
-                        </button>
+                        <div class="buttons">
+                            <button @onclick="() => MoveUserToUserGroup(user)">
+                                <i class="material-icons icon">add</i>
+                            </button>
+                        </div>
                     </div>
                 }
             </div>
@@ -105,9 +124,6 @@
         UserGroup = userGroup;
         UserGroupDescriptionInput = userGroup.Description;
 
-        Console.WriteLine(UserGroup.Description);
-        Console.WriteLine(UserGroupDescriptionInput);
-
         var users = await AdministrationService.GetAllUsers();
 
         UsersMembers = users!.FindAll(u => u.UserGroupId == UserGroup.Id);
@@ -156,6 +172,21 @@
         }
     }
 
+    private async Task UpdateUserGroupLeader(UserContract user)
+    {
+        if (user is null || UserGroup is null)
+        {
+            return;
+        }
+
+        if (await AdministrationService.UpdateUserGroupLeader(user.Id, UserGroup!.Id))
+        {
+            await OnUserGroupChanged.InvokeAsync();
+            UserGroup.LeaderId = user.Id;
+            StateHasChanged();
+        }
+    }
+
     private async Task DeleteUserGroup()
     {
         if (_deleteUserGroupConfirmation == false)
@@ -171,7 +202,7 @@
 
         if (await AdministrationService.DeleteUserGroup(UserGroup!.Id))
         {
-            SaveAndToggleUserGroupMenu();
+            await SaveAndToggleUserGroupMenu();
             await OnUserGroupChanged.InvokeAsync();
         }
     }
@@ -190,5 +221,5 @@
     {
         UsersNonMembersFiltered = UsersNonMembers!.FindAll(u => u.Name.Contains(searched_user));
     }
-    
+
 }

@@ -30,6 +30,7 @@ public class ApplicationDbContext : ApiAuthorizationDbContext<ApplicationUser>
     public DbSet<DatasetDb> Datasets { get; set; } = null!;
     public DbSet<Activity> Activities { get; set; } = null!;
     public DbSet<UserGroupMessage> UserGroupMessages { get; set; } = null!;
+    public DbSet<Assignment> Assignments { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder builder)
     {

@@ -23,6 +23,7 @@ builder.Services.AddScoped<IReportService, ReportService>();
 builder.Services.AddScoped<IAdministrationService, AdministrationService>();
 builder.Services.AddScoped<IActivityService, ActivityService>();
 builder.Services.AddScoped<IChatService, ChatService>();
+builder.Services.AddScoped<IAssignmentService, AssignmentService>();
 
 builder.Services.AddApiAuthorization()
     .AddAccountClaimsPrincipalFactory<UserWithRolesFactory>();

@@ -180,7 +180,7 @@ public class AdministrationController : ControllerBase
 
     [HttpGet("{userGroupId}")]
     public async Task<ActionResult> GetUserGroup(
-        [FromRoute] Guid userGroupId   
+        [FromRoute] Guid userGroupId
     )
     {
         var userGroup = await _context.UserGroups.FindAsync(userGroupId);
@@ -196,6 +196,7 @@ public class AdministrationController : ControllerBase
             Id = userGroup.Id,
             Name = userGroup.Name,
             Description = userGroup.Description,
+            LeaderId = userGroup.LeaderId,
             Users = usersMembers
         };
         return Ok(result);
@@ -207,7 +208,7 @@ public class AdministrationController : ControllerBase
         var userGroups = _context.UserGroups;
 
         var result = new List<UserGroupContract>();
-        foreach(var userGroup in userGroups)
+        foreach (var userGroup in userGroups)
         {
             var users = await _userManager.Users.ToListAsync();
             if (users is null) return NotFound();
@@ -220,8 +221,9 @@ public class AdministrationController : ControllerBase
                     Id = userGroup.Id,
                     Name = userGroup.Name,
                     Description = userGroup.Description,
+                    LeaderId = userGroup.LeaderId,
                     Users = usersMembers
-                }    
+                }
             );
         }
 
@@ -231,7 +233,7 @@ public class AdministrationController : ControllerBase
 
     [HttpGet("{userId}")]
     public async Task<ActionResult> GetUserGroupByUserId(
-        [FromRoute] Guid userId   
+        [FromRoute] Guid userId
     )
     {
         var user = await _context.Users.FindAsync(userId.ToString());
@@ -249,10 +251,11 @@ public class AdministrationController : ControllerBase
 
         var result = new UserGroupContract
         {
-              Id = userGroup.Id,
-              Name = userGroup.Name,
-              Description = userGroup.Description,
-              Users = userGroupUsers
+            Id = userGroup.Id,
+            Name = userGroup.Name,
+            Description = userGroup.Description,
+            LeaderId = userGroup.LeaderId,
+            Users = userGroupUsers
         };
 
         return Ok(result);
@@ -293,7 +296,7 @@ public class AdministrationController : ControllerBase
 
         var users = _userManager.Users.Where(u => u.UserGroupId == deleteUserGroupCommand.UserGroupId);
 
-        foreach(var user in users)
+        foreach (var user in users)
         {
             user.UserGroupId = null;
         }
@@ -305,7 +308,7 @@ public class AdministrationController : ControllerBase
 
     [HttpGet("{userGroupId}")]
     public async Task<ActionResult> GetUserGroupMembers(
-        [FromRoute] Guid userGroupId    
+        [FromRoute] Guid userGroupId
     )
     {
         var user_group = await _context.UserGroups.FindAsync(userGroupId);
@@ -316,7 +319,7 @@ public class AdministrationController : ControllerBase
 
         var usersMembers = users.FindAll(u => u.UserGroupId == userGroupId);
 
-        var result = new List<UserContract>(); 
+        var result = new List<UserContract>();
         foreach (var user in usersMembers)
         {
             var roles = await _userManager.GetRolesAsync(user);
@@ -337,7 +340,7 @@ public class AdministrationController : ControllerBase
 
     [HttpGet("{userGroupId}")]
     public async Task<ActionResult> GetUserGroupNonMembers(
-        [FromRoute] Guid userGroupId    
+        [FromRoute] Guid userGroupId
     )
     {
         var user_group = await _context.UserGroups.FindAsync(userGroupId);
@@ -348,7 +351,7 @@ public class AdministrationController : ControllerBase
 
         var usersNonMembers = users.FindAll(u => u.UserGroupId != userGroupId);
 
-        var result = new List<UserContract>(); 
+        var result = new List<UserContract>();
         foreach (var user in usersNonMembers)
         {
             var roles = await _userManager.GetRolesAsync(user);
@@ -409,13 +412,21 @@ public class AdministrationController : ControllerBase
         var user = await _context.Users.FindAsync(removeUserFromUserGroupCommand.UserId.ToString());
         if (user is null) return NotFound();
 
-        var user_group = _context.UserGroups.Find(removeUserFromUserGroupCommand.UserGroupId);
+        var userGroup = _context.UserGroups.Find(removeUserFromUserGroupCommand.UserGroupId);
 
-        if(user.UserGroupId != user_group!.Users!.FirstOrDefault(u => u.UserGroupId == user.UserGroupId)!.UserGroupId) return NotFound();
+        if (user.UserGroupId != userGroup!.Users!.FirstOrDefault(u => u.UserGroupId == user.UserGroupId)!.UserGroupId) return NotFound();
+
+        if (userGroup.LeaderId != null)
+        {
+            if (userGroup.LeaderId.ToString() == user.Id)
+            {
+                userGroup.LeaderId = null;
+            }
+        }
 
         user.UserGroup = null;
         user.UserGroupId = null;
-        user_group.Users!.Remove(user);
+        userGroup.Users!.Remove(user);
 
         _context.SaveChanges();
 
@@ -427,12 +438,32 @@ public class AdministrationController : ControllerBase
     public async Task<ActionResult> UpdateUserGroupDescription(
         [FromBody] UpdateUserGroupDescriptionCommand updateUserGroupDescriptionCommand)
     {
-        if (updateUserGroupDescriptionCommand.UserGroupId == Guid.Empty ) return BadRequest();
+        if (updateUserGroupDescriptionCommand.UserGroupId == Guid.Empty) return BadRequest();
 
         var userGroup = await _context.UserGroups.FindAsync(updateUserGroupDescriptionCommand.UserGroupId);
         if (userGroup is null) return NotFound();
 
         userGroup.Description = updateUserGroupDescriptionCommand.Description;
+        _context.SaveChanges();
+
+        return Ok();
+    }
+
+    [Authorize(Roles = "Admin")]
+    [HttpPut]
+    public async Task<ActionResult> UpdateUserGroupLeader(
+    [FromBody] UpdateUserGroupLeaderCommand updateUserGroupLeaderCommand)
+    {
+        if (updateUserGroupLeaderCommand.UserId == Guid.Empty || updateUserGroupLeaderCommand.UserGroupId == Guid.Empty) return BadRequest();
+
+        var userGroup = await _context.UserGroups.FindAsync(updateUserGroupLeaderCommand.UserGroupId);
+        if (userGroup is null) return NotFound();
+
+        var user = await _context.Users.FindAsync(updateUserGroupLeaderCommand.UserId.ToString());
+        if (user is null) return NotFound();
+
+        userGroup.LeaderId = updateUserGroupLeaderCommand.UserId;
+
         _context.SaveChanges();
 
         return Ok();

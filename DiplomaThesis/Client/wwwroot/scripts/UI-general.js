@@ -1,9 +1,4 @@
-﻿//show on page load
-$(document).ready(function () {
-    showLoginDialog();
-});
-
-//right click context menu functions
+﻿//right click context menu functions
 function showRClickContextMenu(top, left) {
     var menu = document.getElementById('r_click_context_menu');
     menu.style.display = 'block';

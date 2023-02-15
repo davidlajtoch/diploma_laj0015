@@ -118,6 +118,34 @@ namespace DiplomaThesis.Server.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
+            modelBuilder.Entity("DiplomaThesis.Server.Models.Assignment", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid?>("UserGroupId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserGroupId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Assignments");
+                });
+
             modelBuilder.Entity("DiplomaThesis.Server.Models.DatasetDb", b =>
                 {
                     b.Property<Guid>("Id")
@@ -166,7 +194,11 @@ namespace DiplomaThesis.Server.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Description")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid?>("LeaderId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -513,6 +545,21 @@ namespace DiplomaThesis.Server.Migrations
                     b.HasOne("DiplomaThesis.Server.Models.UserGroup", "UserGroup")
                         .WithMany("Users")
                         .HasForeignKey("UserGroupId");
+
+                    b.Navigation("UserGroup");
+                });
+
+            modelBuilder.Entity("DiplomaThesis.Server.Models.Assignment", b =>
+                {
+                    b.HasOne("DiplomaThesis.Server.Models.UserGroup", "UserGroup")
+                        .WithMany()
+                        .HasForeignKey("UserGroupId");
+
+                    b.HasOne("DiplomaThesis.Server.Models.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId");
+
+                    b.Navigation("User");
 
                     b.Navigation("UserGroup");
                 });

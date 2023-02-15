@@ -116,7 +116,8 @@ namespace DiplomaThesis.Server.Migrations
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    LeaderId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -298,6 +299,31 @@ namespace DiplomaThesis.Server.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "Assignments",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    UserGroupId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Assignments", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Assignments_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Assignments_UserGroups_UserGroupId",
+                        column: x => x.UserGroupId,
+                        principalTable: "UserGroups",
+                        principalColumn: "Id");
+                });
+
             migrationBuilder.InsertData(
                 table: "AspNetRoles",
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
@@ -356,6 +382,16 @@ namespace DiplomaThesis.Server.Migrations
                 column: "NormalizedUserName",
                 unique: true,
                 filter: "[NormalizedUserName] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Assignments_UserGroupId",
+                table: "Assignments",
+                column: "UserGroupId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Assignments_UserId",
+                table: "Assignments",
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_DeviceCodes_DeviceCode",
@@ -418,6 +454,9 @@ namespace DiplomaThesis.Server.Migrations
 
             migrationBuilder.DropTable(
                 name: "AspNetUserTokens");
+
+            migrationBuilder.DropTable(
+                name: "Assignments");
 
             migrationBuilder.DropTable(
                 name: "Datasets");

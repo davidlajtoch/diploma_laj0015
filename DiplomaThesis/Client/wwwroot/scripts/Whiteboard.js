@@ -1,8 +1,5 @@
-﻿"use strict";
-
-//used by whiteboard with copy / paste
+﻿//used by whiteboard with copy / paste
 var clipboard;
-const MAX_HISTORY_LEN = 3;
 
 fabric.Object.prototype.set({
     borderColor: 'rgba(0, 0, 0, 0.5)',
@@ -16,9 +13,9 @@ fabric.Object.prototype.set({
 });
 
 class Whiteboard {
-    constructor(page) {
-        
-        this.canvas = new fabric.Canvas('whiteboard' + page, {
+    constructor() {
+
+        this.canvas = new fabric.Canvas('whiteboard', {
             isDrawingMode: true,
             imageSmoothingEnabled: false,
             backgroundColor: '#fff',
@@ -29,18 +26,8 @@ class Whiteboard {
             targetFindTolerance: 8,
         });
         console.log('SHITEBOARD');
-        var rect = new fabric.Rect({
-            left: 100,
-            top: 100,
-            fill: 'red',
-            width: 20,
-            height: 20
-        });
 
-        // "add" rectangle onto canvas
-        this.canvas.add(rect);
-
-        this.top_left = {x: 0, y: 0};
+        this.top_left = { x: 0, y: 0 };
 
         this.canvas.selectionColor = 'rgba(0,0,0,0.1)';
 
@@ -74,7 +61,7 @@ class Whiteboard {
             a: 0
         },
 
-        this.object_p1 = [];
+            this.object_p1 = [];
         this.object_p2 = [];
 
         this.defaultCursors = [this.canvas.defaultCursor, this.canvas.hoverCursor, this.canvas.moveCursor, this.canvas.rotateCursor];
@@ -336,8 +323,7 @@ class Whiteboard {
         if (!json.hasOwnProperty('id')) {
             this.setObjectId(json);
         }
-        
-        console.log('after ' + json.id);
+
         var tmp = this.canvas;
         var ths = this;
 
@@ -346,7 +332,7 @@ class Whiteboard {
             tmp.add(enlivenedObjects[0]);
             ths.enableEvent('object:added');
             //tmp.renderAll();
-            
+
         });
         this.canvas = tmp;
         this.canvas.renderAll();
@@ -406,7 +392,7 @@ class Whiteboard {
         } else {
             this.doPasteOne(clipboard);
         }
-        
+
     }
 
     bringObjectForward(object_id) {
@@ -446,7 +432,7 @@ class Whiteboard {
         object.setCoords();
         this.canvas.renderAll();
     }
-    
+
     addText() {
         var new_text = new fabric.IText("", {
             fontFamily: "nunito_bold"
@@ -548,7 +534,7 @@ class Whiteboard {
             });
         });
         this.canvas.discardActiveObject().renderAll();
-        
+
     }
 
     //----------setters----------------------------------------------------
@@ -687,14 +673,5 @@ class Whiteboard {
             this.canvas.__eventListeners[event] = this.disabled_events[event];
             delete this.disabled_events[event];
         }
-    }
-}
-
-class HistoryEntry{
-    constructor(object, action, before, after) {
-        this.object = object;
-        this.action = action;
-        this.before = before;
-        this.after = after;
     }
 }

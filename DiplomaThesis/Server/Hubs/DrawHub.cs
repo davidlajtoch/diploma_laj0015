@@ -45,10 +45,10 @@ namespace DiplomaThesis.Server.Hubs
             await Clients.OthersInGroup(group).SendAsync("AddPage");
         }
 
-        public async Task SendPointer(double pointer_x, double pointer_y, string username, int page, string group)
+        public async Task SendPointer(double pointer_x, double pointer_y, string username, string group)
         {
                 var encodedUsername = HttpUtility.HtmlEncode(username);
-                await Clients.OthersInGroup(group).SendAsync("LoadPointer", pointer_x, pointer_y, Context.ConnectionId, encodedUsername, page);
+                await Clients.OthersInGroup(group).SendAsync("LoadPointer", pointer_x, pointer_y, Context.ConnectionId, encodedUsername);
         }
 
         public async Task LoadCanvasRequest(string group)
@@ -56,79 +56,79 @@ namespace DiplomaThesis.Server.Hubs
             await Clients.OthersInGroup(group).SendAsync("LoadCanvasRequest", Context.ConnectionId);
         }
 
-        public async Task SendCanvas(string json, int id_counter, int page, string caller)
+        public async Task SendCanvas(string json, int id_counter, string caller)
         {
-            await Clients.Client(caller).SendAsync("DrawCanvas", json, id_counter, page);
+            await Clients.Client(caller).SendAsync("DrawCanvas", json, id_counter);
         }
 
-        public async Task SendCanvasAll(string whiteboard_data, int id_counter, int page, string group)
+        public async Task SendCanvasAll(string whiteboard_data, int id_counter, string group)
         {
-            await Clients.OthersInGroup(group).SendAsync("DrawCanvas", whiteboard_data, id_counter, page);
+            await Clients.OthersInGroup(group).SendAsync("DrawCanvas", whiteboard_data, id_counter);
         }
 
-        public async Task SendBringObjectForward(int id, int page, string group)
+        public async Task SendBringObjectForward(int id, string group)
         {
-            await Clients.OthersInGroup(group).SendAsync("DrawBringObjectForward", id, page);
+            await Clients.OthersInGroup(group).SendAsync("DrawBringObjectForward", id);
         }
 
-        public async Task SendSendObjectBackwards(int id, int page, string group)
+        public async Task SendSendObjectBackwards(int id, string group)
         {
-            await Clients.OthersInGroup(group).SendAsync("DrawSendObjectBackwards", id, page);
+            await Clients.OthersInGroup(group).SendAsync("DrawSendObjectBackwards", id);
         }
 
-        public async Task SendObjectAdd(object json, int page, string group)
+        public async Task SendObjectAdd(object json, string group)
         {
-            await Clients.OthersInGroup(group).SendAsync("DrawObjectAdd", json, page);
+            await Clients.OthersInGroup(group).SendAsync("DrawObjectAdd", json);
         }
 
-        public async Task SendObjectMove(float x, float y, int id, int page, string group)
+        public async Task SendObjectMove(float x, float y, int id, string group)
         {
-            await Clients.OthersInGroup(group).SendAsync("DrawObjectMove", x, y, id, page);
+            await Clients.OthersInGroup(group).SendAsync("DrawObjectMove", x, y, id);
         }
 
-        public async Task SendObjectScale(float x, float y, float scaleX, float scaleY, int id, int page, string group)
+        public async Task SendObjectScale(float x, float y, float scaleX, float scaleY, int id, string group)
         {
-            await Clients.OthersInGroup(group).SendAsync("DrawObjectScale", x, y, scaleX, scaleY, id, page);
+            await Clients.OthersInGroup(group).SendAsync("DrawObjectScale", x, y, scaleX, scaleY, id);
         }
 
-        public async Task SendObjectRotate(float angle, int id, int page, string group)
+        public async Task SendObjectRotate(float angle, int id, string group)
         {
-            await Clients.OthersInGroup(group).SendAsync("DrawObjectRotate", angle, id, page);
+            await Clients.OthersInGroup(group).SendAsync("DrawObjectRotate", angle, id);
         }
 
-        public async Task SendObjectRemove(int id, int page, string group)
+        public async Task SendObjectRemove(int id, string group)
         {
-            await Clients.OthersInGroup(group).SendAsync("DrawObjectRemove", id, page);
+            await Clients.OthersInGroup(group).SendAsync("DrawObjectRemove", id);
         }
 
-        public async Task SendObjectBucket(string fill, int id, int page, string group)
+        public async Task SendObjectBucket(string fill, int id, string group)
         {
-            await Clients.OthersInGroup(group).SendAsync("DrawObjectBucket", fill, id, page);
+            await Clients.OthersInGroup(group).SendAsync("DrawObjectBucket", fill, id);
         }
 
-        public async Task SendObjectRecolor(string stroke, int id, int page, string group)
+        public async Task SendObjectRecolor(string stroke, int id, string group)
         {
-            await Clients.OthersInGroup(group).SendAsync("DrawObjectRecolor", stroke, id, page);
+            await Clients.OthersInGroup(group).SendAsync("DrawObjectRecolor", stroke, id);
         }
 
-        public async Task SendObjectGroup(object objects, int page, string group)
+        public async Task SendObjectGroup(object objects, string group)
         {
-            await Clients.OthersInGroup(group).SendAsync("DrawObjectGroup", objects, page);
+            await Clients.OthersInGroup(group).SendAsync("DrawObjectGroup", objects);
         }
 
-        public async Task SendImg(string img_data, int page, string group)
+        public async Task SendImg(string img_data, string group)
         {
-            await Clients.OthersInGroup(group).SendAsync("DrawImg", img_data, page);
+            await Clients.OthersInGroup(group).SendAsync("DrawImg", img_data);
         }
 
-        public async Task SendTextModify(string text, int id, int page, string group)
+        public async Task SendTextModify(string text, int id, string group)
         {
-            await Clients.OthersInGroup(group).SendAsync("DrawTextModify", text, id, page);
+            await Clients.OthersInGroup(group).SendAsync("DrawTextModify", text, id);
         }
 
-        public async Task SendHistoryCounter(int history_counter, int page, string group)
+        public async Task SendHistoryCounter(int history_counter, string group)
         {
-            await Clients.OthersInGroup(group).SendAsync("DrawHistoryCounter", history_counter, page);
+            await Clients.OthersInGroup(group).SendAsync("DrawHistoryCounter", history_counter);
         }
     }
 }

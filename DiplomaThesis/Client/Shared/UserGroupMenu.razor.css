@@ -66,7 +66,8 @@
 }
 .user_group_menu_container .user_group_menu .user_list .user {
   width: 100%;
-  display: inline-block;
+  display: inline-flex;
+  justify-content: space-between;
   cursor: auto;
   padding-top: 5px;
   padding-bottom: 5px;
@@ -77,12 +78,9 @@
 .user_group_menu_container .user_group_menu .user_list .user:hover {
   color: #651fff;
 }
-.user_group_menu_container .user_group_menu .user_list .user .name {
-  float: left;
-}
-.user_group_menu_container .user_group_menu .user_list .user button {
+.user_group_menu_container .user_group_menu .user_list .user .buttons button {
   height: 25px;
-  float: right;
+  margin-left: 5px;
   position: relative;
   top: -2px;
   cursor: pointer;
@@ -92,7 +90,7 @@
   border-radius: 500px;
   transition: 0.2s ease-in-out;
 }
-.user_group_menu_container .user_group_menu .user_list .user button:hover {
+.user_group_menu_container .user_group_menu .user_list .user .buttons button:hover {
   color: #651fff;
   padding-left: 12px;
   padding-right: 12px;

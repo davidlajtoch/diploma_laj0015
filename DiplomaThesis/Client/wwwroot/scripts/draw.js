@@ -1,253 +1,563 @@
-﻿"use strict";
+﻿//"use strict";
 
+var whiteboard = new Whiteboard();
+var connection = new signalR.HubConnectionBuilder().withUrl("/drawhub").build();
+var user_group;
+var username;
 
-//console.log(whiteboard_pages[0].top_left);
-
-////register whiteboard events
-
-//pageselect box functions
-const MAX_PAGES = 5;
-
-var page_counter = 1;
-var current_page = 0;
-
-function addPage() {
-    if (page_counter < MAX_PAGES) {
-
-        var page_button = '<a id="psb_button_page' + (page_counter + 1) + '" class="psb_button_page">' + (page_counter + 1) + '</a> ';
-
-        $('#psb_page_buttons').append(page_button);
-
-        page_counter++;
-
-        if (page_counter >= MAX_PAGES) {
-            $('#psb_button_page_add').css('display', 'none');
-        }
-    }
-}
-
-//page button click functions
-$('#psb_page_buttons').on('click', '.psb_button_page', function () {
-    $('#psb_page_buttons .psb_button_page').each(function () {
-        $(this).removeClass("psb_selected");
+function connectDrawClient(user_group_id) {
+    user_group = user_group_id;
+    connection.start().then(function () {
+        addToGroup(user_group_id);
+    }).catch(function (err) {
+        return console.error(err.toString());
     });
-    $(this).addClass("psb_selected");
 
-    current_page = parseInt($(this).text()) - 1;
+    whiteboard.canvas.on('mouse:wheel', function (opt) {
+        whiteboard.zoom(opt);
+        opt.e.preventDefault();
+        opt.e.stopPropagation();
+    });
 
-    $('#whiteboards_container').children().css('display', 'none');
-    $('#whiteboard' + (current_page + 1)).parent().css('display', 'block');
+    whiteboard.canvas.on('object:added', function (e) {
+        whiteboard.setObjectId(e.target);
+        console.log('xd');
+        sendObjectAdd(e.target);
 
-});
+    });
 
-//add button functions
-$('#psb_button_page_add').click(function () {
-    addPage();
-    draw_client.sendAddPage();
-    $('#psb_page_buttons').find('.psb_button_page').last().trigger('click');
-});
+    whiteboard.canvas.on('selection:created', function (e) {
+        if (whiteboard.drawing_modes.isEllipseMode || whiteboard.drawing_modes.isRectangleMode || whiteboard.drawing_modes.isTriangleMode || whiteboard.drawing_modes.isLineMode) { whiteboard.deselectObjects(); }
+        else {
+            if (whiteboard.drawing_modes.isDeleteMode) {
+                whiteboard.removeSelectedObject();
+                sendObjectRemove(e.target);
+            } else {
+                if (whiteboard.drawing_modes.isBucketMode) {
+                    if (e.target.type == 'activeSelection') {
+                        var objects_fills = [];
+                        for (let i = 0; i < e.target._objects.length; i++) {
+                            objects_fills.push(e.target._objects[i].fill);
+                        }
+                    }
 
-
-var draw_client;
-var whiteboard_pages;
-
-export function connectDrawClient(user_group_id) {
-    whiteboard_pages = [new Whiteboard(1), new Whiteboard(2), new Whiteboard(3), new Whiteboard(4), new Whiteboard(5)];
-    draw_client = new DrawClient(user_group_id, whiteboard_pages);
-    
-
-    $.each(whiteboard_pages, function (i, whiteboard) {
-
-        whiteboard.canvas.on('mouse:wheel', function (opt) {
-            whiteboard.zoom(opt);
-            opt.e.preventDefault();
-            opt.e.stopPropagation();
-        });
-
-        whiteboard.canvas.on('object:added', function (e) {
-            whiteboard.setObjectId(e.target);
-            draw_client.sendObjectAdd(e.target);
-
-        });
-
-        whiteboard.canvas.on('selection:created', function (e) {
-            if (whiteboard.drawing_modes.isEllipseMode || whiteboard.drawing_modes.isRectangleMode || whiteboard.drawing_modes.isTriangleMode || whiteboard.drawing_modes.isLineMode) { whiteboard.deselectObjects(); }
-            else {
-                if (whiteboard.drawing_modes.isDeleteMode) {
-                    whiteboard.removeSelectedObject();
-                    draw_client.sendObjectRemove(e.target);
+                    whiteboard.bucketSelectedObject();
+                    sendObjectBucket(e.target);
                 } else {
-                    if (whiteboard.drawing_modes.isBucketMode) {
+                    if (whiteboard.drawing_modes.isRecolorMode) {
                         if (e.target.type == 'activeSelection') {
-                            var objects_fills = [];
+                            var objects_strokes = [];
                             for (let i = 0; i < e.target._objects.length; i++) {
-                                objects_fills.push(e.target._objects[i].fill);
+                                objects_strokes.push(e.target._objects[i].stroke);
                             }
                         }
-
-                        whiteboard.bucketSelectedObject();
-                        draw_client.sendObjectBucket(e.target);
-                    } else {
-                        if (whiteboard.drawing_modes.isRecolorMode) {
-                            if (e.target.type == 'activeSelection') {
-                                var objects_strokes = [];
-                                for (let i = 0; i < e.target._objects.length; i++) {
-                                    objects_strokes.push(e.target._objects[i].stroke);
-                                }
-                            }
-                            whiteboard.recolorSelectedObject();
-                            draw_client.sendObjectRecolor(e.target);
-                        }
+                        whiteboard.recolorSelectedObject();
+                        sendObjectRecolor(e.target);
                     }
                 }
             }
-        });
+        }
+    });
 
-        whiteboard.canvas.on('object:moved', function (e) {
-            draw_client.sendObjectMove(e.target);
-        });
+    whiteboard.canvas.on('object:moved', function (e) {
+        sendObjectMove(e.target);
+    });
 
-        whiteboard.canvas.on('object:scaled', function (e) {
-            draw_client.sendObjectScale(e.target);
-        });
+    whiteboard.canvas.on('object:scaled', function (e) {
+        sendObjectScale(e.target);
+    });
 
-        whiteboard.canvas.on('object:rotated', function (e) {
-            draw_client.sendObjectRotate(e.target);
-        });
+    whiteboard.canvas.on('object:rotated', function (e) {
+        sendObjectRotate(e.target);
+    });
 
-        whiteboard.canvas.on('mouse:down', function () {
-            if (whiteboard.drawing_modes.isTextMode) {
-                whiteboard.addText();
-            } else {
-                if (whiteboard.drawing_modes.isEllipseMode || whiteboard.drawing_modes.isRectangleMode || whiteboard.drawing_modes.isTriangleMode || whiteboard.drawing_modes.isLineMode) {
-                    whiteboard.addObjectP1();
-                } else {
-                    if (whiteboard.drawing_modes.isColorPickerMode) {
-                        copyColorPickerValueToClipboard();
-                        whiteboard.canvas.discardActiveObject().renderAll();
-                    }
-                }
-            }
-        });
-
-        whiteboard.canvas.on('mouse:up', function () {
+    whiteboard.canvas.on('mouse:down', function () {
+        if (whiteboard.drawing_modes.isTextMode) {
+            whiteboard.addText();
+        } else {
             if (whiteboard.drawing_modes.isEllipseMode || whiteboard.drawing_modes.isRectangleMode || whiteboard.drawing_modes.isTriangleMode || whiteboard.drawing_modes.isLineMode) {
-                whiteboard.addObjectP2();
-            }
-            if (whiteboard.drawing_modes.isLineMode) {
-                whiteboard.addLine();
+                whiteboard.addObjectP1();
             } else {
-                if (whiteboard.drawing_modes.isRectangleMode) {
-                    whiteboard.addRectangle();
+                if (whiteboard.drawing_modes.isColorPickerMode) {
+                    copyColorPickerValueToClipboard();
+                    whiteboard.canvas.discardActiveObject().renderAll();
+                }
+            }
+        }
+    });
+
+    whiteboard.canvas.on('mouse:up', function () {
+        if (whiteboard.drawing_modes.isEllipseMode || whiteboard.drawing_modes.isRectangleMode || whiteboard.drawing_modes.isTriangleMode || whiteboard.drawing_modes.isLineMode) {
+            whiteboard.addObjectP2();
+        }
+        if (whiteboard.drawing_modes.isLineMode) {
+            whiteboard.addLine();
+        } else {
+            if (whiteboard.drawing_modes.isRectangleMode) {
+                whiteboard.addRectangle();
+            } else {
+                if (whiteboard.drawing_modes.isEllipseMode) {
+                    whiteboard.addEllipse();
                 } else {
-                    if (whiteboard.drawing_modes.isEllipseMode) {
-                        whiteboard.addEllipse();
-                    } else {
-                        if (whiteboard.drawing_modes.isTriangleMode) {
-                            whiteboard.addTriangle();
-                        }
+                    if (whiteboard.drawing_modes.isTriangleMode) {
+                        whiteboard.addTriangle();
                     }
                 }
             }
-        });
-
-        whiteboard.canvas.on('text:editing:exited', function (e) {
-            draw_client.sendTextModify(e.target);
-        });
-
-        //whiteboard.canvas.on('mouse:move', function (e) {
-        //    pointer_move_counter += 1;
-        //    if (pointer_move_counter >= POINTER_SEND_INTERVAL) {
-        //        pointer_move_counter = 0;
-        //        draw_client.sendPointer();
-        //    }
-        //    if (whiteboard.drawing_modes.isColorPickerMode) {
-        //        whiteboard.setColorAtPointer(e);
-        //    }
-        //});
-
-        window.addEventListener('resize', function () { whiteboard.resize(); }, false);
+        }
     });
 
-    draw_client.connection.on("LoadMessagesRequest", function (caller) {
-        draw_client.sendMessages(caller);
+    whiteboard.canvas.on('text:editing:exited', function (e) {
+        sendTextModify(e.target);
     });
 
-    draw_client.connection.on("LoadMessages", function (messages) {
-        draw_client.loadMessages(messages);
+    //whiteboard.canvas.on('mouse:move', function (e) {
+    //    pointer_move_counter += 1;
+    //    if (pointer_move_counter >= POINTER_SEND_INTERVAL) {
+    //        pointer_move_counter = 0;
+    //        sendPointer();
+    //    }
+    //    if (whiteboard.drawing_modes.isColorPickerMode) {
+    //        whiteboard.setColorAtPointer(e);
+    //    }
+    //});
+
+    window.addEventListener('resize', function () { whiteboard.resize(); }, false);
+
+    connection.on("LoadMessagesRequest", function (caller) {
+        sendMessages(caller);
     });
 
-    draw_client.connection.on("LoadMessage", function (connection_id, username, message) {
-        draw_client.loadMessage(connection_id, username, message);
+    connection.on("LoadMessages", function (messages) {
+        loadMessages(messages);
     });
 
-    draw_client.connection.on("AddPage", function () {
+    connection.on("LoadMessage", function (connection_id, username, message) {
+        loadMessage(connection_id, username, message);
+    });
+
+    connection.on("AddPage", function () {
         addPage();
     });
 
-    draw_client.connection.on("LoadPointer", function (pointer_x, pointer_y, connection_id, username, page) {
+    connection.on("LoadPointer", function (pointer_x, pointer_y, connection_id, username) {
         //console.log(pointer_x, pointer_y);
-        drawPointer(pointer_x, pointer_y, connection_id, username, page);
+        drawPointer(pointer_x, pointer_y, connection_id, username);
     });
 
-    draw_client.connection.on("LoadCanvasRequest", function (caller) {
-        draw_client.sendCanvas(caller);
+    connection.on("LoadCanvasRequest", function (caller) {
+        sendCanvas(caller);
     });
 
-    draw_client.connection.on("DrawCanvas", function (json, id_counter, page) {
-        if (page > (page_counter - 1)) {
-            addPage();
-        }
-        draw_client.drawCanvas(json, id_counter, page);
+    connection.on("DrawCanvas", function (json, id_counter) {
+        drawCanvas(json, id_counter);
     });
 
-    draw_client.connection.on("DrawBringObjectForward", function (id, page) {
-        draw_client.drawBringObjectForward(id, page);
+    connection.on("DrawBringObjectForward", function (id) {
+        drawBringObjectForward(id);
     });
 
-    draw_client.connection.on("DrawSendObjectBackwards", function (id, page) {
-        draw_client.drawSendObjectBackwards(id, page);
+    connection.on("DrawSendObjectBackwards", function (id) {
+        drawSendObjectBackwards(id);
     });
 
-    draw_client.connection.on("DrawObjectAdd", function (json, page) {
+    connection.on("DrawObjectAdd", function (json) {
         console.log('draw.js', json);
-        draw_client.drawObjectAdd(json, page);
+        drawObjectAdd(json);
     });
 
-    draw_client.connection.on("DrawObjectMove", function (x, y, id, page) {
-        draw_client.drawObjectMove(x, y, id, page);
+    connection.on("DrawObjectMove", function (x, y, id) {
+        drawObjectMove(x, y, id);
     });
 
-    draw_client.connection.on("DrawObjectScale", function (x, y, scaleX, scaleY, flipX, flipY, id, page) {
-        draw_client.drawObjectScale(x, y, scaleX, scaleY, flipX, flipY, id, page);
+    connection.on("DrawObjectScale", function (x, y, scaleX, scaleY, flipX, flipY, id) {
+        drawObjectScale(x, y, scaleX, scaleY, flipX, flipY, id);
     });
 
-    draw_client.connection.on("DrawObjectRotate", function (angle, id, page) {
-        draw_client.drawObjectRotate(angle, id, page);
+    connection.on("DrawObjectRotate", function (angle, id) {
+        drawObjectRotate(angle, id);
     });
 
-    draw_client.connection.on("DrawObjectRemove", function (id, page) {
-        draw_client.drawObjectRemove(id, page);
+    connection.on("DrawObjectRemove", function (id) {
+        drawObjectRemove(id);
     });
 
-    draw_client.connection.on("DrawObjectBucket", function (fill, id, page) {
-        draw_client.drawObjectBucket(fill, id, page);
+    connection.on("DrawObjectBucket", function (fill, id) {
+        drawObjectBucket(fill, id);
     });
 
-    draw_client.connection.on("DrawObjectRecolor", function (stroke, id, page) {
-        draw_client.drawObjectRecolor(stroke, id, page);
+    connection.on("DrawObjectRecolor", function (stroke, id) {
+        drawObjectRecolor(stroke, id);
     });
 
-    draw_client.connection.on("DrawObjectGroup", function (objects, page) {
-        draw_client.drawObjectGroup(objects, page);
+    connection.on("DrawObjectGroup", function (objects) {
+        drawObjectGroup(objects);
     });
 
-    draw_client.connection.on("DrawImg", function (img_data, page) {
-        draw_client.drawImg(img_data, page);
+    connection.on("DrawImg", function (img_data) {
+        drawImg(img_data);
     });
 
-    draw_client.connection.on("DrawTextModify", function (text, id, page) {
-        draw_client.drawTextModify(text, id, page);
+    connection.on("DrawTextModify", function (text, id) {
+        drawTextModify(text, id);
+    });
+
+//function loadWhiteboard(slot) {
+//    toggleLoader();
+//    disableWhiteboardSection();
+
+//    $.ajax({
+//        context: this,
+//        type: 'post',
+//        data: {
+//            slot: slot
+//        },
+//        url: '/Whiteboard/LoadWhiteboard',
+//        success: function (result) {
+//            if (result.answer != "") {
+//                toggleLoader();
+//                enableWhiteboardSectionWithError(result.answer);
+//            }
+//            else {
+//                this.drawCanvas(result.whiteboard_data, result.id_counter, this.current_page);
+//                this.sendCanvasAll(result.whiteboard_data, result.id_counter);
+//                enableWhiteboardSectionWithSuccessLoad();
+//                toggleLoader();
+//            }
+//        }
+//    });
+//}
+
+//function saveWhiteboard(slot, whiteboard_data, whiteboard_name, id_counter) {
+//    toggleLoader();
+//    disableWhiteboardSection();
+
+//    $.ajax({
+//        type: 'post',
+//        data: {
+//            slot: slot, whiteboard_data: whiteboard_data, whiteboard_name: whiteboard_name, id_counter: id_counter
+//        },
+//        url: '/Whiteboard/SaveWhiteboard',
+//        success: function (result) {
+//            if (result != "") {
+//                toggleLoader();
+//                enableWhiteboardSectionWithError(result);
+//            }
+//            else {
+//                toggleLoader();
+//                enableWhiteboardSectionWithSuccessSave(slot, whiteboard_name);
+//            }
+//        }
+//    });
+//}
+}
+function addToGroup(group) {
+    connection.invoke("AddToGroup", group).catch(function (err) {
+        return console.error(err.toString());
     });
 }
 
+function removeFromGroup(group) {
+    connection.invoke("RemoveFromGroup", group).catch(function (err) {
+        return console.error(err.toString());
+    });
+}
+
+function loadMessagesRequest() {
+    connection.invoke("LoadMessagesRequest", user_group).catch(function (err) {
+        return console.error(err.toString());
+    });
+}
+
+function loadMessages(messages) {
+    this.messages = messages.slice();
+
+    for (i = 0; i < this.messages.length;) {
+        addMessage(this.messages[i], this.messages[i + 1]);
+        i += 2
+    }
+}
+
+function loadMessage(connection_id, username, message) {
+    this.messages.push([username]);
+    this.messages.push([message]);
+    addMessage(connection_id, username, message);
+}
+
+function sendMessages(caller) {
+    connection.invoke("SendMessages", this.messages, caller).catch(function (err) {
+        return console.error(err.toString());
+    });
+}
+
+function sendMessage(message) {
+    this.messages.push(this.username);
+    this.messages.push(message);
+
+    addMessage("", this.username, message);
+
+    connection.invoke("SendMessage", this.username, message, user_group).catch(function (err) {
+        return console.error(err.toString());
+    });
+}
+
+function sendAddPage() {
+    connection.invoke("SendAddPage", user_group).catch(function (err) {
+        return console.error(err.toString());
+    });
+}
+
+function sendPointer() {
+    var pointer = this.whiteboard.getPointer();
+    connection.invoke("SendPointer", pointer.x, pointer.y, this.username, user_group).catch(function (err) {
+        return console.error(err.toString());
+    });
+}
+
+function loadCanvasRequest() {
+    connection.invoke("LoadCanvasRequest", user_group).catch(function (err) {
+        return console.error(err.toString());
+    });
+}
+
+function sendCanvas(caller) {
+    connection.invoke("SendCanvas", JSON.stringify(whiteboard.canvas.toJSON(['id'])), whiteboard.id_counter, caller).catch(function (err) {
+        return console.error(err.toString());
+    });
+}
+
+function sendCanvasAll(whiteboard_data, id_counter) {
+    connection.invoke("SendCanvasAll", whiteboard_data, id_counter, user_group).catch(function (err) {
+        return console.error(err.toString());
+    });
+}
+
+function sendBringObjectForward(object) {
+    if (object.type == 'activeSelection') {
+        for (let i = 0; i < object._objects.length; i++) {
+            whiteboard.bringObjectForward(object._objects[i].id);
+            connection.invoke("SendBringObjectForward", object._objects[i].id, user_group).catch(function (err) {
+                return console.error(err.toString());
+            });
+        }
+    } else {
+        whiteboard.bringObjectForward(object.id);
+        connection.invoke("SendBringObjectForward", object.id, user_group).catch(function (err) {
+            return console.error(err.toString());
+        });
+    }
+}
+
+function sendSendObjectBackwards(object) {
+    if (object.type == 'activeSelection') {
+        for (let i = 0; i < object._objects.length; i++) {
+            whiteboard.sendObjectBackwards(object._objects[i].id);
+            connection.invoke("SendSendObjectBackwards", object._objects[i].id, user_group).catch(function (err) {
+                return console.error(err.toString());
+            });
+        }
+    } else {
+        whiteboard.sendObjectBackwards(object.id);
+        connection.invoke("SendSendObjectBackwards", object.id, user_group).catch(function (err) {
+            return console.error(err.toString());
+        });
+    }
+}
+
+function sendObjectAdd(object) {
+    console.log('sendobjectadd', object);
+    connection.invoke("SendObjectAdd", object, user_group).catch(function (err) {
+        return console.error(err.toString());
+    });
+}
+
+function sendObjectMove(object) {
+    if (object.type == 'activeSelection') {
+        for (let i = 0; i < object._objects.length; i++) {
+
+            var left = object.left + (object.width / 2.0) + object._objects[i].left;
+            var top = object.top + (object.height / 2.0) + object._objects[i].top;
+
+            connection.invoke("SendObjectMove", left, top, object._objects[i].id, user_group).catch(function (err) {
+                return console.error(err.toString());
+            });
+        }
+    } else {
+        connection.invoke("SendObjectMove", object.left, object.top, object.id, user_group).catch(function (err) {
+            return console.error(err.toString());
+        });
+    }
+}
+
+
+function sendObjectScale(object) {
+    if (object.type == 'activeSelection') {
+        whiteboard.deselectObjects();
+        for (let i = 0; i < object._objects.length; i++) {
+
+            var actual_object = whiteboard.getObjectById(object._objects[i].id);
+
+            connection.invoke("SendObjectScale", actual_object.left, actual_object.top, actual_object.scaleX, actual_object.scaleY, actual_object.id, user_group).catch(function (err) {
+                return console.error(err.toString());
+            });
+        }
+    } else {
+        connection.invoke("SendObjectScale", object.left, object.top, object.scaleX, object.scaleY, object.id, user_group).catch(function (err) {
+            return console.error(err.toString());
+        });
+    }
+}
+
+function sendObjectRotate(object) {
+    if (object.type == 'activeSelection') {
+        whiteboard.deselectObjects();
+        for (let i = 0; i < object._objects.length; i++) {
+
+            console.log(object._objects[i].id);
+
+            var actual_object = whiteboard.getObjectById(object._objects[i].id);
+
+            console.log(actual_object);
+
+            connection.invoke("SendObjectRotate", actual_object.angle, actual_object.id, user_group).catch(function (err) {
+                return console.error(err.toString());
+            });
+            connection.invoke("SendObjectMove", actual_object.left, actual_object.top, actual_object.id, user_group).catch(function (err) {
+                return console.error(err.toString());
+            });
+        }
+    } else {
+        connection.invoke("SendObjectRotate", object.angle, object.id, user_group).catch(function (err) {
+            return console.error(err.toString());
+        });
+    }
+
+}
+
+function sendObjectRemove(object) {
+    if (object.type == 'activeSelection') {
+        for (let i = 0; i < object._objects.length; i++) {
+            connection.invoke("SendObjectRemove", object._objects[i].id, user_group).catch(function (err) {
+                return console.error(err.toString());
+            });
+        }
+    } else {
+        connection.invoke("SendObjectRemove", object.id, user_group).catch(function (err) {
+            return console.error(err.toString());
+        });
+    }
+}
+
+function sendObjectBucket(object) {
+    if (object.type == 'activeSelection') {
+        for (let i = 0; i < object._objects.length; i++) {
+            connection.invoke("SendObjectBucket", object._objects[i].fill, object._objects[i].id, user_group).catch(function (err) {
+                return console.error(err.toString());
+            });
+        }
+    } else {
+        connection.invoke("SendObjectBucket", whiteboard.free_drawing_brush.color, object.id, user_group).catch(function (err) {
+            return console.error(err.toString());
+        });
+    }
+}
+
+function sendObjectRecolor(object) {
+    if (object.type == 'activeSelection') {
+        for (let i = 0; i < object._objects.length; i++) {
+            connection.invoke("SendObjectRecolor", object._objects[i].stroke, object._objects[i].id, user_group).catch(function (err) {
+                return console.error(err.toString());
+            });
+        }
+    } else {
+        connection.invoke("SendObjectRecolor", whiteboard.free_drawing_brush.color, object.id, user_group).catch(function (err) {
+            return console.error(err.toString());
+        });
+    }
+}
+
+function sendObjectGroup(object) {
+
+    if (object.type == 'activeSelection') {
+        for (let i = 0; i < object._objects.length; i++) {
+            connection.invoke("SendObjectRemove", object._objects[i].id, user_group).catch(function (err) {
+                return console.error(err.toString());
+            });
+        }
+        connection.invoke("SendObjectGroup", object, user_group).catch(function (err) {
+            return console.error(err.toString());
+        });
+    }
+}
+
+function sendImg(img_data) {
+    connection.invoke("SendImg", img_data, user_group).catch(function (err) {
+        return console.error(err.toString());
+    });
+}
+
+function sendTextModify(text_object) {
+    connection.invoke("SendTextModify", text_object.text, text_object.id, user_group).catch(function (err) {
+        return console.error(err.toString());
+    });
+}
+
+function drawCanvas(json, id_counter) {
+    whiteboard.loadCanvas(json, id_counter);
+}
+
+function drawBringObjectForward(id) {
+    whiteboard.bringObjectForward(id);
+}
+
+function drawSendObjectBackwards(id) {
+    whiteboard.sendObjectBackwards(id);
+}
+
+function drawObjectAdd(json) {
+
+    whiteboard.disableEvent("object:added");
+    whiteboard.addObject(json);
+    whiteboard.enableEvent('object:added');
+}
+
+function drawObjectMove(x, y, id) {
+    whiteboard.disableEvent('object:moved');
+    whiteboard.moveObject(x, y, id);
+    whiteboard.enableEvent('object:moved');
+}
+
+function drawObjectScale(x, y, scaleX, scaleY, id) {
+    whiteboard.disableEvent('object:scaled');
+    whiteboard.scaleObject(x, y, scaleX, scaleY, id);
+    whiteboard.enableEvent('object:scaled');
+}
+
+function drawObjectRotate(angle, id) {
+    whiteboard.rotateObject(angle, id);
+    whiteboard.enableEvent('object:moved');
+}
+
+function drawObjectRemove(id) {
+    whiteboard.removeObjectById(id);
+}
+
+function drawObjectBucket(fill, id) {
+    whiteboard.bucketObjectById(fill, id);
+}
+
+function drawObjectRecolor(stroke, id) {
+    whiteboard.recolorObjectById(stroke, id);
+}
+
+function drawObjectGroup(objects) {
+    whiteboard.groupObjects(objects);
+}
+
+function drawImg(img_data) {
+    whiteboard.addImg(img_data);
+}
+
+function drawTextModify(text, id) {
+    whiteboard.modifyText(text, id);
+}

@@ -105,23 +105,11 @@ else
         <span></span>
     </div>
 
-    <div id="pageselect_box">
-        <div id="psb_page_buttons">
-            <a id="psb_button_page1" class="psb_button_page psb_selected">1</a>
-        </div>
-        <a id="psb_button_page_add" class="psb_button_page_add">+</a>
-    </div>
-
-        <canvas class="whiteboard" id="whiteboard" style="z-index: 0; width: 1000px; height: 500px;"></canvas>
-        <canvas class="whiteboard" id="whiteboard2"></canvas>
-        <canvas class="whiteboard" id="whiteboard3"></canvas>
-        <canvas class="whiteboard" id="whiteboard4"></canvas>
-        <canvas class="whiteboard" id="whiteboard5"></canvas>
+        <canvas class="whiteboard" id="whiteboard" style="z-index: 0; width: 100vw; height: 100vh;"></canvas>
 }
 
 @code {
-    IJSObjectReference? _jsDrawModule;
-    IJSObjectReference? _jsWhiteboardModule;
+    IJSObjectReference? _js;
 
     private HubConnection HubConnection;
     private UserGroupContract? UserGroup = null;
@@ -139,15 +127,16 @@ else
         {
             if (firstRender)
             {
-                _jsDrawModule = await Js.InvokeAsync<IJSObjectReference>("import", "./scripts/draw.js");
-
+                await Js.InvokeVoidAsync("loadJs", "./scripts/Whiteboard.js");
+                await Task.Delay(1000);
+                await Js.InvokeVoidAsync("loadJs", "./scripts/draw.js");
+                await Task.Delay(1000);
+                await Js.InvokeVoidAsync("connectDrawClient", UserGroup.Id.ToString());
+                Console.WriteLine(UserGroup.Id.ToString());
+                
             }
-
-            if (canvasReady)
-            {
-                await _jsDrawModule!.InvokeVoidAsync("connectDrawClient", UserGroup.Id.ToString());
-                canvasReady = false;
-            }
+            
+            
         }
         catch (Exception e)
         {

@@ -31,11 +31,11 @@
             height: 40px;
             margin-top: 10px;
 
-            .group_left{
+            .group_left {
                 float: left
             }
 
-            .group_right{
+            .group_right {
                 float: right;
             }
         }
@@ -76,7 +76,8 @@
 
             .user {
                 width: 100%;
-                display: inline-block;
+                display: inline-flex;
+                justify-content: space-between;
                 cursor: auto;
                 padding-top: 5px;
                 padding-bottom: 5px;
@@ -88,33 +89,31 @@
                     color: $color_purple;
                 }
 
-                .name {
-                    float: left;
-                }
+                .buttons {
+                    button {
+                        height: 25px;
+                        margin-left: 5px;
+                        position: relative;
+                        top: -2px;
+                        cursor: pointer;
+                        background-color: $color_lighter_grey;
+                        color: $color_grey;
+                        border: none;
+                        border-radius: 500px;
+                        transition: 0.2s ease-in-out;
 
-                button {
-                    height: 25px;
-                    float: right;
-                    position: relative;
-                    top: -2px;
-                    cursor: pointer;
-                    background-color: $color_lighter_grey;
-                    color: $color_grey;
-                    border: none;
-                    border-radius: 500px;
-                    transition: 0.2s ease-in-out;
-
-                    &:hover {
-                        color: $color_purple;
-                        padding-left: 12px;
-                        padding-right: 12px;
+                        &:hover {
+                            color: $color_purple;
+                            padding-left: 12px;
+                            padding-right: 12px;
+                        }
                     }
                 }
             }
         }
     }
 
-    .info_no_roles{
+    .info_no_roles {
         width: 100%;
         color: $color_light_grey;
         text-align: center;

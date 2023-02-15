@@ -63,8 +63,8 @@ else
                             else
                             {
                                 @_user_groups.FirstOrDefault(
-                                 userGroup => userGroup?.Id.Equals(user.UserGroupId) ?? false, null
-                                )?.Name
+                userGroup => userGroup?.Id.Equals(user.UserGroupId) ?? false, null
+                )?.Name
                             }
 
                         </div>
@@ -93,17 +93,24 @@ else
             <ul class="list_groups animate__animated animate__fadeIn">
                 <li class="header">
                     <div class="col col-1">ID</div>
-                    <div class="col col-2">Name</div>
-                    <div class="col col-3">Description</div>
-                    <div class="col col-4">Users</div>
+                    <div class="col col-1">Name</div>
+                    <div class="col col-1">Leader</div>
+                    <div class="col col-1">Description</div>
+                    <div class="col col-1">Users</div>
                 </li>
-                @foreach (var user_group in _user_groups_searched!)
+                @foreach (var userGroup in _user_groups_searched!)
                 {
-                    <li class="row" @onclick="() => _userGroupMenu.ShowUserGroup(user_group)">
-                        <div class="col col-1" data-label="ID">@user_group.Id</div>
-                        <div class="col col-2" data-label="Name">@user_group.Name</div>
-                        <div class="col col-2" data-label="Name">@user_group.Description</div>
-                        <div class="col col-3" data-label="Users">@user_group.Users.Count()</div>
+                    <li class="row" @onclick="() => _userGroupMenu.ShowUserGroup(userGroup)">
+                        <div class="col col-1" data-label="ID">@userGroup.Id</div>
+                        <div class="col col-1" data-label="Name">@userGroup.Name</div>
+                        <div class="col col-1" data-label="Leader">
+                            @if (userGroup.Users != null)
+                            {
+                                @userGroup.Users.Where(u => u.Id == userGroup.LeaderId).Select(u => u.Name).DefaultIfEmpty(string.Empty).First()
+                            }
+                        </div>
+                        <div class="col col-1" data-label="Name">@userGroup.Description</div>
+                        <div class="col col-1" data-label="Users">@userGroup.Users.Count()</div>
                     </li>
 
                 }

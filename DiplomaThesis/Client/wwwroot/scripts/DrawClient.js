@@ -1,7 +1,7 @@
 ﻿"use strict";
 
 class DrawClient {
-    constructor(user_group_id, whiteboard_pages) {
+    constructor(user_group_id, whiteboard) {
         this.connection = new signalR.HubConnectionBuilder().withUrl("/drawhub").build();
         this.group = user_group_id;
         var this_tmp = this;
@@ -13,8 +13,7 @@ class DrawClient {
         
         this.username = "";
         this.messages = [];
-        this.whiteboard_pages = this.whiteboard_pages
-        this.current_page = 0;
+        this.whiteboard = whiteboard;
         console.log(user_group_id);
     }
 
@@ -124,8 +123,8 @@ class DrawClient {
     }
 
     sendPointer() {
-        var pointer = this.whiteboard_pages[this.current_page].getPointer();
-        this.connection.invoke("SendPointer", pointer.x, pointer.y, this.username, this.current_page, this.group).catch(function (err) {
+        var pointer = this.whiteboard.getPointer();
+        this.connection.invoke("SendPointer", pointer.x, pointer.y, this.username, this.group).catch(function (err) {
             return console.error(err.toString());
         });
     }
@@ -137,15 +136,13 @@ class DrawClient {
     }
 
     sendCanvas(caller) {
-        for (let i = 0; i < page_counter; i++) {
-            this.connection.invoke("SendCanvas", JSON.stringify(whiteboard_pages[i].canvas.toJSON(['id'])), whiteboard_pages[i].id_counter, i, caller).catch(function (err) {
+            this.connection.invoke("SendCanvas", JSON.stringify(whiteboard.canvas.toJSON(['id'])), whiteboard.id_counter, caller).catch(function (err) {
                 return console.error(err.toString());
-            });
         }
     }
 
     sendCanvasAll(whiteboard_data, id_counter) {
-        this.connection.invoke("SendCanvasAll", whiteboard_data, id_counter, this.current_page, this.group).catch(function (err) {
+        this.connection.invoke("SendCanvasAll", whiteboard_data, id_counter, this.group).catch(function (err) {
             return console.error(err.toString());
         });
 
@@ -154,14 +151,14 @@ class DrawClient {
     sendBringObjectForward(object) {
         if (object.type == 'activeSelection') {
             for (let i = 0; i < object._objects.length; i++) {
-                whiteboard_pages[current_page].bringObjectForward(object._objects[i].id);
-                this.connection.invoke("SendBringObjectForward", object._objects[i].id, this.current_page, this.group).catch(function (err) {
+                whiteboard.bringObjectForward(object._objects[i].id);
+                this.connection.invoke("SendBringObjectForward", object._objects[i].id, this.group).catch(function (err) {
                     return console.error(err.toString());
                 });
             }
         } else {
-            whiteboard_pages[current_page].bringObjectForward(object.id);
-            this.connection.invoke("SendBringObjectForward", object.id, this.current_page, this.group).catch(function (err) {
+            whiteboard.bringObjectForward(object.id);
+            this.connection.invoke("SendBringObjectForward", object.id, this.group).catch(function (err) {
                 return console.error(err.toString());
             });
         }
@@ -170,14 +167,14 @@ class DrawClient {
     sendSendObjectBackwards(object) {
         if (object.type == 'activeSelection') {
             for (let i = 0; i < object._objects.length; i++) {
-                whiteboard_pages[current_page].sendObjectBackwards(object._objects[i].id);
-                this.connection.invoke("SendSendObjectBackwards", object._objects[i].id, this.current_page, this.group).catch(function (err) {
+                whiteboard.sendObjectBackwards(object._objects[i].id);
+                this.connection.invoke("SendSendObjectBackwards", object._objects[i].id, this.group).catch(function (err) {
                     return console.error(err.toString());
                 });
             }
         } else {
-            whiteboard_pages[current_page].sendObjectBackwards(object.id);
-            this.connection.invoke("SendSendObjectBackwards", object.id, this.current_page, this.group).catch(function (err) {
+            whiteboard.sendObjectBackwards(object.id);
+            this.connection.invoke("SendSendObjectBackwards", object.id, this.group).catch(function (err) {
                 return console.error(err.toString());
             });
         }
@@ -185,7 +182,7 @@ class DrawClient {
 
     sendObjectAdd(object) {
         console.log('sendobjectadd', object);
-        this.connection.invoke("SendObjectAdd", object, this.current_page, this.group).catch(function (err) {
+        this.connection.invoke("SendObjectAdd", object, this.group).catch(function (err) {
             return console.error(err.toString());
         });
     }
@@ -197,12 +194,12 @@ class DrawClient {
                 var left = object.left + (object.width / 2.0) + object._objects[i].left;
                 var top = object.top + (object.height / 2.0) + object._objects[i].top;
 
-                this.connection.invoke("SendObjectMove", left, top, object._objects[i].id, this.current_page, this.group).catch(function (err) {
+                this.connection.invoke("SendObjectMove", left, top, object._objects[i].id, this.group).catch(function (err) {
                     return console.error(err.toString());
                 });
             }
         } else {
-            this.connection.invoke("SendObjectMove", object.left, object.top, object.id, this.current_page, this.group).catch(function (err) {
+            this.connection.invoke("SendObjectMove", object.left, object.top, object.id, this.group).catch(function (err) {
                 return console.error(err.toString());
             });
         }
@@ -211,17 +208,17 @@ class DrawClient {
     
     sendObjectScale(object) {
         if (object.type == 'activeSelection') {
-            whiteboard_pages[this.current_page].deselectObjects();
+            whiteboard.deselectObjects();
             for (let i = 0; i < object._objects.length; i++) {
 
-                var actual_object = whiteboard_pages[this.current_page].getObjectById(object._objects[i].id);
+                var actual_object = whiteboard.getObjectById(object._objects[i].id);
 
-                this.connection.invoke("SendObjectScale", actual_object.left, actual_object.top, actual_object.scaleX, actual_object.scaleY, actual_object.id, this.current_page, this.group).catch(function (err) {
+                this.connection.invoke("SendObjectScale", actual_object.left, actual_object.top, actual_object.scaleX, actual_object.scaleY, actual_object.id, this.group).catch(function (err) {
                     return console.error(err.toString());
                 });
             }
         } else {
-            this.connection.invoke("SendObjectScale", object.left, object.top, object.scaleX, object.scaleY, object.id, this.current_page, this.group).catch(function (err) {
+            this.connection.invoke("SendObjectScale", object.left, object.top, object.scaleX, object.scaleY, object.id, this.group).catch(function (err) {
                 return console.error(err.toString());
             });
         }
@@ -229,24 +226,24 @@ class DrawClient {
 
     sendObjectRotate(object) {
         if (object.type == 'activeSelection') {
-            whiteboard_pages[this.current_page].deselectObjects();
+            whiteboard.deselectObjects();
             for (let i = 0; i < object._objects.length; i++) {
 
                 console.log(object._objects[i].id);
 
-                var actual_object = whiteboard_pages[this.current_page].getObjectById(object._objects[i].id);
+                var actual_object = whiteboard.getObjectById(object._objects[i].id);
 
                 console.log(actual_object);
 
-                this.connection.invoke("SendObjectRotate", actual_object.angle, actual_object.id, this.current_page, this.group).catch(function (err) {
+                this.connection.invoke("SendObjectRotate", actual_object.angle, actual_object.id, this.group).catch(function (err) {
                     return console.error(err.toString());
                 });
-                this.connection.invoke("SendObjectMove", actual_object.left, actual_object.top, actual_object.id, this.current_page, this.group).catch(function (err) {
+                this.connection.invoke("SendObjectMove", actual_object.left, actual_object.top, actual_object.id, this.group).catch(function (err) {
                     return console.error(err.toString());
                 });
             }
         } else {
-            this.connection.invoke("SendObjectRotate", object.angle, object.id, this.current_page, this.group).catch(function (err) {
+            this.connection.invoke("SendObjectRotate", object.angle, object.id, this.group).catch(function (err) {
                 return console.error(err.toString());
             });
         }
@@ -256,12 +253,12 @@ class DrawClient {
     sendObjectRemove(object) {
         if (object.type == 'activeSelection') {
             for (let i = 0; i < object._objects.length; i++) {
-                this.connection.invoke("SendObjectRemove", object._objects[i].id, this.current_page, this.group).catch(function (err) {
+                this.connection.invoke("SendObjectRemove", object._objects[i].id, this.group).catch(function (err) {
                     return console.error(err.toString());
                 });
             }
         } else {
-            this.connection.invoke("SendObjectRemove", object.id, this.current_page, this.group).catch(function (err) {
+            this.connection.invoke("SendObjectRemove", object.id, this.group).catch(function (err) {
                 return console.error(err.toString());
             });
         } 
@@ -270,12 +267,12 @@ class DrawClient {
     sendObjectBucket(object) {
         if (object.type == 'activeSelection') {
             for (let i = 0; i < object._objects.length; i++) {
-                this.connection.invoke("SendObjectBucket", object._objects[i].fill, object._objects[i].id, this.current_page, this.group).catch(function (err) {
+                this.connection.invoke("SendObjectBucket", object._objects[i].fill, object._objects[i].id, this.group).catch(function (err) {
                     return console.error(err.toString());
                 });
             }
         } else {
-            this.connection.invoke("SendObjectBucket", whiteboard_pages[this.current_page].free_drawing_brush.color, object.id, this.current_page, this.group).catch(function (err) {
+            this.connection.invoke("SendObjectBucket", whiteboard.free_drawing_brush.color, object.id, this.group).catch(function (err) {
                 return console.error(err.toString());
             });
         }
@@ -284,12 +281,12 @@ class DrawClient {
     sendObjectRecolor(object) {
         if (object.type == 'activeSelection') {
             for (let i = 0; i < object._objects.length; i++) {
-                this.connection.invoke("SendObjectRecolor", object._objects[i].stroke, object._objects[i].id, this.current_page, this.group).catch(function (err) {
+                this.connection.invoke("SendObjectRecolor", object._objects[i].stroke, object._objects[i].id, this.group).catch(function (err) {
                     return console.error(err.toString());
                 });
             }
         } else {
-            this.connection.invoke("SendObjectRecolor", whiteboard_pages[this.current_page].free_drawing_brush.color, object.id, this.current_page, this.group).catch(function (err) {
+            this.connection.invoke("SendObjectRecolor", whiteboard.free_drawing_brush.color, object.id, this.group).catch(function (err) {
                 return console.error(err.toString());
             });
         }
@@ -299,85 +296,85 @@ class DrawClient {
         
         if (object.type == 'activeSelection') {
             for (let i = 0; i < object._objects.length; i++) {
-                this.connection.invoke("SendObjectRemove", object._objects[i].id, this.current_page, this.group).catch(function (err) {
+                this.connection.invoke("SendObjectRemove", object._objects[i].id, this.group).catch(function (err) {
                     return console.error(err.toString());
                 });
             }
-            this.connection.invoke("SendObjectGroup", object, this.current_page, this.group).catch(function (err) {
+            this.connection.invoke("SendObjectGroup", object, this.group).catch(function (err) {
                 return console.error(err.toString());
             });
         }
     }
 
     sendImg(img_data) {
-        this.connection.invoke("SendImg", img_data, this.current_page, this.group).catch(function (err) {
+        this.connection.invoke("SendImg", img_data, this.group).catch(function (err) {
             return console.error(err.toString());
         });
     }
 
     sendTextModify(text_object) {
-        this.connection.invoke("SendTextModify", text_object.text, text_object.id, this.current_page, this.group).catch(function (err) {
+        this.connection.invoke("SendTextModify", text_object.text, text_object.id, this.group).catch(function (err) {
             return console.error(err.toString());
         });
     }
     
-    drawCanvas(json, id_counter, page) {
-        whiteboard_pages[page].loadCanvas(json, id_counter);
+    drawCanvas(json, id_counter) {
+        whiteboard.loadCanvas(json, id_counter);
     }
 
-    drawBringObjectForward(id, page) {
-        whiteboard_pages[page].bringObjectForward(id);
+    drawBringObjectForward(id) {
+        whiteboard.bringObjectForward(id);
     }
 
-    drawSendObjectBackwards(id, page) {
-        whiteboard_pages[page].sendObjectBackwards(id);
+    drawSendObjectBackwards(id) {
+        whiteboard.sendObjectBackwards(id);
     }
 
-    drawObjectAdd(json, page) {
+    drawObjectAdd(json) {
         
-        whiteboard_pages[page].disableEvent("object:added");
-        whiteboard_pages[page].addObject(json);
-        whiteboard_pages[page].enableEvent('object:added');
+        whiteboard.disableEvent("object:added");
+        whiteboard.addObject(json);
+        whiteboard.enableEvent('object:added');
     }
 
-    drawObjectMove(x, y, id, page) {
-        whiteboard_pages[page].disableEvent('object:moved');
-        whiteboard_pages[page].moveObject(x, y, id);
-        whiteboard_pages[page].enableEvent('object:moved');
+    drawObjectMove(x, y, id) {
+        whiteboard.disableEvent('object:moved');
+        whiteboard.moveObject(x, y, id);
+        whiteboard.enableEvent('object:moved');
     }
 
-    drawObjectScale(x, y, scaleX, scaleY, id, page) {
-        whiteboard_pages[page].disableEvent('object:scaled');
-        whiteboard_pages[page].scaleObject(x, y, scaleX, scaleY, id);
-        whiteboard_pages[page].enableEvent('object:scaled');
+    drawObjectScale(x, y, scaleX, scaleY, id) {
+        whiteboard.disableEvent('object:scaled');
+        whiteboard.scaleObject(x, y, scaleX, scaleY, id);
+        whiteboard.enableEvent('object:scaled');
     }
 
-    drawObjectRotate(angle, id, page) {
-        whiteboard_pages[page].rotateObject(angle, id);
-        whiteboard_pages[page].enableEvent('object:moved');
+    drawObjectRotate(angle, id) {
+        whiteboard.rotateObject(angle, id);
+        whiteboard.enableEvent('object:moved');
     }
 
-    drawObjectRemove(id, page) {
-        whiteboard_pages[page].removeObjectById(id);
+    drawObjectRemove(id) {
+        whiteboard.removeObjectById(id);
     }
 
-    drawObjectBucket(fill, id, page) {
-        whiteboard_pages[page].bucketObjectById(fill, id);
+    drawObjectBucket(fill, id) {
+        whiteboard.bucketObjectById(fill, id);
     }
 
-    drawObjectRecolor(stroke, id, page) {
-        whiteboard_pages[page].recolorObjectById(stroke, id);
+    drawObjectRecolor(stroke, id) {
+        whiteboard.recolorObjectById(stroke, id);
     }
 
-    drawObjectGroup(objects, page) {
-        whiteboard_pages[page].groupObjects(objects);
+    drawObjectGroup(objects) {
+        whiteboard.groupObjects(objects);
     }
 
-    drawImg(img_data, page) {
-        whiteboard_pages[page].addImg(img_data);
+    drawImg(img_data) {
+        whiteboard.addImg(img_data);
     }
 
-    drawTextModify(text, id, page) {
-        whiteboard_pages[page].modifyText(text, id);
+    drawTextModify(text, id) {
+        whiteboard.modifyText(text, id);
     }
 }
