@@ -36,7 +36,7 @@ public class AssignmentService : IAssignmentService
         try
         {
             var response = await _http.PostAsJsonAsync(
-                "Administration/CreateAssignment",
+                "Assignment/CreateAssignment",
                 new CreateAssignmentCommand { Name = newAssignmentName, UserGroupId = userGroupId }
             );
 

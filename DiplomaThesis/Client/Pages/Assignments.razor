@@ -40,29 +40,57 @@ else
             </div>
         </div>
 
-        <div class="section">
-            <div class="container_list_assignments">
-                <div class="section_header">To Do</div>
-                <div class="list_assignments">
-                    @foreach (var assignment in AssignmentsUserGroupToDo)
+        <div class="container_sections">
+            @for (int i = 0; i < AssignmentLists.Count(); i++)
+            {
+                <div class="container_section">
+                    @if (AssignmentLists[i] != null || AssignmentLists[i].Count() != 0)
                     {
-                        @assignment.Name <br />
-                        @assignment.Created
+                        <div class="section_header">@AssignmentCategories.ElementAt(i).Value</div>
+                        <div class="section">
+                            <div class="list_assignments">
+                                @foreach (var assignment in AssignmentLists[i])
+                                {
+                                    <div class="assignment">
+                                        <div class="name">@assignment.Name</div>
+                                        <div class="created">@assignment.Created</div>
+                                        <div class="description">@assignment.Description</div>
+                                        <div class="assignee">
+                                            @if (assignment.User != null)
+                                            {
+                                                @assignment.Description
+                                            }
+                                            else
+                                            {
+                                                <span class="text_light">Not assigned</span>
+                                            }
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+
                     }
                 </div>
-            </div>
+            }
         </div>
     </div>
 }
 
 @code {
     private List<AssignmentContract> AssignmentsUserGroup = new();
-    private List<AssignmentContract> AssignmentsUserGroupToDo = new();
-    private List<AssignmentContract> AssignmentsUserGroupInProgress = new();
-    private List<AssignmentContract> AssignmentsUserGroupDone = new();
     private List<UserContract> UserGroupMembers = new();
     private UserGroupContract? UserGroup = null;
     private Guid UserId = new();
+
+    private List<List<AssignmentContract>> AssignmentLists = new List<List<AssignmentContract>>();
+
+    private Dictionary<int, string> AssignmentCategories = new Dictionary<int, string>
+    {
+        {0, "To do" },
+        {1, "In progress" },
+        {2, "Done" },
+    };
 
     private string NewAssignmentName = string.Empty;
 
@@ -79,27 +107,21 @@ else
     protected override async Task OnInitializedAsync()
     {
         await GetSetUserId();
-        Console.WriteLine("got user id");
         UserGroup = await AdministrationService.GetUserUserGroup(UserId);
-        Console.WriteLine("got user group");
 
         if (UserGroup!.Id == Guid.Empty)
         {
             return;
         }
-        Console.WriteLine("user group not empty");
-        if(UserGroup.LeaderId == UserId)
+        if (UserGroup.LeaderId == UserId)
         {
             UserUserGroupLeader = true;
         }
-        Console.WriteLine("user group leader set");
+
         AssignmentsUserGroup = await AssignmentService.GetUserGroupAssignments(UserGroup.Id);
-        Console.WriteLine("got assignments");
         CategorizeAssignments();
-        Console.WriteLine("categorized assignments");
 
         UserInUserGroup = true;
-        Console.WriteLine("cuser in user group true");
     }
 
     private async Task GetSetUserId()
@@ -117,9 +139,19 @@ else
 
     private void CategorizeAssignments()
     {
-        AssignmentsUserGroupToDo = AssignmentsUserGroup!.FindAll(a => a.Step == 0);
-        AssignmentsUserGroupInProgress = AssignmentsUserGroup!.FindAll(a => a.Step == 1);
-        AssignmentsUserGroupDone = AssignmentsUserGroup!.FindAll(a => a.Step == 2);
+        if (AssignmentLists.Count() == AssignmentCategories.Count())
+        {
+            foreach (KeyValuePair<int, string> assignmentCategory in AssignmentCategories)
+            {
+                AssignmentLists[assignmentCategory.Key] = AssignmentsUserGroup!.FindAll(a => a.Step == assignmentCategory.Key);
+            }
+            return;
+        }
+
+        foreach (KeyValuePair<int, string> assignmentCategory in AssignmentCategories)
+        {
+            AssignmentLists.Add(AssignmentsUserGroup!.FindAll(a => a.Step == assignmentCategory.Key));
+        }
     }
 
     private async Task CreateAssignment()
@@ -134,7 +166,7 @@ else
         if (result != null)
         {
             NewAssignmentName = string.Empty;
-            AssignmentsUserGroupToDo.Add(result);
+            AssignmentLists[0].Add(result);
             StateHasChanged();
         }
     }
