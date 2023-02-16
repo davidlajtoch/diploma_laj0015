@@ -2,7 +2,7 @@
   width: calc(100% - 10px);
   height: 40px;
   font-family: "Nunito", sans-serif;
-  color: #424242;
+  color: #4b5563;
   margin-bottom: 10px;
 }
 .menu .group_left {
@@ -20,7 +20,7 @@
   display: flex;
   flex-direction: column;
   font-family: "Nunito", sans-serif;
-  color: #424242;
+  color: #4b5563;
   padding: 0px;
 }
 .list_datasets .row {
@@ -53,5 +53,5 @@
   height: 40px;
   font-family: "Nunito", sans-serif;
   text-align: center;
-  color: #424242;
+  color: #4b5563;
 }

@@ -83,7 +83,7 @@
   float: left;
 }
 .user_menu_container .user_menu .list_user_groups .role:hover, .user_menu_container .user_menu .list_roles .role:hover {
-  color: #424242;
+  color: #4b5563;
 }
 .user_menu_container .user_menu .user_group_selected {
   display: inline-block;
@@ -98,6 +98,6 @@
 }
 .user_menu_container .user_menu .info_no_roles {
   width: 100%;
-  color: #bdbdbd;
+  color: #9ca3af;
   text-align: center;
 }

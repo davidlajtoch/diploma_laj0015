@@ -92,7 +92,7 @@
   }
 }
 .list_users .info_light, .list_groups .info_light {
-  color: #bdbdbd;
+  color: #9ca3af;
 }
 .list_users .row_expanded, .list_groups .row_expanded {
   animation: expand 1s linear;

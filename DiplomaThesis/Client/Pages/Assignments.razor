@@ -41,38 +41,66 @@ else
         </div>
 
         <div class="container_sections">
-            @for (int i = 0; i < AssignmentLists.Count(); i++)
-            {
-                <div class="container_section">
-                    @if (AssignmentLists[i] != null || AssignmentLists[i].Count() != 0)
-                    {
-                        <div class="section_header">@AssignmentCategories.ElementAt(i).Value</div>
-                        <div class="section">
-                            <div class="list_assignments">
-                                @foreach (var assignment in AssignmentLists[i])
-                                {
-                                    <div class="assignment">
-                                        <div class="name">@assignment.Name</div>
-                                        <div class="created">@assignment.Created</div>
-                                        <div class="description">@assignment.Description</div>
-                                        <div class="assignee">
-                                            @if (assignment.User != null)
-                                            {
-                                                @assignment.Description
-                                            }
-                                            else
-                                            {
-                                                <span class="text_light">Not assigned</span>
-                                            }
-                                        </div>
-                                    </div>
-                                }
+            <div class="section_left">
+                @for (int i = 0; i < AssignmentLists.Count(); i++)
+                {
+                    <div class="container_subsection">
+                        @if (AssignmentLists[i] != null || AssignmentLists[i].Count() != 0)
+                        {
+                            <div class="subsection_header">
+                                @AssignmentCategories.ElementAt(i).Value <span class="text_light">@AssignmentLists[i].Count()</span>
                             </div>
-                        </div>
+                            <div class="subsection">
+                                <div class="list_assignments">
+                                    @foreach (var assignment in AssignmentLists[i])
+                                    {
+                                        <div class="assignment urgency@(assignment.Urgency)" @onclick="() => SelectAssignment(assignment)">
+                                            <div class="name">@assignment.Name</div>
+                                            <div class="created">@assignment.Created</div>
+                                            <div class="description">@assignment.Description</div>
+                                            <div class="assignee">
+                                                @if (assignment.User != null)
+                                                {
+                                                    @assignment.User.Name
+                                                }
+                                                else
+                                                {
+                                                    <span class="text_light">Not assigned</span>
+                                                }
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        }
+                    </div>
 
-                    }
+                }
+            </div>
+
+            <div class="section_right">
+                @if(SelectedAssignment != null)
+                {
+                <div class="assignment">
+                    <div class="name">@SelectedAssignment!.Name</div>
+                    <div class="created">@SelectedAssignment.Created</div>
+                    <div class="description">@SelectedAssignment.Description</div>
+                    <div class="assignee">
+                        @if (SelectedAssignment.User != null)
+                        {
+                            @SelectedAssignment.User.Name
+                        }
+                        else
+                        {
+                            <span class="text_light">Not assigned</span>
+                        }
+                    </div>
                 </div>
-            }
+                }
+                <div class="menu_assignment">
+                    xd
+                </div>
+            </div>
         </div>
     </div>
 }
@@ -93,6 +121,7 @@ else
     };
 
     private string NewAssignmentName = string.Empty;
+    private AssignmentContract? SelectedAssignment { get; set; }
 
     private bool UserInUserGroup = false;
     private bool UserUserGroupLeader = false;
@@ -152,6 +181,11 @@ else
         {
             AssignmentLists.Add(AssignmentsUserGroup!.FindAll(a => a.Step == assignmentCategory.Key));
         }
+    }
+
+    private void SelectAssignment(AssignmentContract assignment)
+    {
+        SelectedAssignment = assignment;
     }
 
     private async Task CreateAssignment()
