@@ -136,7 +136,8 @@ else
     private bool UserInUserGroup = false;
     private bool IsConnected => HubConnection.State == HubConnectionState.Connected;
 
-    private PeriodicTimer RequestConnectedUsersTimer = new PeriodicTimer(TimeSpan.FromSeconds(20));
+    private PeriodicTimer RequestConnectedUsersTimer = new PeriodicTimer(TimeSpan.FromSeconds(15));
+    private PeriodicTimer UpdateConnectedUsersTimer = new PeriodicTimer(TimeSpan.FromSeconds(20));
 
     protected override async Task OnInitializedAsync()
     {
@@ -169,7 +170,6 @@ else
             if (!UsersChatConnectedTmp.Contains(userId))
             {
                 UsersChatConnectedTmp.Add(userId);
-                UsersChatConnected = UsersChatConnectedTmp;
                 StateHasChanged();
             }
         });
@@ -177,12 +177,11 @@ else
         await HubConnection.StartAsync();
 
         await AddUserToHubGroup();
-        await RequestConnectedUserId();
-        await SendConnectedUserId();
 
         UserMessages = await ChatService.GetUserGroupMessages(UserGroup.Id);
 
         RunRequestConnectedUsersTimer();
+        RunUpdateConnectedUsersTimer();
 
         UserInUserGroup = true;
     }
@@ -235,7 +234,22 @@ else
         {
             UsersChatConnectedTmp.Clear();
             await RequestConnectedUserId();
-            StateHasChanged();
+        }
+    }
+
+    private async void RunUpdateConnectedUsersTimer()
+    {
+        while (await UpdateConnectedUsersTimer.WaitForNextTickAsync())
+        {
+            var firstNotSecond = UsersChatConnected.Except(UsersChatConnectedTmp).ToList();
+            var secondNotFirst = UsersChatConnectedTmp.Except(UsersChatConnected).ToList();
+
+            if (!firstNotSecond.Any() || secondNotFirst.Any())
+            {
+                UsersChatConnected = UsersChatConnectedTmp;
+                StateHasChanged();
+            }
+            
         }
     }
 
@@ -261,6 +275,7 @@ else
     public async ValueTask DisposeAsync()
     {
         RequestConnectedUsersTimer.Dispose();
+        UpdateConnectedUsersTimer.Dispose();
         if (HubConnection is not null)
         {
             await HubConnection.DisposeAsync();

@@ -69,6 +69,7 @@
   position: relative;
 }
 .container_sections .section_left .container_subsection .subsection .list_assignments .assignment {
+  position: relative;
   width: calc(100% - 25px);
   max-height: 140px;
   display: flex;
@@ -132,6 +133,27 @@
 }
 .container_sections .section_left .container_subsection .subsection .list_assignments .urgency2 .assignee {
   color: #4b5563;
+}
+.container_sections .section_left .container_subsection .subsection .list_assignments .button_step_decrease, .container_sections .section_left .container_subsection .subsection .list_assignments .button_step_increase {
+  width: 30px;
+  height: 30px;
+  margin: 0;
+  position: absolute;
+  top: 50%;
+  -ms-transform: translateY(-50%);
+  transform: translateY(-50%);
+  z-index: 2;
+}
+.container_sections .section_left .container_subsection .subsection .list_assignments .button_step_decrease .icon, .container_sections .section_left .container_subsection .subsection .list_assignments .button_step_increase .icon {
+  position: relative;
+  top: 1px;
+  left: -1px;
+}
+.container_sections .section_left .container_subsection .subsection .list_assignments .button_step_decrease {
+  left: -30px;
+}
+.container_sections .section_left .container_subsection .subsection .list_assignments .button_step_increase {
+  right: -30px;
 }
 .container_sections .section_right {
   width: 400px;

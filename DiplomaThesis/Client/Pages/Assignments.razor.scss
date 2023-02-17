@@ -77,6 +77,7 @@
                     position: relative;
 
                     .assignment {
+                        position: relative;
                         width: calc(100% - 25px);
                         max-height: 140px;
                         display: flex;
@@ -104,7 +105,7 @@
                             overflow: hidden;
                         }
 
-                        &:hover{
+                        &:hover {
                             padding-bottom: 15px;
                             padding-top: 15px;
                         }
@@ -157,6 +158,31 @@
                             color: $color_grey;
                         }
                     }
+
+                    .button_step_decrease, .button_step_increase {
+                        width: 30px;
+                        height: 30px;
+                        margin: 0;
+                        position: absolute;
+                        top: 50%;
+                        -ms-transform: translateY(-50%);
+                        transform: translateY(-50%);
+                        z-index: 2;
+
+                        .icon{
+                            position: relative;
+                            top: 1px;
+                            left: -1px;
+                        }
+                    }
+
+                    .button_step_decrease{
+                        left: -30px;
+                    }
+
+                    .button_step_increase{
+                        right: -30px;
+                    }
                 }
             }
         }
@@ -195,7 +221,7 @@
             }
         }
 
-        .assignment_menu{
+        .assignment_menu {
             width: calc(100% - 20px);
             height: 100px;
         }

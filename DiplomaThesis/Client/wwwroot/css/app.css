@@ -80,6 +80,13 @@ html {
   padding-right: 12px;
 }
 
+.button_with_icon_circle_default {
+  background-color: #fff;
+  color: #4b5563;
+  border: none;
+  border-radius: 50%;
+}
+
 .input_search_default {
   height: 40px;
   width: 150px;

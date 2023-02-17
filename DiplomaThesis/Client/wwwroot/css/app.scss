@@ -87,6 +87,13 @@ html {
     }
 }
 
+.button_with_icon_circle_default {
+    background-color: $color_white;
+    color: $color_grey;
+    border: none;
+    border-radius: 50%;
+}
+
 .input_search_default {
     height: 40px;
     width: 150px;
