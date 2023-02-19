@@ -7,6 +7,5 @@ public class ActivityContract
     public DateTime? Created { get; init; }
     public string? UserGroupName { get; init; }
     public Guid? UserGroupId { get; init; }
-    public UserGroupContract? UserGroup { get; init; }
     
 }

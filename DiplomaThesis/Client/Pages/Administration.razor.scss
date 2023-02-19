@@ -55,7 +55,7 @@
     }
 
     .row {
-        background-color: #ffffff;
+        background-color: $color_white;
         box-shadow: $shadow_light_grey;
         transition: all 0.2s ease-in-out;
         cursor: pointer;

@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Security.Claims;
 using DiplomaThesis.Client.Shared;
 using DiplomaThesis.Server.Data;
@@ -24,6 +25,8 @@ public class AssignmentController : ControllerBase
     private readonly RoleManager<IdentityRole> _roleManager;
     private readonly UserManager<ApplicationUser> _userManager;
 
+    private readonly int[] _allowedAssignmentSteps = { 0, 1, 2};
+
     public AssignmentController(
         UserManager<ApplicationUser> userManager,
         RoleManager<IdentityRole> roleManager,
@@ -33,6 +36,24 @@ public class AssignmentController : ControllerBase
         _userManager = userManager;
         _roleManager = roleManager;
         _context = context;
+    }
+
+    private async Task<ActionResult> RecordActivity(string message, Guid? userGroupId)
+    {
+        var userGroup = await _context.UserGroups.FindAsync(userGroupId);
+
+        Activity newActivity = new Activity
+        {
+            Message = message,
+            Created = DateTime.Now,
+            UserGroupName = (userGroup == null)? null : userGroup.Name,
+            UserGroupId= userGroupId
+        };
+
+        _context.Activities.Add(newActivity);
+        //_context.SaveChanges();
+
+        return Ok();
     }
 
     private async Task<UserContract> ApplicationUserToUserContract(ApplicationUser applicationUser)
@@ -95,7 +116,7 @@ public class AssignmentController : ControllerBase
     public ActionResult CreateAssignment(
         [FromBody] CreateAssignmentCommand createAssignmentCommand)
     {
-        if(createAssignmentCommand.Name == string.Empty || createAssignmentCommand.Name == null || createAssignmentCommand.UserGroupId == Guid.Empty) return NotFound();
+        if (createAssignmentCommand.Name == string.Empty || createAssignmentCommand.Name == null || createAssignmentCommand.UserGroupId == Guid.Empty) return NotFound();
 
         var assignment = new Assignment
         {
@@ -110,7 +131,7 @@ public class AssignmentController : ControllerBase
         return Ok(new AssignmentContract
         {
             Id = result.Entity.Id,
-            Name= result.Entity.Name,
+            Name = result.Entity.Name,
             Description = result.Entity.Description,
             Created = result.Entity.Created,
             Urgency = result.Entity.Urgency,
@@ -118,6 +139,31 @@ public class AssignmentController : ControllerBase
             UserGroupId = result.Entity.UserGroupId,
             User = null
         });
+    }
+
+    [HttpPut]
+    public async Task<ActionResult> UpdateAssignmentStep(
+        [FromBody] UpdateAssignmentStepCommand updateAssignmentStepCommand)
+    {
+        if (updateAssignmentStepCommand.AssignmentId == Guid.Empty) return BadRequest();
+
+        int[] allowedValues = { -1, 1 };
+        if (!allowedValues.Contains(updateAssignmentStepCommand.ByValue)) return BadRequest();
+
+        var assignment = await _context.Assignments.FindAsync(updateAssignmentStepCommand.AssignmentId);
+        if (assignment == null) return NotFound();
+
+        var resultStep = assignment.Step + updateAssignmentStepCommand.ByValue;
+
+        if(!_allowedAssignmentSteps.Contains(resultStep)) return BadRequest();
+
+        assignment.Step += updateAssignmentStepCommand.ByValue;
+
+        await RecordActivity("Assignment " + assignment.Name + " had it's step " + ((updateAssignmentStepCommand.ByValue == -1)? "decresed" : "increased"), assignment.UserGroupId);
+        
+        _context.SaveChanges();
+
+        return Ok();
     }
 }
 

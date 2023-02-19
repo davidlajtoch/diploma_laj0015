@@ -54,54 +54,88 @@ else
                                 <div class="list_assignments">
                                     @foreach (var assignment in AssignmentLists[i])
                                     {
-                                        <div class="assignment urgency@(assignment.Urgency)" @onclick="() => SelectAssignment(assignment)">
-                                            <div class="name">@assignment.Name</div>
-                                            <div class="created">@assignment.Created</div>
-                                            <div class="description">@assignment.Description</div>
-                                            <div class="assignee">
-                                                @if (assignment.User != null)
-                                                {
-                                                    @assignment.User.Name
-                                                }
-                                                else
-                                                {
-                                                    <span class="text_light">Not assigned</span>
-                                                }
+                                        <div class="container_assignment animate__animated animate__fadeIn">
+                                            <button class="button_step_decrease" @onclick="() => UpdateAssignmentStep(assignment, -1)"
+                                    disabled="@((assignment.Step == AssignmentCategories.Keys.First())? true : false)">
+                                                <i class="material-icons icon">chevron_left</i>
+                                            </button>
+                                            <div class="assignment urgency@(assignment.Urgency)" @onclick="() => SelectAssignment(assignment)">
+                                                <div class="name">@assignment.Name</div>
+                                                <div class="created">@assignment.Created</div>
+                                                <div class="description">@assignment.Description</div>
+                                                <div class="assignee">
+                                                    @if (assignment.User != null)
+                                                    {
+                                                        @assignment.User.Name
+                                                    }
+                                                    else
+                                                    {
+                                                        <span class="text_light">Not assigned</span>
+                                                    }
+                                                </div>
                                             </div>
-                                            <button class="button_step_decrease button_with_icon_circle_default"><i class="material-icons icon">chevron_left</i></button>
-                                            <button class="button_step_increase button_with_icon_circle_default"><i class="material-icons icon">chevron_right</i></button>
+                                            <button class="button_step_increase" @onclick="() => UpdateAssignmentStep(assignment, 1)"
+                                    disabled="@((assignment.Step == AssignmentCategories.Keys.Last())? true : false)">
+                                                <i class="material-icons icon">chevron_right</i>
+                                            </button>
                                         </div>
                                     }
                                 </div>
                             </div>
                         }
                     </div>
-
                 }
             </div>
 
             <div class="section_right">
-                @if(SelectedAssignment != null)
+                @if (SelectedAssignment != null)
                 {
-                <div class="assignment">
-                    <div class="name">@SelectedAssignment!.Name</div>
-                    <div class="created">@SelectedAssignment.Created</div>
-                    <div class="description">@SelectedAssignment.Description</div>
+                    <div class="section_header">Name</div>
+                    <input type="text" class="input_search_default input_search nohover" placeholder="Name this assignment..." @bind="AssignmentName">
+
+                    <div class="section_header">Description</div>
+                    <textarea name="textarea" class="textarea_default textarea" placeholder="Describe this assignment..." @bind="AssignmentDescription"></textarea>
+
+                    <div class="section_header">Assignee</div>
                     <div class="assignee">
-                        @if (SelectedAssignment.User != null)
+                        @if (SelectedAssignment.User == null)
                         {
-                            @SelectedAssignment.User.Name
+
+                            <div class="name text_light animate__animated animate__fadeInDown">No user assigned</div>
                         }
                         else
                         {
-                            <span class="text_light">Not assigned</span>
+                            <div class="animate__animated animate__fadeInUp">
+                                <div class="name">@AssignmentUserName</div>
+                                <button class="button_tiny_default" @onclick="() => RemoveUserFromAssignment(SelectedAssignment.User)">
+                                    <i class="material-icons icon">remove</i>
+                                </button>
+                            </div>
                         }
                     </div>
-                </div>
+
+                    <input type="text" class="input_search_default input_search nohover" placeholder="Search and select Assignee..."
+                   @oninput="@((e) => SearchUserByName(e.Value!.ToString()!))">
+                    <div class="list_users">
+                        @foreach (var user in UserGroupMembersFiltered!)
+                        {
+                            <div class="user" @onclick="()=> AddUserToAssignment(SelectedAssignment!, user)">
+                                @user.Name
+                            </div>
+                        }
+                    </div>
+                    <div class="section_header">Urgency</div>
+                    <div class="urgency">
+                        <button class="button_circle_default button_circle">0</button>
+                        <button class="button_circle_default button_circle">1</button>
+                        <button class="button_circle_default button_circle">2</button>
+                    </div>
                 }
-                <div class="menu_assignment">
-                    xd
-                </div>
+                else
+                {
+                    <div class="notification_nothing_here">Select an assignment to view it's detail...</div>
+                }
+
             </div>
         </div>
     </div>
@@ -110,6 +144,7 @@ else
 @code {
     private List<AssignmentContract> AssignmentsUserGroup = new();
     private List<UserContract> UserGroupMembers = new();
+    private List<UserContract> UserGroupMembersFiltered = new();
     private UserGroupContract? UserGroup = null;
     private Guid UserId = new();
 
@@ -123,6 +158,10 @@ else
     };
 
     private string NewAssignmentName = string.Empty;
+    private string AssignmentName = string.Empty;
+    private string AssignmentDescription = string.Empty;
+    private string AssignmentUserName = string.Empty;
+    private int AssignmentUrgency = 0;
     private AssignmentContract? SelectedAssignment { get; set; }
 
     private bool UserInUserGroup = false;
@@ -149,6 +188,8 @@ else
             UserUserGroupLeader = true;
         }
 
+        await GetSetUserGroupMembers();
+
         AssignmentsUserGroup = await AssignmentService.GetUserGroupAssignments(UserGroup.Id);
         CategorizeAssignments();
 
@@ -165,7 +206,7 @@ else
     private async Task GetSetUserGroupMembers()
     {
         UserGroupMembers = await AdministrationService.GetUserGroupMembers(UserGroup.Id);
-        UserGroupMembers = UserGroupMembers!.FindAll(u => u.Id != UserId);
+        UserGroupMembersFiltered = UserGroupMembers!;
     }
 
     private void CategorizeAssignments()
@@ -207,11 +248,54 @@ else
         }
     }
 
+    private async Task UpdateAssignmentStep(AssignmentContract assignment, int byValue)
+    {
+        if (NewAssignmentName == null ||
+           (assignment.Step + byValue) < AssignmentCategories.Keys.First() ||
+           (assignment.Step + byValue) > AssignmentCategories.Keys.Last())
+        {
+            return;
+        }
+
+        if (byValue != -1 && byValue != 1)
+        {
+            return;
+        }
+
+        if (await AssignmentService.UpdateAssignmentStep(assignment.Id, byValue))
+        {
+            AssignmentLists[assignment.Step].Remove(assignment);
+            assignment.Step += byValue;
+            AssignmentLists[assignment.Step].Add(assignment);
+            StateHasChanged();
+        }
+    }
+
+    private async Task AddUserToAssignment(AssignmentContract assignment, UserContract user)
+    {
+        return;
+    }
+
+    private async Task RemoveUserFromAssignment(UserContract user)
+    {
+        return;
+    }
+
     private void SearchAssignmentByName(string searchedAssignment)
     {
         if (searchedAssignment == string.Empty || searchedAssignment == null)
         {
             return;
         }
+    }
+
+    private void SearchUserByName(string searchedUser)
+    {
+        if (searchedUser == string.Empty || searchedUser == null)
+        {
+            return;
+        }
+
+        UserGroupMembersFiltered = UserGroupMembers!.FindAll(u => u.Name.Contains(searchedUser));
     }
 }

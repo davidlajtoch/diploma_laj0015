@@ -38,8 +38,8 @@
 .container .section_left .container_list_users .section_subheader {
   width: 100%;
   text-align: center;
-  color: #651fff;
-  border-bottom: 1px solid #f5f5f5;
+  color: #7c4dff;
+  border-bottom: 1px solid #f3f4f6;
 }
 .container .section_left .container_list_users .list_users {
   width: 100%;
@@ -68,12 +68,12 @@
   transform: translate(-50%, -50%);
 }
 .container .section_left .container_list_users .list_users .user .status .connected {
-  background-color: #651fff;
+  background-color: #7c4dff;
   border: 5px solid #dcccff;
 }
 .container .section_left .container_list_users .list_users .user .status .disconnected {
   background-color: #9ca3af;
-  border: 5px solid #f5f5f5;
+  border: 5px solid #f3f4f6;
 }
 .container .section_right {
   height: 100%;
@@ -140,7 +140,7 @@
 }
 .container .section_right .container_list_messages .list_messages .row .message_current_user .text {
   border-top-right-radius: 0px;
-  background-color: #651fff;
+  background-color: #7c4dff;
   color: #fff;
 }
 .container .section_right .container_list_messages .list_messages .row .message_other_user {
@@ -151,7 +151,7 @@
 }
 .container .section_right .container_list_messages .list_messages .row .message_other_user .text {
   border-top-left-radius: 0px;
-  background-color: #f5f5f5;
+  background-color: #f3f4f6;
 }
 .container .section_right .inputs {
   width: 100%;
@@ -160,7 +160,7 @@
 }
 .container .section_right .inputs .input_with_button input {
   width: 100%;
-  color: #4b5563;
+  color: #6b7280;
 }
 .container .section_right .inputs .menu_emoji {
   width: 190px;

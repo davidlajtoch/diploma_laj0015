@@ -31,13 +31,13 @@
   margin-right: 5px;
   text-decoration: none;
   border-radius: 500px;
-  color: #4b5563;
-  background-color: #f5f5f5;
+  color: #6b7280;
+  background-color: #f3f4f6;
   transition: 0.2s ease-in-out;
   cursor: pointer;
 }
 .section_top .centered_container .buttons a:hover {
-  color: #651fff;
+  color: #7c4dff;
   padding-left: 30px;
   padding-right: 30px;
 }
@@ -69,14 +69,14 @@
   flex-direction: column;
   text-align: center;
   padding: 15px;
-  color: #4b5563;
+  color: #6b7280;
   box-shadow: 0px 0px 9px 0px rgba(0, 0, 0, 0.15);
   border-radius: 15px;
   transition: all ease-in-out 0.1s;
   cursor: pointer;
 }
 .section_middle .grid_links .tile:hover {
-  color: #651fff;
+  color: #7c4dff;
 }
 .section_middle .grid_links .tile .icon, .section_middle .grid_links .tile .name, .section_middle .grid_links .tile .description {
   width: 100%;
@@ -109,7 +109,7 @@
   display: flex;
 }
 .section_bottom .menu .group_left .selected {
-  color: #651fff;
+  color: #7c4dff;
   padding-left: 30px;
   padding-right: 30px;
 }
@@ -138,13 +138,13 @@
   text-align: center;
 }
 .section_bottom .list_activity .header {
-  color: #651fff;
+  color: #7c4dff;
   padding-top: 10px;
   padding-bottom: 10px;
   margin-top: 0px;
 }
 .section_bottom .list_activity .row {
-  background-color: #ffffff;
+  background-color: #fff;
   box-shadow: 0px 0px 9px 0px rgba(0, 0, 0, 0.1);
   transition: all 0.2s ease-in-out;
 }
@@ -176,7 +176,7 @@
     padding: 10px 0;
   }
   .section_bottom .list_activity .col:before {
-    color: #651fff;
+    color: #7c4dff;
     padding-right: 10px;
     padding-left: 10px;
     content: attr(data-label);

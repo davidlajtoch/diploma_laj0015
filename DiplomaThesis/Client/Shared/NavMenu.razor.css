@@ -31,7 +31,7 @@
   height: 40px;
   display: flex;
   flex-direction: row;
-  color: #4b5563;
+  color: #6b7280;
   margin-top: 5px;
   margin-bottom: 5px;
   transition: all ease-in-out 0.1s;
@@ -39,7 +39,7 @@
   cursor: pointer;
 }
 .nav .group .item:hover {
-  color: #651fff;
+  color: #7c4dff;
 }
 .nav .group .item .icon {
   position: relative;

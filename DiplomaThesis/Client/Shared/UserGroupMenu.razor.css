@@ -45,7 +45,7 @@
   text-align: right;
 }
 .user_group_menu_container .user_group_menu .table_info .label {
-  color: #651fff;
+  color: #7c4dff;
   text-align: left;
 }
 .user_group_menu_container .user_group_menu .section_header {
@@ -53,7 +53,7 @@
   text-align: center;
   margin-top: 5px;
   margin-bottom: 5px;
-  color: #651fff;
+  color: #7c4dff;
 }
 .user_group_menu_container .user_group_menu .input_search {
   width: calc(100% - 40px) !important;
@@ -71,12 +71,12 @@
   cursor: auto;
   padding-top: 5px;
   padding-bottom: 5px;
-  border-bottom: 1px solid #f5f5f5;
+  border-bottom: 1px solid #f3f4f6;
   transition: 0.2s ease-in-out;
   cursor: pointer;
 }
 .user_group_menu_container .user_group_menu .user_list .user:hover {
-  color: #651fff;
+  color: #7c4dff;
 }
 .user_group_menu_container .user_group_menu .user_list .user .buttons button {
   margin-left: 5px;

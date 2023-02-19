@@ -19,7 +19,7 @@
   flex-direction: row;
 }
 .menu .group_left .selected {
-  color: #651fff;
+  color: #7c4dff;
   padding-left: 30px;
   padding-right: 30px;
 }
@@ -41,19 +41,19 @@
 }
 .list_users .header, .list_groups .header {
   font-size: 16px;
-  color: #651fff;
+  color: #7c4dff;
   padding-top: 10px;
   padding-bottom: 10px;
   margin-top: 0px;
 }
 .list_users .row, .list_groups .row {
-  background-color: #ffffff;
+  background-color: #fff;
   box-shadow: 0px 0px 9px 0px rgba(0, 0, 0, 0.1);
   transition: all 0.2s ease-in-out;
   cursor: pointer;
 }
 .list_users .row:hover, .list_groups .row:hover {
-  color: #651fff;
+  color: #7c4dff;
 }
 .list_users .col-1, .list_groups .col-1 {
   flex-basis: 25%;
@@ -83,7 +83,7 @@
     padding: 10px 0;
   }
   .list_users .col:before, .list_groups .col:before {
-    color: #651fff;
+    color: #7c4dff;
     padding-right: 10px;
     padding-left: 10px;
     content: attr(data-label);

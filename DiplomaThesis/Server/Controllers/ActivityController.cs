@@ -86,7 +86,6 @@ public class ActivityController : ControllerBase
             Created = DateTime.Now,
             UserGroupName = (userUserGroup == null)? string.Empty : userUserGroup.Name,
             UserGroupId = user.UserGroupId,
-            UserGroup = userUserGroup
         };
         _context.Activities.Add(activity);
         _context.SaveChanges();
@@ -114,7 +113,6 @@ public class ActivityController : ControllerBase
             Created = DateTime.Now,
             UserGroupName = (userUserGroup == null)? string.Empty : userUserGroup.Name,
             UserGroupId = user.UserGroupId,
-            UserGroup = userUserGroup
         };
         _context.Activities.Add(activity);
         _context.SaveChanges();
@@ -146,7 +144,6 @@ public class ActivityController : ControllerBase
             Created = DateTime.Now,
             UserGroupName = userGroup.Name,
             UserGroupId = userGroup.Id,
-            UserGroup = userGroup
         };
         _context.Activities.Add(activity);
         _context.SaveChanges();
@@ -178,7 +175,6 @@ public class ActivityController : ControllerBase
             Created = DateTime.Now,
             UserGroupName = userGroup.Name,
             UserGroupId = userGroup.Id,
-            UserGroup = userGroup
         };
         _context.Activities.Add(activity);
         _context.SaveChanges();
@@ -204,7 +200,6 @@ public class ActivityController : ControllerBase
             Created = DateTime.Now,
             UserGroupName = userGroup.Name,
             UserGroupId = userGroup.Id,
-            UserGroup = userGroup
         };
         _context.Activities.Add(activity);
         _context.SaveChanges();
@@ -230,7 +225,6 @@ public class ActivityController : ControllerBase
             Created = DateTime.Now,
             UserGroupName = userGroup.Name,
             UserGroupId = null,
-            UserGroup = null
         };
         _context.Activities.Add(activity);
         _context.SaveChanges();

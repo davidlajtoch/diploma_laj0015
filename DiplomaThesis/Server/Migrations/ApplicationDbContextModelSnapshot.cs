@@ -28,7 +28,7 @@ namespace DiplomaThesis.Server.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime?>("Created")
+                    b.Property<DateTime>("Created")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Message")
@@ -42,8 +42,6 @@ namespace DiplomaThesis.Server.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("UserGroupId");
 
                     b.ToTable("Activities");
                 });
@@ -537,15 +535,6 @@ namespace DiplomaThesis.Server.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens", (string)null);
-                });
-
-            modelBuilder.Entity("DiplomaThesis.Server.Models.Activity", b =>
-                {
-                    b.HasOne("DiplomaThesis.Server.Models.UserGroup", "UserGroup")
-                        .WithMany()
-                        .HasForeignKey("UserGroupId");
-
-                    b.Navigation("UserGroup");
                 });
 
             modelBuilder.Entity("DiplomaThesis.Server.Models.ApplicationUser", b =>

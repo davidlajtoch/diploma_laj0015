@@ -31,13 +31,13 @@
   height: 100%;
   padding-left: 10px;
   padding-right: 10px;
-  color: #4b5563;
+  color: #6b7280;
   transition: all ease-in-out 0.1s;
   overflow: hidden;
   cursor: pointer;
 }
 .nav .group .item:hover {
-  color: #651fff;
+  color: #7c4dff;
 }
 .nav .group .item:hover .tooltip {
   display: block;
@@ -50,7 +50,7 @@
 .nav .group .item .tooltip {
   display: none;
   width: 120px;
-  background-color: #651fff;
+  background-color: #7c4dff;
   color: #fff;
   text-align: center;
   border-radius: 10px;
@@ -69,5 +69,5 @@
   margin-left: -5px;
   border-width: 5px;
   border-style: solid;
-  border-color: #651fff transparent transparent transparent;
+  border-color: #7c4dff transparent transparent transparent;
 }

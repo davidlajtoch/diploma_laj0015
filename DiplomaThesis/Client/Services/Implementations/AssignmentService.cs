@@ -65,4 +65,22 @@ public class AssignmentService : IAssignmentService
 
         return new AssignmentContract();
     }
+
+    public async Task<bool> UpdateAssignmentStep(Guid assignmentId, int byValue)
+    {
+        try
+        {
+            var response = await _http.PutAsJsonAsync(
+                "Assignment/UpdateAssignmentStep",
+                new UpdateAssignmentStepCommand { AssignmentId = assignmentId, ByValue = byValue }
+            );
+            return response.IsSuccessStatusCode;
+        }
+        catch (AccessTokenNotAvailableException exception)
+        {
+            exception.Redirect();
+        }
+
+        return false;
+    }
 }

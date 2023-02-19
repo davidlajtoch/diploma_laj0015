@@ -87,11 +87,12 @@ html {
     }
 }
 
-.button_with_icon_circle_default {
-    background-color: $color_white;
-    color: $color_grey;
+.button_circle_default {
     border: none;
     border-radius: 50%;
+    font-family: $font_nunito_bold;
+    color: $color_grey;
+    cursor: pointer;
 }
 
 .input_search_default {
@@ -167,6 +168,17 @@ html {
     .button2 {
         right: 40px;
     }
+}
+
+.textarea_default{
+    padding: 10px;
+    color: $color_purple;
+    background-color: $color_lighter_grey;
+    border-radius: 15px;
+    border: none;
+    font-family: $font_nunito_bold;
+    font-size: 16px;
+    outline: none;
 }
 
 .text_light {
