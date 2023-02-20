@@ -9,4 +9,10 @@ public interface IAssignmentService
     public Task<AssignmentContract> CreateAssignment(string newAssignmentName, Guid userGroupId);
 
     public Task<bool> UpdateAssignmentStep(Guid assignmentId, int byValue);
+
+    public Task<bool> UpdateAssignmentUrgency(Guid assignmentId, int urgency);
+
+    public Task<bool> AddUserToAssignment(Guid assignmentId, Guid userId);
+
+    public Task<bool> RemoveUserFromAssignment(Guid assignmentId);
 }

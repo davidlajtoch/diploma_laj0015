@@ -106,8 +106,8 @@ else
                         else
                         {
                             <div class="animate__animated animate__fadeInUp">
-                                <div class="name">@AssignmentUserName</div>
-                                <button class="button_tiny_default" @onclick="() => RemoveUserFromAssignment(SelectedAssignment.User)">
+                                <div class="name">@SelectedAssignment.User.Name</div>
+                                <button class="button_tiny_default" @onclick="() => RemoveUserFromAssignment(SelectedAssignment!)">
                                     <i class="material-icons icon">remove</i>
                                 </button>
                             </div>
@@ -119,6 +119,7 @@ else
                     <div class="list_users">
                         @foreach (var user in UserGroupMembersFiltered!)
                         {
+                            if (SelectedAssignment.User != null && user.Id == SelectedAssignment!.User.Id) { continue; }
                             <div class="user" @onclick="()=> AddUserToAssignment(SelectedAssignment!, user)">
                                 @user.Name
                             </div>
@@ -126,9 +127,9 @@ else
                     </div>
                     <div class="section_header">Urgency</div>
                     <div class="urgency">
-                        <button class="button_circle_default button_circle">0</button>
-                        <button class="button_circle_default button_circle">1</button>
-                        <button class="button_circle_default button_circle">2</button>
+                        <button class="button_circle_default button_circle @((AssignmentUrgency == 0)? "urgency0" : "")" @onclick="() => UpdateAssignmentUrgency(SelectedAssignment!, 0)">0</button>
+                        <button class="button_circle_default button_circle @((AssignmentUrgency == 1)? "urgency1" : "")" @onclick="() => UpdateAssignmentUrgency(SelectedAssignment!, 1)">1</button>
+                        <button class="button_circle_default button_circle @((AssignmentUrgency == 2)? "urgency2" : "")" @onclick="() => UpdateAssignmentUrgency(SelectedAssignment!, 2)">2</button>
                     </div>
                 }
                 else
@@ -273,12 +274,52 @@ else
 
     private async Task AddUserToAssignment(AssignmentContract assignment, UserContract user)
     {
-        return;
+        if (assignment == null || user == null || assignment.User == user)
+        {
+            return;
+        }
+
+        if (await AssignmentService.AddUserToAssignment(assignment.Id, user.Id))
+        {
+            SelectedAssignment!.User = user;
+            AssignmentLists[assignment.Step].Where(a => a.Id == assignment.Id).FirstOrDefault()!.User = user;
+            StateHasChanged();
+        }
     }
 
-    private async Task RemoveUserFromAssignment(UserContract user)
+    private async Task RemoveUserFromAssignment(AssignmentContract assignment)
     {
-        return;
+        if (assignment == null)
+        {
+            return;
+        }
+
+        if (await AssignmentService.RemoveUserFromAssignment(assignment.Id))
+        {
+            SelectedAssignment!.User = null;
+            AssignmentLists[assignment.Step].Where(a => a.Id == assignment.Id).FirstOrDefault()!.User = null;
+            StateHasChanged();
+        }
+    }
+
+    private async Task UpdateAssignmentUrgency(AssignmentContract assignment, int urgency)
+    {
+        if (SelectedAssignment!.Urgency == urgency)
+        {
+            return;
+        }
+
+        if (urgency != 0 && urgency != 1 && urgency != 2)
+        {
+            return;
+        }
+
+        if (await AssignmentService.UpdateAssignmentUrgency(assignment.Id, urgency))
+        {
+            SelectedAssignment.Urgency = urgency;
+            AssignmentLists[assignment.Step].Where(a => a.Id == assignment.Id).FirstOrDefault()!.Urgency = urgency;
+            StateHasChanged();
+        }
     }
 
     private void SearchAssignmentByName(string searchedAssignment)

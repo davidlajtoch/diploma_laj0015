@@ -9,5 +9,5 @@ public class Assignment
     public int Urgency { get; set; } = 0;
     public int Step { get; set; } = 0;
     public Guid UserGroupId { get; set; }
-    public ApplicationUser? User { get; set; }
+    public Guid? UserId { get; set; } = null;
 }

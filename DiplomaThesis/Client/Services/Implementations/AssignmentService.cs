@@ -46,16 +46,6 @@ public class AssignmentService : IAssignmentService
             }
 
             var createdAssignment = await response.Content.ReadFromJsonAsync<AssignmentContract>();
-
-            response = await _http.PostAsJsonAsync(
-                "Activity/CreateAssignment",
-                new ActivityCommand
-                {
-                    Message = "was created",
-                    ObjectId1 = createdAssignment!.Id,
-                    UserGroupId = createdAssignment!.UserGroupId
-                }
-            );
             return createdAssignment!;
         }
         catch (AccessTokenNotAvailableException exception)
@@ -73,6 +63,60 @@ public class AssignmentService : IAssignmentService
             var response = await _http.PutAsJsonAsync(
                 "Assignment/UpdateAssignmentStep",
                 new UpdateAssignmentStepCommand { AssignmentId = assignmentId, ByValue = byValue }
+            );
+            return response.IsSuccessStatusCode;
+        }
+        catch (AccessTokenNotAvailableException exception)
+        {
+            exception.Redirect();
+        }
+
+        return false;
+    }
+
+    public async Task<bool> UpdateAssignmentUrgency(Guid assignmentId, int urgency)
+    {
+        try
+        {
+            var response = await _http.PutAsJsonAsync(
+                "Assignment/UpdateAssignmentUrgency",
+                new UpdateAssignmentUrgencyCommand { AssignmentId = assignmentId, Urgency = urgency }
+            );
+            return response.IsSuccessStatusCode;
+        }
+        catch (AccessTokenNotAvailableException exception)
+        {
+            exception.Redirect();
+        }
+
+        return false;
+    }
+
+    public async Task<bool> AddUserToAssignment(Guid assignmentId, Guid userId)
+    {
+        try
+        {
+            var response = await _http.PutAsJsonAsync(
+                "Assignment/AddUserToAssignment",
+                new AddUserToAssignmentCommand { AssignmentId = assignmentId, UserId = userId }
+            );
+            return response.IsSuccessStatusCode;
+        }
+        catch (AccessTokenNotAvailableException exception)
+        {
+            exception.Redirect();
+        }
+
+        return false;
+    }
+
+    public async Task<bool> RemoveUserFromAssignment(Guid assignmentId)
+    {
+        try
+        {
+            var response = await _http.PutAsJsonAsync(
+                "Assignment/RemoveUserFromAssignment",
+                new RemoveUserFromAssignmentCommand { AssignmentId = assignmentId }
             );
             return response.IsSuccessStatusCode;
         }

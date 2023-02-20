@@ -25,7 +25,7 @@ public class AssignmentController : ControllerBase
     private readonly RoleManager<IdentityRole> _roleManager;
     private readonly UserManager<ApplicationUser> _userManager;
 
-    private readonly int[] _allowedAssignmentSteps = { 0, 1, 2};
+    private readonly int[] _allowedAssignmentSteps = { 0, 1, 2 };
 
     public AssignmentController(
         UserManager<ApplicationUser> userManager,
@@ -46,8 +46,8 @@ public class AssignmentController : ControllerBase
         {
             Message = message,
             Created = DateTime.Now,
-            UserGroupName = (userGroup == null)? null : userGroup.Name,
-            UserGroupId= userGroupId
+            UserGroupName = (userGroup == null) ? null : userGroup.Name,
+            UserGroupId = userGroupId
         };
 
         _context.Activities.Add(newActivity);
@@ -94,6 +94,9 @@ public class AssignmentController : ControllerBase
         var result = new List<AssignmentContract>();
         foreach (var assignment in assignmentsUserGroup)
         {
+            var user = await _userManager.FindByIdAsync(assignment.UserId.ToString());
+
+
             result.Add(new AssignmentContract
             {
                 Id = assignment.Id,
@@ -103,7 +106,7 @@ public class AssignmentController : ControllerBase
                 Urgency = assignment.Urgency,
                 Step = assignment.Step,
                 UserGroupId = assignment.UserGroupId,
-                User = (assignment.User == null) ? null : await ApplicationUserToUserContract(assignment.User)
+                User = (user == null) ? null : await ApplicationUserToUserContract(user)
             });
         }
 
@@ -113,7 +116,7 @@ public class AssignmentController : ControllerBase
     }
 
     [HttpPost]
-    public ActionResult CreateAssignment(
+    public async Task<ActionResult> CreateAssignment(
         [FromBody] CreateAssignmentCommand createAssignmentCommand)
     {
         if (createAssignmentCommand.Name == string.Empty || createAssignmentCommand.Name == null || createAssignmentCommand.UserGroupId == Guid.Empty) return NotFound();
@@ -126,6 +129,9 @@ public class AssignmentController : ControllerBase
         };
 
         var result = _context.Assignments.Add(assignment);
+
+        await RecordActivity("Assignment " + assignment.Name + " was created", assignment.UserGroupId);
+
         _context.SaveChanges();
 
         return Ok(new AssignmentContract
@@ -155,14 +161,76 @@ public class AssignmentController : ControllerBase
 
         var resultStep = assignment.Step + updateAssignmentStepCommand.ByValue;
 
-        if(!_allowedAssignmentSteps.Contains(resultStep)) return BadRequest();
+        if (!_allowedAssignmentSteps.Contains(resultStep)) return BadRequest();
 
         assignment.Step += updateAssignmentStepCommand.ByValue;
 
-        await RecordActivity("Assignment " + assignment.Name + " had it's step " + ((updateAssignmentStepCommand.ByValue == -1)? "decresed" : "increased"), assignment.UserGroupId);
-        
+        await RecordActivity("Assignment " + assignment.Name + " had it's step " + ((updateAssignmentStepCommand.ByValue == -1) ? "decresed" : "increased"), assignment.UserGroupId);
+
         _context.SaveChanges();
 
+        return Ok();
+    }
+
+    [HttpPut]
+    public async Task<ActionResult> UpdateAssignmentUrgency(
+    [FromBody] UpdateAssignmentUrgencyCommand updateAssignmentUrgencyCommand)
+    {
+        if (updateAssignmentUrgencyCommand.AssignmentId == Guid.Empty) return BadRequest();
+
+        int[] allowedValues = { 0, 1, 2 };
+        if (!allowedValues.Contains(updateAssignmentUrgencyCommand.Urgency)) return BadRequest();
+
+        var assignment = await _context.Assignments.FindAsync(updateAssignmentUrgencyCommand.AssignmentId);
+        if (assignment == null) return NotFound();
+
+        assignment.Urgency += updateAssignmentUrgencyCommand.Urgency;
+
+        await RecordActivity("Assignment " + assignment.Name + " had it's urgency set to " + updateAssignmentUrgencyCommand.Urgency, assignment.UserGroupId);
+
+        _context.SaveChanges();
+
+        return Ok();
+    }
+
+    [HttpPut]
+    public async Task<ActionResult> AddUserToAssignment(
+        [FromBody] AddUserToAssignmentCommand addUserToAssignmentCommand)
+    {
+        if (addUserToAssignmentCommand.AssignmentId == Guid.Empty || addUserToAssignmentCommand.UserId == Guid.Empty) return BadRequest();
+
+        var assignment = await _context.Assignments.FindAsync(addUserToAssignmentCommand.AssignmentId);
+        if (assignment == null) return NotFound();
+
+        var user = await _userManager.FindByIdAsync(addUserToAssignmentCommand.UserId.ToString());
+        if (user == null) return NotFound();
+
+        assignment.UserId = Guid.Parse(user.Id);
+
+        await RecordActivity("Assignment " + assignment.Name + " was assigned to " + user.UserName, assignment.UserGroupId);
+
+        _context.SaveChanges();
+        return Ok();
+    }
+
+    [HttpPut]
+    public async Task<ActionResult> RemoveUserFromAssignment(
+    [FromBody] RemoveUserFromAssignmentCommand removeUserFromAssignmentCommand)
+    {
+        if (removeUserFromAssignmentCommand.AssignmentId == Guid.Empty) return BadRequest();
+
+        var assignment = await _context.Assignments.FindAsync(removeUserFromAssignmentCommand.AssignmentId);
+        if (assignment == null) return NotFound();
+
+        if (assignment.UserId == null) return BadRequest();
+
+        var previousUser = await _userManager.FindByIdAsync(assignment.UserId.ToString()); ;
+
+        assignment.UserId = null;
+
+        await RecordActivity("Assignment " + assignment.Name + " was disassigned from " + previousUser.UserName, assignment.UserGroupId);
+
+        _context.SaveChanges();
         return Ok();
     }
 }

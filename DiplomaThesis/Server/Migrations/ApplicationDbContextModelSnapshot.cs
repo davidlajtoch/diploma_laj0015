@@ -142,12 +142,10 @@ namespace DiplomaThesis.Server.Migrations
                     b.Property<Guid>("UserGroupId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<Guid?>("UserId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("Assignments");
                 });
@@ -544,15 +542,6 @@ namespace DiplomaThesis.Server.Migrations
                         .HasForeignKey("UserGroupId");
 
                     b.Navigation("UserGroup");
-                });
-
-            modelBuilder.Entity("DiplomaThesis.Server.Models.Assignment", b =>
-                {
-                    b.HasOne("DiplomaThesis.Server.Models.ApplicationUser", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId");
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("DiplomaThesis.Server.Models.ReportDb", b =>
