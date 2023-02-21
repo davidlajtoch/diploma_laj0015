@@ -56,6 +56,24 @@ public class AssignmentService : IAssignmentService
         return new AssignmentContract();
     }
 
+    public async Task<bool> DeleteAssignment(Guid assignmentId)
+    {
+        try
+        {
+            var response = await _http.DeleteAsJsonAsync(
+                "Assignment/DeleteAssignment",
+                new DeleteAssignmentCommand { AssignmentId = assignmentId }
+            );
+            return response.IsSuccessStatusCode;
+        }
+        catch (AccessTokenNotAvailableException exception)
+        {
+            exception.Redirect();
+        }
+
+        return false;
+    }
+
     public async Task<bool> UpdateAssignmentStep(Guid assignmentId, int byValue)
     {
         try
@@ -81,6 +99,42 @@ public class AssignmentService : IAssignmentService
             var response = await _http.PutAsJsonAsync(
                 "Assignment/UpdateAssignmentUrgency",
                 new UpdateAssignmentUrgencyCommand { AssignmentId = assignmentId, Urgency = urgency }
+            );
+            return response.IsSuccessStatusCode;
+        }
+        catch (AccessTokenNotAvailableException exception)
+        {
+            exception.Redirect();
+        }
+
+        return false;
+    }
+
+    public async Task<bool> UpdateAssignmentName(Guid assignmentId, string name)
+    {
+        try
+        {
+            var response = await _http.PutAsJsonAsync(
+                "Assignment/UpdateAssignmentName",
+                new UpdateAssignmentNameCommand { AssignmentId = assignmentId, Name = name }
+            );
+            return response.IsSuccessStatusCode;
+        }
+        catch (AccessTokenNotAvailableException exception)
+        {
+            exception.Redirect();
+        }
+
+        return false;
+    }
+
+    public async Task<bool> UpdateAssignmentDescription(Guid assignmentId, string description)
+    {
+        try
+        {
+            var response = await _http.PutAsJsonAsync(
+                "Assignment/UpdateAssignmentDescription",
+                new UpdateAssignmentDescriptionCommand { AssignmentId = assignmentId, Description = description }
             );
             return response.IsSuccessStatusCode;
         }

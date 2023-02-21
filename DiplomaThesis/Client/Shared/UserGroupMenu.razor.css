@@ -35,19 +35,6 @@
 .user_group_menu_container .user_group_menu .bottom_menu .group_right {
   float: right;
 }
-.user_group_menu_container .user_group_menu .table_info {
-  width: 100%;
-  text-align: center;
-  margin-top: 5px;
-  margin-bottom: 5px;
-}
-.user_group_menu_container .user_group_menu .table_info td {
-  text-align: right;
-}
-.user_group_menu_container .user_group_menu .table_info .label {
-  color: #7c4dff;
-  text-align: left;
-}
 .user_group_menu_container .user_group_menu .section_header {
   width: 100%;
   text-align: center;

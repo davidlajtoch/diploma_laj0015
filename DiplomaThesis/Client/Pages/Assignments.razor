@@ -31,10 +31,14 @@ else
             </div>
 
             <div class="group_right">
-                <div class="input_with_button_default input_with_button">
-                    <input @bind="NewAssignmentName" type="text" placeholder="Create new assignment...">
-                    <button class="button1" @onclick="CreateAssignment"><i class="material-icons icon">add</i></button>
-                </div>
+                @if (!UserUserGroupLeader)
+                {
+                    <div class="input_with_button_default input_with_button">
+                        <input @bind="NewAssignmentName" type="text" placeholder="Create new assignment...">
+                        <button class="button1" @onclick="CreateAssignment"><i class="material-icons icon">add</i></button>
+                    </div>
+                }
+                
                 <input type="text" class="input_search_default" placeholder="Search by name..."
                    @oninput="@((e) => SearchAssignmentByName(e.Value!.ToString()!))">
             </div>
@@ -88,7 +92,7 @@ else
             </div>
 
             <div class="section_right">
-                @if (SelectedAssignment != null)
+                @if (SelectedAssignment != null && !UserUserGroupLeader)
                 {
                     <div class="section_header">Name</div>
                     <input type="text" class="input_search_default input_search nohover" placeholder="Name this assignment..." @bind="AssignmentName">
@@ -127,12 +131,60 @@ else
                     </div>
                     <div class="section_header">Urgency</div>
                     <div class="urgency">
-                        <button class="button_circle_default button_circle @((AssignmentUrgency == 0)? "urgency0" : "")" @onclick="() => UpdateAssignmentUrgency(SelectedAssignment!, 0)">0</button>
-                        <button class="button_circle_default button_circle @((AssignmentUrgency == 1)? "urgency1" : "")" @onclick="() => UpdateAssignmentUrgency(SelectedAssignment!, 1)">1</button>
-                        <button class="button_circle_default button_circle @((AssignmentUrgency == 2)? "urgency2" : "")" @onclick="() => UpdateAssignmentUrgency(SelectedAssignment!, 2)">2</button>
+                        <button class="button_circle_default button_circle @((SelectedAssignment.Urgency == 0)? "urgency0" : "")" @onclick="() => UpdateAssignmentUrgency(SelectedAssignment!, 0)">0</button>
+                        <button class="button_circle_default button_circle @((SelectedAssignment.Urgency == 1)? "urgency1" : "")" @onclick="() => UpdateAssignmentUrgency(SelectedAssignment!, 1)">1</button>
+                        <button class="button_circle_default button_circle @((SelectedAssignment.Urgency == 2)? "urgency2" : "")" @onclick="() => UpdateAssignmentUrgency(SelectedAssignment!, 2)">2</button>
+                    </div>
+
+                    <div class="bottom_menu">
+                        <button class="button_warning" @onclick="() => DeleteAssignment(SelectedAssignment)" @onmouseout="ResetAssignmentDeleteConfirm">
+                            @(DeleteAssignmentConfirmation ? "Are you sure?" : "Delete assignment")
+                        </button>
+                        <button class="button_default" @onclick="() => SaveAll(SelectedAssignment!, AssignmentName, AssignmentDescription)">Save</button>
                     </div>
                 }
-                else
+
+
+                @if (SelectedAssignment != null && UserUserGroupLeader)
+                {
+                    <table class="table_info">
+                        <tr>
+                            <td class="label">Name</td>
+                            <td>@SelectedAssignment.Name</td>
+                        </tr>
+                        <tr>
+                            <td class="label">Created</td>
+                            <td>@SelectedAssignment.Created</td>
+                        </tr>
+                        <tr>
+                            <td class="label">Assignee</td>
+                            @if (@SelectedAssignment.User != null)
+                            {
+                                <td>@SelectedAssignment.User.Name</td>
+                            }
+                            else
+                            {
+                                <td class="text_light animate__animated animate__fadeInDown">No user assigned</td>
+                            }
+
+                        </tr>
+                        <tr>
+                            <td class="label">Urgency</td>
+                            <td>@SelectedAssignment.Urgency</td>
+                        </tr>
+                    </table>
+
+                    <div class="section_header">Description</div>
+                    <div class="description">
+                        @SelectedAssignment.Description
+                    </div>
+
+                    <div class="bottom_menu">
+                        <button class="button_default" @onclick="() => AddUserToAssignment(SelectedAssignment!, UserId)">Assign to me</button>
+                    </div>
+                }
+
+                @if (SelectedAssignment == null)
                 {
                     <div class="notification_nothing_here">Select an assignment to view it's detail...</div>
                 }
@@ -148,6 +200,7 @@ else
     private List<UserContract> UserGroupMembersFiltered = new();
     private UserGroupContract? UserGroup = null;
     private Guid UserId = new();
+    private string UserName = string.Empty;
 
     private List<List<AssignmentContract>> AssignmentLists = new List<List<AssignmentContract>>();
 
@@ -167,6 +220,7 @@ else
 
     private bool UserInUserGroup = false;
     private bool UserUserGroupLeader = false;
+    private bool DeleteAssignmentConfirmation = false;
 
     private async Task UpdateData()
     {
@@ -184,6 +238,7 @@ else
         {
             return;
         }
+
         if (UserGroup.LeaderId == UserId)
         {
             UserUserGroupLeader = true;
@@ -202,6 +257,7 @@ else
         var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
         var userId = user.FindFirst(u => u.Type.Contains("sub"))?.Value;
         UserId = Guid.Parse(userId!);
+        UserName = user!.Identity!.Name!;
     }
 
     private async Task GetSetUserGroupMembers()
@@ -230,6 +286,15 @@ else
     private void SelectAssignment(AssignmentContract assignment)
     {
         SelectedAssignment = assignment;
+        AssignmentName = assignment.Name;
+        AssignmentDescription = assignment.Description;
+
+    }
+
+    private async Task SaveAll(AssignmentContract assignment, string name, string description)
+    {
+        await UpdateAssignmentName(assignment, name);
+        await UpdateAssignmentDescription(assignment, description);
     }
 
     private async Task CreateAssignment()
@@ -272,6 +337,66 @@ else
         }
     }
 
+    private async Task UpdateAssignmentUrgency(AssignmentContract assignment, int urgency)
+    {
+        if (SelectedAssignment!.Urgency == urgency)
+        {
+            return;
+        }
+
+        if (urgency != 0 && urgency != 1 && urgency != 2)
+        {
+            return;
+        }
+
+        if (await AssignmentService.UpdateAssignmentUrgency(assignment.Id, urgency))
+        {
+            SelectedAssignment.Urgency = urgency;
+            AssignmentLists[assignment.Step].Where(a => a.Id == assignment.Id).FirstOrDefault()!.Urgency = urgency;
+            StateHasChanged();
+        }
+    }
+
+    private async Task UpdateAssignmentDescription(AssignmentContract assignment, string description)
+    {
+        if (SelectedAssignment == null)
+        {
+            return;
+        }
+
+        if (SelectedAssignment!.Description == description)
+        {
+            return;
+        }
+
+        if (await AssignmentService.UpdateAssignmentDescription(assignment.Id, description))
+        {
+            SelectedAssignment.Description = description;
+            AssignmentLists[assignment.Step].Where(a => a.Id == assignment.Id).FirstOrDefault()!.Description = description;
+            StateHasChanged();
+        }
+    }
+
+    private async Task UpdateAssignmentName(AssignmentContract assignment, string name)
+    {
+        if (SelectedAssignment == null)
+        {
+            return;
+        }
+
+        if (SelectedAssignment!.Name == name)
+        {
+            return;
+        }
+
+        if (await AssignmentService.UpdateAssignmentName(assignment.Id, name))
+        {
+            SelectedAssignment.Name = name;
+            AssignmentLists[assignment.Step].Where(a => a.Id == assignment.Id).FirstOrDefault()!.Name = name;
+            StateHasChanged();
+        }
+    }
+
     private async Task AddUserToAssignment(AssignmentContract assignment, UserContract user)
     {
         if (assignment == null || user == null || assignment.User == user)
@@ -281,6 +406,32 @@ else
 
         if (await AssignmentService.AddUserToAssignment(assignment.Id, user.Id))
         {
+            SelectedAssignment!.User = user;
+            AssignmentLists[assignment.Step].Where(a => a.Id == assignment.Id).FirstOrDefault()!.User = user;
+            StateHasChanged();
+        }
+    }
+
+    private async Task AddUserToAssignment(AssignmentContract assignment, Guid userId)
+    {
+        if (assignment == null || userId == Guid.Empty)
+        {
+            return;
+        }
+
+        if (assignment.User != null && assignment.User.Id == userId)
+        {
+            return;
+        }
+
+        if (await AssignmentService.AddUserToAssignment(assignment.Id, userId))
+        {
+            var user = new UserContract
+                {
+                    Id = Guid.Empty,
+                    Name = UserName,
+                    UserGroupId = UserGroup!.Id
+                };
             SelectedAssignment!.User = user;
             AssignmentLists[assignment.Step].Where(a => a.Id == assignment.Id).FirstOrDefault()!.User = user;
             StateHasChanged();
@@ -302,24 +453,30 @@ else
         }
     }
 
-    private async Task UpdateAssignmentUrgency(AssignmentContract assignment, int urgency)
+    private async Task DeleteAssignment(AssignmentContract assignment)
     {
-        if (SelectedAssignment!.Urgency == urgency)
+        if (assignment == null)
         {
             return;
         }
 
-        if (urgency != 0 && urgency != 1 && urgency != 2)
+        if (DeleteAssignmentConfirmation == false)
         {
+            DeleteAssignmentConfirmation = true;
             return;
         }
 
-        if (await AssignmentService.UpdateAssignmentUrgency(assignment.Id, urgency))
+        if (await AssignmentService.DeleteAssignment(assignment.Id))
         {
-            SelectedAssignment.Urgency = urgency;
-            AssignmentLists[assignment.Step].Where(a => a.Id == assignment.Id).FirstOrDefault()!.Urgency = urgency;
+            SelectedAssignment = null;
+            AssignmentLists[assignment.Step].RemoveAll(a => a.Id == assignment.Id);
             StateHasChanged();
         }
+    }
+
+    private void ResetAssignmentDeleteConfirm()
+    {
+        DeleteAssignmentConfirmation = false;
     }
 
     private void SearchAssignmentByName(string searchedAssignment)

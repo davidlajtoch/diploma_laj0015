@@ -147,6 +147,22 @@ public class AssignmentController : ControllerBase
         });
     }
 
+    [HttpDelete]
+    public async Task<ActionResult> DeleteAssignment(
+    [FromBody] DeleteAssignmentCommand deleteAssignmentCommand)
+    {
+        var assignment = await _context.Assignments.FindAsync(deleteAssignmentCommand.AssignmentId);
+        if (assignment is null) return NotFound();
+
+        _context.Assignments.Remove(assignment);
+
+        await RecordActivity("Assignment " + assignment.Name + " was deleted", assignment.UserGroupId);
+
+        _context.SaveChanges();
+
+        return Ok();
+    }
+
     [HttpPut]
     public async Task<ActionResult> UpdateAssignmentStep(
         [FromBody] UpdateAssignmentStepCommand updateAssignmentStepCommand)
@@ -184,9 +200,47 @@ public class AssignmentController : ControllerBase
         var assignment = await _context.Assignments.FindAsync(updateAssignmentUrgencyCommand.AssignmentId);
         if (assignment == null) return NotFound();
 
-        assignment.Urgency += updateAssignmentUrgencyCommand.Urgency;
+        assignment.Urgency = updateAssignmentUrgencyCommand.Urgency;
 
         await RecordActivity("Assignment " + assignment.Name + " had it's urgency set to " + updateAssignmentUrgencyCommand.Urgency, assignment.UserGroupId);
+
+        _context.SaveChanges();
+
+        return Ok();
+    }
+
+    [HttpPut]
+    public async Task<ActionResult> UpdateAssignmentName(
+    [FromBody] UpdateAssignmentNameCommand updateAssignmentNameCommand)
+    {
+        if (updateAssignmentNameCommand.AssignmentId == Guid.Empty || updateAssignmentNameCommand.Name == null) return BadRequest();
+
+        var assignment = await _context.Assignments.FindAsync(updateAssignmentNameCommand.AssignmentId);
+        if (assignment == null) return NotFound();
+
+        var previousName = assignment.Name;
+
+        assignment.Name = updateAssignmentNameCommand.Name;
+
+        await RecordActivity("Assignment " + previousName + " was renamed to " + assignment.Name, assignment.UserGroupId);
+
+        _context.SaveChanges();
+
+        return Ok();
+    }
+
+    [HttpPut]
+    public async Task<ActionResult> UpdateAssignmentDescription(
+        [FromBody] UpdateAssignmentDescriptionCommand updateAssignmentDescriptionCommand)
+    {
+        if (updateAssignmentDescriptionCommand.AssignmentId == Guid.Empty || updateAssignmentDescriptionCommand.Description == null) return BadRequest();
+
+        var assignment = await _context.Assignments.FindAsync(updateAssignmentDescriptionCommand.AssignmentId);
+        if (assignment == null) return NotFound();
+
+        assignment.Description = updateAssignmentDescriptionCommand.Description;
+
+        await RecordActivity("Assignment " + assignment.Name + " had it's description changed", assignment.UserGroupId);
 
         _context.SaveChanges();
 

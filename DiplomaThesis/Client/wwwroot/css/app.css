@@ -166,6 +166,20 @@ html {
   outline: none;
 }
 
+.table_info {
+  width: 100%;
+  text-align: center;
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+.table_info td {
+  text-align: right;
+}
+.table_info .label {
+  color: #7c4dff;
+  text-align: left;
+}
+
 .text_light {
   color: #9ca3af !important;
 }

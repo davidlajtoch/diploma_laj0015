@@ -170,7 +170,7 @@ html {
     }
 }
 
-.textarea_default{
+.textarea_default {
     padding: 10px;
     color: $color_purple;
     background-color: $color_lighter_grey;
@@ -179,6 +179,22 @@ html {
     font-family: $font_nunito_bold;
     font-size: 16px;
     outline: none;
+}
+
+.table_info {
+    width: 100%;
+    text-align: center;
+    margin-top: 5px;
+    margin-bottom: 5px;
+
+    td {
+        text-align: right;
+    }
+
+    .label {
+        color: $color_purple;
+        text-align: left;
+    }
 }
 
 .text_light {

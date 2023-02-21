@@ -80,8 +80,10 @@
   padding: 10px;
   padding-left: 50px;
   padding-right: 50px;
+  background-color: #f3f4f6;
   border-radius: 10px;
   cursor: pointer;
+  transition: 0.2s ease-in-out;
 }
 .container_sections .section_left .container_subsection .subsection .list_assignments .container_assignment .assignment .name, .container_sections .section_left .container_subsection .subsection .list_assignments .container_assignment .assignment .created, .container_sections .section_left .container_subsection .subsection .list_assignments .container_assignment .assignment .assignee {
   width: 100%;
@@ -100,39 +102,18 @@
 }
 .container_sections .section_left .container_subsection .subsection .list_assignments .container_assignment .urgency0 {
   background-color: #f3f4f6;
-}
-.container_sections .section_left .container_subsection .subsection .list_assignments .container_assignment .urgency0 .name {
   color: #6b7280;
 }
 .container_sections .section_left .container_subsection .subsection .list_assignments .container_assignment .urgency0 .created {
   color: #9ca3af;
 }
-.container_sections .section_left .container_subsection .subsection .list_assignments .container_assignment .urgency0 .assignee {
-  color: #6b7280;
-}
 .container_sections .section_left .container_subsection .subsection .list_assignments .container_assignment .urgency1 {
-  background-color: #fde68a;
-}
-.container_sections .section_left .container_subsection .subsection .list_assignments .container_assignment .urgency1 .name {
-  color: #6b7280;
-}
-.container_sections .section_left .container_subsection .subsection .list_assignments .container_assignment .urgency1 .created {
-  color: #9ca3af;
-}
-.container_sections .section_left .container_subsection .subsection .list_assignments .container_assignment .urgency1 .assignee {
-  color: #6b7280;
+  background-color: #fef9c3;
+  color: #eab308;
 }
 .container_sections .section_left .container_subsection .subsection .list_assignments .container_assignment .urgency2 {
   background-color: #ffebee;
-}
-.container_sections .section_left .container_subsection .subsection .list_assignments .container_assignment .urgency2 .name {
-  color: #6b7280;
-}
-.container_sections .section_left .container_subsection .subsection .list_assignments .container_assignment .urgency2 .created {
-  color: #9ca3af;
-}
-.container_sections .section_left .container_subsection .subsection .list_assignments .container_assignment .urgency2 .assignee {
-  color: #6b7280;
+  color: #ff1744;
 }
 .container_sections .section_left .container_subsection .subsection .list_assignments .container_assignment .button_step_decrease, .container_sections .section_left .container_subsection .subsection .list_assignments .container_assignment .button_step_increase {
   opacity: 0;
@@ -167,6 +148,7 @@
   flex-direction: column;
   border-radius: 15px;
   box-shadow: 0px 0px 9px 0px rgba(0, 0, 0, 0.15);
+  overflow: hidden;
 }
 .container_sections .section_right .section_header {
   width: 100%;
@@ -177,11 +159,18 @@
 }
 .container_sections .section_right .input_search {
   width: calc(100% - 40px);
+  color: #6b7280;
 }
 .container_sections .section_right .textarea {
+  color: #6b7280;
   resize: none;
   width: calc(100% - 20px);
   flex-grow: 100;
+}
+.container_sections .section_right .button_default {
+  width: auto !important;
+  margin: 0 auto;
+  margin-top: 10px;
 }
 .container_sections .section_right .assignee .name {
   float: left;
@@ -213,9 +202,31 @@
   width: 40px;
   height: 40px;
 }
+.container_sections .section_right .urgency .urgency0 {
+  background-color: #f3f4f6;
+  color: #7c4dff;
+}
+.container_sections .section_right .urgency .urgency1 {
+  background-color: #fef9c3;
+  color: #eab308;
+}
+.container_sections .section_right .urgency .urgency2 {
+  background-color: #ffebee;
+  color: #ff1744;
+}
 .container_sections .section_right .assignment_menu {
   width: calc(100% - 20px);
   height: 100px;
+}
+.container_sections .section_right .bottom_menu {
+  width: 100%;
+  height: 40px;
+  display: flex;
+  justify-content: space-around;
+  margin-top: 10px;
+}
+.container_sections .section_right .bottom_menu button {
+  margin: 0px;
 }
 .container_sections .section_right .notification_nothing_here {
   position: absolute;
@@ -225,13 +236,8 @@
   color: #9ca3af;
   text-align: center;
 }
-
-.table_groups .col-1 {
-  flex-basis: 20%;
-}
-.table_groups .col-2 {
-  flex-basis: 30%;
-}
-.table_groups .col-3 {
-  flex-basis: 25%;
+.container_sections .section_right .description {
+  width: calc(100% - 20px);
+  flex-grow: 100;
+  overflow-y: scroll;
 }
