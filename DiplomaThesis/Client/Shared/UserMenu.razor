@@ -220,7 +220,7 @@
             return;
         }
 
-        if (await AdministrationService.DeleteUser(User!.Name))
+        if (await AdministrationService.DeleteUser(User!.Id))
         {
             ToggleUserMenu();
             await OnUserChanged.InvokeAsync();

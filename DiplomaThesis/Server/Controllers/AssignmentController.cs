@@ -51,7 +51,6 @@ public class AssignmentController : ControllerBase
         };
 
         _context.Activities.Add(newActivity);
-        //_context.SaveChanges();
 
         return Ok();
     }

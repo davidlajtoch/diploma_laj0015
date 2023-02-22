@@ -113,7 +113,6 @@ app.UseAuthorization();
 app.MapRazorPages();
 app.MapControllers();
 app.MapHub<ChatHub>("/chathub");
-app.MapHub<DrawHub>("/drawhub");
 app.MapFallbackToFile("index.html");
 
 app.UseSwaggerUI(options =>

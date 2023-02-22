@@ -24,9 +24,13 @@
                 <tr>
                     <td class="label">Leader</td>
                     <td>
-                        @if (UserGroup.Users != null)
+                        @if (UsersMembers != null && UserGroup.LeaderId != null && UserGroup.LeaderId != Guid.Empty)
                         {
-                            @UserGroup.Users.Where(u => u.Id == UserGroup.LeaderId).Select(u => u.Name).DefaultIfEmpty(string.Empty).First()
+                            @UsersMembers.FirstOrDefault(u => u.Id == UserGroup.LeaderId)!.Name
+                        }
+                        else
+                        {
+                            <span class="text_light animate__animated animate__fadeInDown">No leader</span>
                         }
                     </td>
                 </tr>
@@ -168,6 +172,12 @@
             UsersMembersFiltered = UsersMembers;
             UsersNonMembers!.Add(user);
             UsersNonMembersFiltered = UsersNonMembers;
+
+            if(user.Id == UserGroup.LeaderId)
+            {
+                UserGroup.LeaderId = null;
+            }
+
             StateHasChanged();
         }
     }

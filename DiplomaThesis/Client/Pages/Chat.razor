@@ -141,7 +141,7 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        GetSetUserIdAndName();
+        await GetSetUserIdAndName();
         UserGroup = await AdministrationService.GetUserUserGroup(UserId);
 
         if (UserGroup!.Id == Guid.Empty)

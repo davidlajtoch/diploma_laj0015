@@ -1,3 +1,4 @@
+using System.Data;
 using System.Linq;
 using System.Security.Claims;
 using DiplomaThesis.Server.Data;
@@ -33,6 +34,23 @@ public class AdministrationController : ControllerBase
         _userManager = userManager;
         _roleManager = roleManager;
         _context = context;
+    }
+
+    private async Task<ActionResult> RecordActivity(string message, Guid? userGroupId)
+    {
+        var userGroup = await _context.UserGroups.FindAsync(userGroupId);
+
+        Activity newActivity = new Activity
+        {
+            Message = message,
+            Created = DateTime.Now,
+            UserGroupName = (userGroup == null) ? null : userGroup.Name,
+            UserGroupId = userGroupId
+        };
+
+        _context.Activities.Add(newActivity);
+
+        return Ok();
     }
 
     private async Task<List<UserContract>> ApplicationUsersToUserContracts(List<ApplicationUser>? applicationUsers)
@@ -116,13 +134,17 @@ public class AdministrationController : ControllerBase
     public async Task<ActionResult> DeleteUser(
         [FromBody] DeleteUserCommand deleteUserCommand)
     {
-        var user = await _userManager.FindByNameAsync(deleteUserCommand.UserName);
+        var user = await _userManager.FindByIdAsync(deleteUserCommand.UserId.ToString());
         if (user is null) return NotFound();
 
         var loggedInUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         if (loggedInUserId.Equals(user.Id)) return BadRequest();
 
         var result = await _userManager.DeleteAsync(user);
+
+        await RecordActivity("User " + user.UserName + " was deleted", null);
+
+        _context.SaveChanges();
 
         if (!result.Succeeded)
             return StatusCode(500);
@@ -156,6 +178,9 @@ public class AdministrationController : ControllerBase
         var result = await _userManager.AddToRoleAsync(user, addRoleCommand.RoleName);
         if (!result.Succeeded) return BadRequest();
 
+        await RecordActivity(user.UserName + " was added to role " + addRoleCommand.RoleName, user.UserGroupId);
+        _context.SaveChanges();
+
         return Ok();
     }
 
@@ -174,6 +199,10 @@ public class AdministrationController : ControllerBase
 
         var result = await _userManager.RemoveFromRoleAsync(user, removeRoleCommand.RoleName);
         if (!result.Succeeded) return BadRequest();
+
+        await RecordActivity(user.UserName + " was removed from role " + removeRoleCommand.RoleName, user.UserGroupId);
+
+        _context.SaveChanges();
 
         return Ok();
     }
@@ -263,27 +292,24 @@ public class AdministrationController : ControllerBase
 
     [Authorize(Roles = "Admin")]
     [HttpPost]
-    public ActionResult CreateUserGroup(
+    public async Task<ActionResult> CreateUserGroup(
         [FromBody] CreateUserGroupCommand createUserGroupCommand)
     {
         if (_context.UserGroups.Any(group => group.Name.Equals(createUserGroupCommand.Name))) return BadRequest();
 
         var userGroup = new UserGroup
         {
-            Id = Guid.NewGuid(),
             Name = createUserGroupCommand.Name,
             Users = new List<ApplicationUser>()
         };
 
-        var result = _context.UserGroups.Add(userGroup);
+        _context.UserGroups.Add(userGroup);
+
+        await RecordActivity("User group " + createUserGroupCommand.Name + " was created", null);
+
         _context.SaveChanges();
 
-        return Ok(new UserGroupContract
-        {
-            Id = result.Entity.Id,
-            Name = result.Entity.Name,
-            Users = new List<UserContract>()
-        });
+        return Ok();
     }
 
     [Authorize(Roles = "Admin")]
@@ -300,7 +326,11 @@ public class AdministrationController : ControllerBase
         {
             user.UserGroupId = null;
         }
+
         _context.UserGroups.Remove(userGroup);
+
+        await RecordActivity("User group " + userGroup.Name + " was deleted", null);
+
         _context.SaveChanges();
 
         return Ok();
@@ -378,26 +408,29 @@ public class AdministrationController : ControllerBase
         var user = await _context.Users.FindAsync(moveUserToUserGroupCommand.UserId.ToString());
         if (user is null) return NotFound();
 
-        if (moveUserToUserGroupCommand.UserGroupId.Equals(Guid.Empty))
-        {
-            var userGroups = _context.UserGroups.ToList();
-            var userGroup = userGroups.FirstOrDefault(
-                group =>
-                {
-                    if (group is null || group.Users is null) return false;
-                    return group.Users.Any(userInGroup => userInGroup.Id.Equals(user.Id));
-                }, null);
-            user.UserGroup = null;
-            userGroup?.Users!.Remove(user);
-        }
-        else
-        {
-            var userGroup = _context.UserGroups.Find(moveUserToUserGroupCommand.UserGroupId);
-            if (userGroup is null) return NotFound();
+        var newUserGroup = _context.UserGroups.Find(moveUserToUserGroupCommand.UserGroupId);
+        if (newUserGroup is null) return NotFound();
 
-            user.UserGroup = userGroup;
-            user.UserGroupId = userGroup.Id;
+        if(user.UserGroup != null || user.UserGroupId != null)
+        {
+            var oldUserGroup = _context.UserGroups.Find(user.UserGroupId);
+            if (oldUserGroup is null) return NotFound();
+
+            if(oldUserGroup.Users != null)
+            {
+                oldUserGroup.Users.Remove(user);
+
+                if(oldUserGroup.LeaderId != null && oldUserGroup.LeaderId == Guid.Parse(user.Id))
+                {
+                    oldUserGroup.LeaderId = null;
+                }
+            }
         }
+
+        user.UserGroup = newUserGroup;
+        user.UserGroupId = newUserGroup.Id;
+
+        await RecordActivity("User " + user.UserName + " was moved to user group " + newUserGroup.Name, newUserGroup.Id);
 
         _context.SaveChanges();
 
@@ -428,6 +461,8 @@ public class AdministrationController : ControllerBase
         user.UserGroupId = null;
         userGroup.Users!.Remove(user);
 
+        await RecordActivity("User " + user.UserName + " was removed from user group " + userGroup.Name, userGroup.Id);
+
         _context.SaveChanges();
 
         return Ok();
@@ -444,6 +479,9 @@ public class AdministrationController : ControllerBase
         if (userGroup is null) return NotFound();
 
         userGroup.Description = updateUserGroupDescriptionCommand.Description;
+
+        await RecordActivity("User group " + userGroup.Name + " had it's description changed", userGroup.Id);
+
         _context.SaveChanges();
 
         return Ok();
@@ -463,6 +501,8 @@ public class AdministrationController : ControllerBase
         if (user is null) return NotFound();
 
         userGroup.LeaderId = updateUserGroupLeaderCommand.UserId;
+
+        await RecordActivity("User group " + userGroup.Name + " had it's leader changed to " + user.UserName, userGroup.Id);
 
         _context.SaveChanges();
 

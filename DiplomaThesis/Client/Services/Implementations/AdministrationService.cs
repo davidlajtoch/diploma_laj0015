@@ -45,13 +45,13 @@ public class AdministrationService : IAdministrationService
         }
     }
 
-    public async Task<bool> DeleteUser(string userName)
+    public async Task<bool> DeleteUser(Guid userId)
     {
         try
         {
             var response = await _http.DeleteAsJsonAsync(
                 "Administration/DeleteUser",
-                new DeleteUserCommand { UserName = userName }
+                new DeleteUserCommand { UserId = userId }
             );
             return response.IsSuccessStatusCode;
         }
@@ -85,19 +85,6 @@ public class AdministrationService : IAdministrationService
                 "Administration/AddRole",
                 new AddRoleCommand { UserId = userId, RoleName = roleName }
             );
-            if (!response.IsSuccessStatusCode)
-            {
-                return response.IsSuccessStatusCode;
-            }
-            response = await _http.PostAsJsonAsync(
-                "Activity/AddRole",
-                new ActivityCommand
-                {
-                    Message = "was added to role",
-                    ObjectId1 = userId,
-                    ObjectName2 = roleName
-                }
-            );
             return response.IsSuccessStatusCode;
         }
         catch (AccessTokenNotAvailableException exception)
@@ -115,19 +102,6 @@ public class AdministrationService : IAdministrationService
             var response = await _http.PutAsJsonAsync(
                 "Administration/RemoveRole",
                 new RemoveRoleCommand { UserId = userId, RoleName = roleName }
-            );
-            if (!response.IsSuccessStatusCode)
-            {
-                return response.IsSuccessStatusCode;
-            }
-            response = await _http.PostAsJsonAsync(
-                "Activity/RemoveRole",
-                new ActivityCommand
-                {
-                    Message = "was removed from role",
-                    ObjectId1 = userId,
-                    ObjectName2 = roleName
-                }
             );
             return response.IsSuccessStatusCode;
         }
@@ -192,23 +166,6 @@ public class AdministrationService : IAdministrationService
                 "Administration/CreateUserGroup",
                 new CreateUserGroupCommand { Name = newUserGroupName }
             );
-
-            if (!response.IsSuccessStatusCode)
-            {
-                return response.IsSuccessStatusCode;
-            }
-
-            var createdUserGroup = await response.Content.ReadFromJsonAsync<UserGroupContract>();
-
-            response = await _http.PostAsJsonAsync(
-                "Activity/CreateUserGroup",
-                new ActivityCommand
-                {
-                    Message = "was created",
-                    ObjectId1 = createdUserGroup.Id,
-                    UserGroupId = createdUserGroup.Id
-                }
-            );
             return response.IsSuccessStatusCode;
         }
         catch (AccessTokenNotAvailableException exception)
@@ -223,20 +180,7 @@ public class AdministrationService : IAdministrationService
     {
         try
         {
-            var response = await _http.PostAsJsonAsync(
-                "Activity/UserGroupDeleted",
-                new ActivityCommand
-                {
-                    Message = "was deleted",
-                    ObjectId1 = userGroupId,
-                }
-            );
-            if (!response.IsSuccessStatusCode)
-            {
-                return response.IsSuccessStatusCode;
-            }
-
-            response = await _http.DeleteAsJsonAsync(
+            var response = await _http.DeleteAsJsonAsync(
                 "Administration/DeleteUserGroup",
                 new DeleteUserGroupCommand { UserGroupId = userGroupId }
             );
@@ -288,20 +232,6 @@ public class AdministrationService : IAdministrationService
                 "Administration/MoveUserToUserGroup",
                 new MoveUserToUserGroupCommand { UserId = userId, UserGroupId = userGroupId }
             );
-            if (!response.IsSuccessStatusCode)
-            {
-                return response.IsSuccessStatusCode;
-            }
-            response = await _http.PostAsJsonAsync(
-                "Activity/MoveUserToUserGroup",
-                new ActivityCommand
-                {
-                    Message = "moved to",
-                    ObjectId1 = userId,
-                    ObjectId2 = userGroupId,
-                    UserGroupId = userGroupId
-                }
-            );
             return response.IsSuccessStatusCode;
         }
         catch (AccessTokenNotAvailableException exception)
@@ -319,20 +249,6 @@ public class AdministrationService : IAdministrationService
             var response = await _http.PutAsJsonAsync(
                 "Administration/RemoveUserFromUserGroup",
                 new RemoveUserFromUserGroupCommand { UserId = userId, UserGroupId = userGroupId }
-            );
-            if (!response.IsSuccessStatusCode)
-            {
-                return response.IsSuccessStatusCode;
-            }
-            response = await _http.PostAsJsonAsync(
-                "Activity/RemoveUserFromUserGroup",
-                new ActivityCommand
-                {
-                    Message = "removed from",
-                    ObjectId1 = userId,
-                    ObjectId2 = userGroupId,
-                    UserGroupId = userGroupId
-                }
             );
             return response.IsSuccessStatusCode;
         }

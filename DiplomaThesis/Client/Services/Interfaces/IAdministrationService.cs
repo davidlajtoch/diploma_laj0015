@@ -8,7 +8,7 @@ public interface IAdministrationService
 
     public Task<List<UserContract>?> GetAllUsers();
 
-    public Task<bool> DeleteUser(string userName);
+    public Task<bool> DeleteUser(Guid userId);
 
     public Task<List<RoleContract>?> GetAllRoles();
 
