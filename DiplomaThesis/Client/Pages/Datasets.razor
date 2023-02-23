@@ -10,7 +10,7 @@
 <PageTitle>Datasets</PageTitle>
 <PageHeader Text="Datasets" />
 
-@if (_datasets is null)
+@if (DatasetList is null)
 {
     <Loader />
 }
@@ -30,12 +30,37 @@ else
                    @oninput="@((e) => SearchDatasetByName(e.Value!.ToString()!))">
             </div>
         </div>
-        <ul class="list_datasets">
-            @foreach (var dataset in _datasets_searched!)
+
+        <ul class="list_datasets animate__animated animate__fadeIn">
+            <li class="header">
+                <div class="col col-1">ID</div>
+                <div class="col col-1">Name</div>
+                <div class="col col-1">Columns</div>
+                <div class="col col-1">Uploaded through ReporTiny</div>
+            </li>
+            @foreach (var dataset in DatasetListFiltered!)
             {
                 <li class="row">
                     <div class="col col-1" data-label="ID">@dataset.Id</div>
-                    <div class="col col-2" data-label="Name">@dataset.Name</div>
+                    <div class="col col-1" data-label="Name">@dataset.Name</div>
+                    <div class="col col-1" data-label="Columns">@dataset.ColumnNames.Count()</div>
+                    <div class="col col-1" data-label="Uploaded through ReporTiny">@dataset.ColumnNames.Any()</div>
+                </li>
+            }
+        </ul>
+
+        <br />
+        <br />
+        <br />
+        <br />
+        <br />
+
+        <ul class="list_datasets">
+            @foreach (var dataset in DatasetListFiltered!)
+            {
+                <li class="header">
+                    <div class="col col-1">ID</div>
+                    <div class="col col-1">Name</div>
                 </li>
 
                 <li class="dataset">
@@ -71,7 +96,7 @@ else
                 </li>
             }
         </ul>
-        @if (_datasets.Count() == 0)
+        @if (DatasetList!.Count() == 0)
         {
             <div class="nothing_found">
                 Nothing found :(
@@ -81,8 +106,8 @@ else
 }
 
 @code {
-    private List<DatasetContract>? _datasets { get; set; }
-    private List<DatasetContract>? _datasets_searched { get; set; }
+    private List<DatasetContract>? DatasetList { get; set; }
+    private List<DatasetContract>? DatasetListFiltered { get; set; }
     private string SearchValue { get; set; } = "";
 
     protected override async Task OnInitializedAsync()
@@ -93,8 +118,8 @@ else
     private async Task UpdateData()
     {
         var datasets = await DatasetService.GetDatasets();
-        _datasets = datasets;
-        _datasets_searched = datasets;
+        DatasetList = datasets;
+        DatasetListFiltered = datasets;
 
         StateHasChanged();
     }
@@ -119,11 +144,13 @@ else
 
         if (datasetId.Equals(Guid.Empty))
         {
-            if (await DatasetService.UploadNewDataset(e.File.Name.Split(".")[0], datasetJson)) _ = UpdateData();
+            Console.WriteLine("Database datasetId is Guid.Empty");
+            //if (await DatasetService.UploadNewDataset(e.File.Name.Split(".")[0], datasetJson)) _ = UpdateData();
         }
         else
         {
-            if (await DatasetService.UploadRowsToDataset(datasetId, datasetJson)) _ = UpdateData();
+            Console.WriteLine("Database datasetId is NOT Guid.Empty");
+            //if (await DatasetService.UploadRowsToDataset(datasetId, datasetJson)) _ = UpdateData();
         }
     }
 
@@ -133,7 +160,7 @@ else
         {
             return;
         }
-        _datasets_searched = _datasets!.FindAll(d => d.Name.Contains(searched_dataset_name));
+        DatasetListFiltered = DatasetList!.FindAll(d => d.Name.Contains(searched_dataset_name));
     }
 
 }
