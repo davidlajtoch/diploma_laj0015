@@ -48,17 +48,17 @@ html {
   background-color: #ffebee !important;
 }
 
-.button_input_file {
+.button_input_file_default {
   padding: 0px;
   padding-left: 20px;
   padding-right: 20px;
   line-height: 40px;
 }
-.button_input_file:hover {
+.button_input_file_default:hover {
   padding-left: 30px;
   padding-right: 30px;
 }
-.button_input_file input[type=file] {
+.button_input_file_default input[type=file] {
   display: none;
 }
 
@@ -182,6 +182,10 @@ html {
 
 .text_light {
   color: #9ca3af !important;
+}
+
+.text_purple {
+  color: #7c4dff !important;
 }
 
 .animation_custom_gelatine {

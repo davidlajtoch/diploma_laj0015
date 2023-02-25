@@ -100,7 +100,7 @@ else
                 </li>
                 @foreach (var userGroup in _user_groups_searched!)
                 {
-                    <li class="row" @onclick="() => _userGroupMenu.ShowUserGroup(userGroup)">
+                    <li class="row" @onclick="() => _userGroupMenu!.ShowUserGroup(userGroup)">
                         <div class="col col-1" data-label="ID">@userGroup.Id</div>
                         <div class="col col-1" data-label="Name">@userGroup.Name</div>
                         <div class="col col-1" data-label="Leader">
@@ -122,8 +122,8 @@ else
 
 
 @code {
-    private UserMenu _userMenu = null!;
-    private UserGroupMenu _userGroupMenu = null!;
+    private UserMenu? _userMenu = null!;
+    private UserGroupMenu? _userGroupMenu = null!;
 
     private List<UserContract>? _users;
     private List<UserContract>? _users_searched;

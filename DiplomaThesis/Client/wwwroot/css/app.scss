@@ -52,7 +52,7 @@ html {
     background-color: $color_light_red !important;
 }
 
-.button_input_file {
+.button_input_file_default {
     padding: 0px;
     padding-left: 20px;
     padding-right: 20px;
@@ -199,6 +199,10 @@ html {
 
 .text_light {
     color: $color_light_grey !important;
+}
+
+.text_purple {
+    color: $color_purple !important;
 }
 
 .animation_custom_gelatine {

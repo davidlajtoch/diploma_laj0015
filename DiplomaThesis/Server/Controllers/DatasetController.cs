@@ -114,8 +114,8 @@ public class DatasetController : ControllerBase
         {
             Id = Guid.NewGuid(),
             PowerBiId = Guid.Parse(dataset.Id),
-            ColumnNames = columns.Select(column => column.Name),
-            ColumnTypes = columns.Select(column => column.DataType)
+            ColumnNames = columns.Select(column => column.Name).ToList(),
+            ColumnTypes = columns.Select(column => column.DataType).ToList()
         };
 
         _context.Datasets.Add(datasetInDb);

@@ -28,6 +28,7 @@ public class ApplicationDbContext : ApiAuthorizationDbContext<ApplicationUser>
     public DbSet<UserGroup> UserGroups { get; set; } = null!;
     public DbSet<ReportDb> Reports { get; set; } = null!;
     public DbSet<DatasetDb> Datasets { get; set; } = null!;
+    public DbSet<DatasetRow> DatasetRows { get; set; } = null!;
     public DbSet<Activity> Activities { get; set; } = null!;
     public DbSet<UserGroupMessage> UserGroupMessages { get; set; } = null!;
     public DbSet<Assignment> Assignments { get; set; } = null!;
@@ -38,9 +39,9 @@ public class ApplicationDbContext : ApiAuthorizationDbContext<ApplicationUser>
 
         builder.UseEncryption(this._encryptionProvider);
 
-        var splitStringConverter = new ValueConverter<IEnumerable<string>, string>(
+        var splitStringConverter = new ValueConverter<List<string>, string>(
             v => string.Join(";", v),
-            v => v.Split(new[] { ';' })
+            v => v.Split(new[] { ';' }).ToList()
         );
         builder.Entity<DatasetDb>().Property(nameof(DatasetDb.ColumnNames)).HasConversion(splitStringConverter);
         builder.Entity<DatasetDb>().Property(nameof(DatasetDb.ColumnTypes)).HasConversion(splitStringConverter);

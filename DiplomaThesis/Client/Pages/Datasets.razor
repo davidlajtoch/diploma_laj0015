@@ -19,7 +19,7 @@ else
     <div class="animate__animated animate__fadeIn">
         <div class="menu">
             <div class="group_left">
-                <label class="button_input_file button_default">
+                <label class="button_input_file_default button_default">
                     New dataset
                     <InputFile OnChange="@(args => LoadFile(args, Guid.Empty))" />
                 </label>
@@ -37,6 +37,7 @@ else
                 <div class="col col-1">Name</div>
                 <div class="col col-1">Columns</div>
                 <div class="col col-1">Uploaded through ReporTiny</div>
+                <div class="col col-1"></div>
             </li>
             @foreach (var dataset in DatasetListFiltered!)
             {
@@ -45,67 +46,23 @@ else
                     <div class="col col-1" data-label="Name">@dataset.Name</div>
                     <div class="col col-1" data-label="Columns">@dataset.ColumnNames.Count()</div>
                     <div class="col col-1" data-label="Uploaded through ReporTiny">@dataset.ColumnNames.Any()</div>
+                    <div class="col col-1">
+                        <button class="button_default" @onclick="() => DatasetMenu!.ShowDataset(dataset)">View</button>
+                        <button class="button_default" @onclick="() => DatasetAddRowsMenu!.ShowDataset(dataset)">Add rows</button>
+                    </div>
                 </li>
             }
         </ul>
 
-        <br />
-        <br />
-        <br />
-        <br />
-        <br />
-
-        <ul class="list_datasets">
-            @foreach (var dataset in DatasetListFiltered!)
-            {
-                <li class="header">
-                    <div class="col col-1">ID</div>
-                    <div class="col col-1">Name</div>
-                </li>
-
-                <li class="dataset">
-                    @if (dataset.ColumnNames.Any())
-                    {
-                        <strong>Dataset structure:</strong>
-                        <br />
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th>Names</th>
-                                    <th>Types</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach (var column in dataset.ColumnNames.Zip(dataset.ColumnTypes))
-                                {
-                                    <tr>
-                                        <td>@column.First</td>
-                                        <td>@column.Second</td>
-                                    </tr>
-                                }
-                            </tbody>
-                        </table>
-                    }
-                    else
-                    {
-                        <strong>Dataset not uploaded through this app.</strong>
-                        <br />
-                    }
-                    <strong>Upload more rows:</strong><br />
-                    <InputFile OnChange="@(args => LoadFile(args, dataset.Id))" />
-                </li>
-            }
-        </ul>
-        @if (DatasetList!.Count() == 0)
-        {
-            <div class="nothing_found">
-                Nothing found :(
-            </div>
-        }
+        <DatasetMenu @ref="DatasetMenu" OnDatasetChanged="UpdateData" />
+        <DatasetAddRowsMenu @ref="DatasetAddRowsMenu" OnDatasetChanged="UpdateData" />
     </div>
 }
 
 @code {
+    private DatasetMenu? DatasetMenu = null!;
+    private DatasetAddRowsMenu? DatasetAddRowsMenu = null!;
+
     private List<DatasetContract>? DatasetList { get; set; }
     private List<DatasetContract>? DatasetListFiltered { get; set; }
     private string SearchValue { get; set; } = "";
@@ -127,6 +84,7 @@ else
     private async Task LoadFile(InputFileChangeEventArgs e, Guid datasetId)
     {
         var file = e.File;
+        Console.WriteLine(file.ContentType);
         var datasetFileContent = await new StreamReader(file.OpenReadStream()).ReadToEndAsync();
         string datasetJson;
 

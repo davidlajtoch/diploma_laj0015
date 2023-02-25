@@ -74,5 +74,13 @@
   {
     "outputFile": "Pages/Assignments.razor.css",
     "inputFile": "Pages/Assignments.razor.scss"
+  },
+  {
+    "outputFile": "Shared/DatasetMenu.razor.css",
+    "inputFile": "Shared/DatasetMenu.razor.scss"
+  },
+  {
+    "outputFile": "Shared/DatasetAddRowsMenu.razor.css",
+    "inputFile": "Shared/DatasetAddRowsMenu.razor.scss"
   }
 ]

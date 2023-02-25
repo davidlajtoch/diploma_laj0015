@@ -1,0 +1,174 @@
+﻿@using DiplomaThesis.Client.Services.Interfaces
+@using DiplomaThesis.Shared.Contracts
+
+@inject IDatasetService DatasetService
+@inject IFileParsingService Parser
+@inject IAdministrationService AdministrationService
+@inject IJSRuntime JSRuntime
+
+@implements IAsyncDisposable
+
+<div class="dataset_add_rows_menu_container animate__animated animate__fadeIn" style="display: @(ShowDatasetAddRowsMenu ? "block" : "none");">
+    <div class="dataset_add_rows_menu">
+        @if (Dataset is null)
+        {
+            <p>
+                <em>Loading...</em>
+            </p>
+        }
+        else
+        {
+            <table class="table_info">
+                <tr>
+                    <td class="label">ID</td>
+                    <td>@Dataset.Id</td>
+                </tr>
+                <tr>
+                    <td class="label">Name</td>
+                    <td>@Dataset.Name</td>
+                </tr>
+                <tr>
+                    <td class="label">Columns</td>
+                    <td>@Dataset.ColumnNames.Count()</td>
+                </tr>
+                <tr>
+                    <td class="label">Uploaded through ReporTiny</td>
+                    <td>@Dataset.ColumnNames.Any()</td>
+                </tr>
+            </table>
+
+            <div class="section_header">Existing data preview</div>
+            @if (@Dataset.ColumnNames.Any())
+            {
+                <table class="table_dataset_preview">
+                    <tr>
+                        @for (int i = 0; i < Dataset.ColumnNames.Count(); i++)
+                        {
+                            <th>@Dataset.ColumnNames[i] : @Dataset.ColumnTypes[i]</th>
+                        }
+                    </tr>
+                </table>
+            }
+            else
+            {
+                <div class="info_preview_not_available text_light">Data preview is only available for datasets uploaded through ReporTiny</div>
+            }
+
+            <div class="section_header">New data preview</div>
+
+            if (!DataFileSelected)
+            {
+                <label @ref="fileDropContainer" class="file_drop_zone @HoverClass @((DataFileWrongType)? "file_drop_zone_warning" : "")" @ondragenter="OnDragEnter" @ondragleave="OnDragLeave" @ondragover="OnDragEnter">
+                    Click to choose file or drag and drop the file here<br /><br />
+                    Supported files<br />
+                    @AllowedFileExtensions
+                    <InputFile @ref="inputFile" OnChange="@(args => LoadFile(args))" accept="@AllowedFileExtensions" />
+                </label>
+            }
+
+            <div class="bottom_menu">
+                <div class="group_left">
+                </div>
+                <div class="group_right">
+                    <button class="button_default" @onclick="SaveAndToggleDatasetMenu">Save and close</button>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+
+@code {
+    [Parameter]
+    public EventCallback OnDatasetChanged { get; set; }
+
+    private DatasetContract? Dataset { get; set; }
+
+    public bool ShowDatasetAddRowsMenu { get; set; }
+    public bool DataFileSelected = false;
+    public bool DataFileWrongType = false;
+
+    IJSObjectReference _filePasteModule;
+    IJSObjectReference _filePasteFunctionReference;
+
+    ElementReference fileDropContainer;
+    InputFile inputFile;
+    private string HoverClass;
+    private const string AllowedFileExtensions = ".json, .csv";
+    private string[] AllowedFileTypes = { "application/json", "text/csv" };
+
+    void OnDragEnter(DragEventArgs e) => HoverClass = "file_drop_zone_hover";
+    void OnDragLeave(DragEventArgs e) => HoverClass = string.Empty;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            _filePasteModule = await JSRuntime.InvokeAsync<IJSObjectReference>("import", "./scripts/filePaste.js");
+        }
+    }
+
+    public async Task SaveAndToggleDatasetMenu()
+    {
+        ShowDatasetAddRowsMenu = !ShowDatasetAddRowsMenu;
+    }
+
+    public async Task ShowDataset(DatasetContract dataset)
+    {
+        Dataset = dataset;
+
+        ShowDatasetAddRowsMenu = true;
+
+        StateHasChanged();
+
+        await Task.Delay(200);
+        _filePasteFunctionReference = await _filePasteModule.InvokeAsync<IJSObjectReference>("initializeFilePaste", fileDropContainer, inputFile.Element);
+
+    }
+
+    private async Task LoadFile(InputFileChangeEventArgs e)
+    {
+        var file = e.File;
+
+        if (!AllowedFileTypes.Contains(file.ContentType))
+        {
+            Console.WriteLine(file.ContentType);
+            HoverClass = string.Empty;
+            DataFileWrongType = true;
+            await Task.Delay(1000);
+            DataFileWrongType = false;
+            return;
+        }
+
+        Console.WriteLine(file.ContentType);
+        var datasetFileContent = await new StreamReader(file.OpenReadStream()).ReadToEndAsync();
+        string datasetJson;
+
+        try
+        {
+            datasetJson = Parser.ParseToJson(datasetFileContent, e.File.Name.Split(".").Last());
+            Console.WriteLine(datasetJson);
+        }
+        catch
+        {
+            Console.WriteLine("Exception");
+            return;
+        }
+
+        HoverClass = string.Empty;
+        DataFileSelected = true;
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (_filePasteFunctionReference != null)
+        {
+            await _filePasteFunctionReference.InvokeVoidAsync("dispose");
+            await _filePasteFunctionReference.DisposeAsync();
+        }
+        if (_filePasteModule != null)
+        {
+            await _filePasteModule.DisposeAsync();
+        }
+    }
+}
