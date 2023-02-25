@@ -36,7 +36,7 @@
 .dataset_add_rows_menu_container .dataset_add_rows_menu .bottom_menu .group_right {
   float: right;
 }
-.dataset_add_rows_menu_container .dataset_add_rows_menu .file_drop_zone {
+.dataset_add_rows_menu_container .dataset_add_rows_menu .file_drop_zone, .dataset_add_rows_menu_container .dataset_add_rows_menu .container_loading_file {
   width: calc(100% - 4px);
   height: 200px;
   position: relative;
@@ -45,9 +45,10 @@
   align-items: center;
   text-align: center;
   border: 2px dashed #9ca3af;
+  border-radius: 15px;
   transition: 0.2s ease-in-out;
 }
-.dataset_add_rows_menu_container .dataset_add_rows_menu .file_drop_zone ::deep input[type=file] {
+.dataset_add_rows_menu_container .dataset_add_rows_menu .file_drop_zone ::deep input[type=file], .dataset_add_rows_menu_container .dataset_add_rows_menu .container_loading_file ::deep input[type=file] {
   position: absolute;
   top: 0px;
   left: 0px;
@@ -56,7 +57,7 @@
   opacity: 0;
   cursor: pointer;
 }
-.dataset_add_rows_menu_container .dataset_add_rows_menu .file_drop_zone:hover {
+.dataset_add_rows_menu_container .dataset_add_rows_menu .file_drop_zone:hover, .dataset_add_rows_menu_container .dataset_add_rows_menu .container_loading_file:hover {
   color: #7c4dff;
   background-color: #f3f4f6;
 }
@@ -78,6 +79,11 @@
   margin-top: 5px;
   margin-bottom: 5px;
   color: #7c4dff;
+}
+.dataset_add_rows_menu_container .dataset_add_rows_menu .container_loading_file {
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
 }
 .dataset_add_rows_menu_container .info_preview_not_available {
   width: 100%;

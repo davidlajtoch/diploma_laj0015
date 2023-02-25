@@ -56,7 +56,7 @@
 
             <div class="section_header">New data preview</div>
 
-            if (!DataFileSelected)
+            if (DataFileLoadProgress == 0)
             {
                 <label @ref="fileDropContainer" class="file_drop_zone @HoverClass @((DataFileWrongType)? "file_drop_zone_warning" : "")" @ondragenter="OnDragEnter" @ondragleave="OnDragLeave" @ondragover="OnDragEnter">
                     Click to choose file or drag and drop the file here<br /><br />
@@ -64,6 +64,14 @@
                     @AllowedFileExtensions
                     <InputFile @ref="inputFile" OnChange="@(args => LoadFile(args))" accept="@AllowedFileExtensions" />
                 </label>
+            }
+
+            if (DataFileLoadProgress == 1)
+            {
+                <div class="container_loading_file animate__animated animate__fadeIn">
+                    <LoaderSmall />
+                    <span>Loading the file, please wait...</span>
+                </div>
             }
 
             <div class="bottom_menu">
@@ -85,7 +93,7 @@
     private DatasetContract? Dataset { get; set; }
 
     public bool ShowDatasetAddRowsMenu { get; set; }
-    public bool DataFileSelected = false;
+    public int DataFileLoadProgress = 0;
     public bool DataFileWrongType = false;
 
     IJSObjectReference _filePasteModule;
@@ -140,14 +148,18 @@
             return;
         }
 
+        HoverClass = string.Empty;
+        DataFileLoadProgress = 1;
+
         Console.WriteLine(file.ContentType);
-        var datasetFileContent = await new StreamReader(file.OpenReadStream()).ReadToEndAsync();
+        var datasetFileContent = await new StreamReader(file.OpenReadStream(maxAllowedSize: 500 * 1024 * 1024)).ReadToEndAsync();
+        Console.WriteLine(file.ContentType);
         string datasetJson;
 
         try
         {
             datasetJson = Parser.ParseToJson(datasetFileContent, e.File.Name.Split(".").Last());
-            Console.WriteLine(datasetJson);
+            //Console.WriteLine(datasetJson);
         }
         catch
         {
@@ -155,8 +167,7 @@
             return;
         }
 
-        HoverClass = string.Empty;
-        DataFileSelected = true;
+        DataFileLoadProgress = 2;
     }
 
     public async ValueTask DisposeAsync()

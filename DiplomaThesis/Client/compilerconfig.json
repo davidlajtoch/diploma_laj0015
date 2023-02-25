@@ -82,5 +82,9 @@
   {
     "outputFile": "Shared/DatasetAddRowsMenu.razor.css",
     "inputFile": "Shared/DatasetAddRowsMenu.razor.scss"
+  },
+  {
+    "outputFile": "Shared/LoaderSmall.razor.css",
+    "inputFile": "Shared/LoaderSmall.razor.scss"
   }
 ]

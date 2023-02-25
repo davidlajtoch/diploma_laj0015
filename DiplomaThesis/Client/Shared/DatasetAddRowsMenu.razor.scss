@@ -43,7 +43,7 @@
             }
         }
 
-        .file_drop_zone {
+        .file_drop_zone, .container_loading_file {
             width: calc(100% - 4px);
             height: 200px;
             position: relative;
@@ -52,6 +52,7 @@
             align-items: center;
             text-align: center;
             border: 2px dashed $color_light_grey;
+            border-radius: 15px;
             transition: 0.2s ease-in-out;
 
             ::deep input[type=file] {
@@ -90,6 +91,12 @@
             margin-top: 5px;
             margin-bottom: 5px;
             color: $color_purple;
+        }
+
+        .container_loading_file{
+            pointer-events: none;
+            display: flex;
+            flex-direction: column;
         }
     }
 
