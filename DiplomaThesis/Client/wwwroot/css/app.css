@@ -21,8 +21,6 @@ html {
   padding: 10px;
   padding-left: 20px;
   padding-right: 20px;
-  margin-left: 5px;
-  margin-right: 5px;
   text-decoration: none;
   font-family: "Nunito", sans-serif;
   font-size: 16px;
@@ -41,6 +39,10 @@ html {
   color: #7c4dff;
   padding-left: 30px;
   padding-right: 30px;
+}
+.button_default:not(.nomargin), .button_warning:not(.nomargin) {
+  margin-left: 5px;
+  margin-right: 5px;
 }
 
 .button_warning:hover {
@@ -82,10 +84,18 @@ html {
 
 .button_circle_default {
   border: none;
-  border-radius: 50%;
+  border-radius: 500px;
   font-family: "Nunito", sans-serif;
   color: #6b7280;
   cursor: pointer;
+  transition: 0.2s ease-in-out;
+}
+.button_circle_default .icon {
+  position: relative;
+  top: 1px;
+}
+.button_circle_default:hover {
+  color: #7c4dff;
 }
 
 .input_search_default {
@@ -186,6 +196,10 @@ html {
 
 .text_purple {
   color: #7c4dff !important;
+}
+
+.text_center {
+  text-align: center;
 }
 
 .animation_custom_gelatine {

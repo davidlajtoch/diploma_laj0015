@@ -1,5 +1,7 @@
+using System.Data;
 using System.Text;
 using DiplomaThesis.Client.Services.Interfaces;
+using Newtonsoft.Json;
 
 namespace DiplomaThesis.Client.Services.Implementations;
 
@@ -42,6 +44,11 @@ public class FileParsingService : IFileParsingService
         sb.AppendLine("\n]");
 
         return sb.ToString();
+    }
+
+    public DataTable ParseJsonToDataTable(string json)
+    {
+        return JsonConvert.DeserializeObject<DataTable>(json);
     }
 
     private static string ParseXlsxToJson(string datasetFile)

@@ -30,16 +30,19 @@
         background-color: $color_white;
 
         .bottom_menu {
+            display: flex;
+            justify-content: space-between;
             width: 100%;
             height: 40px;
             margin-top: 10px;
 
-            .group_left {
-                float: left
-            }
+            .button_circle {
+                width: 40px;
+                height: 40px;
 
-            .group_right {
-                float: right;
+                &:hover {
+                    width: 50px;
+                }
             }
         }
 
@@ -93,10 +96,34 @@
             color: $color_purple;
         }
 
-        .container_loading_file{
+        .container_loading_file {
             pointer-events: none;
             display: flex;
             flex-direction: column;
+        }
+
+        .section_file_format_guide {
+
+            .example_code {
+                width: calc(100% - 20px);
+                background-color: $color_lighter_grey;
+                border-radius: 15px;
+                padding: 10px;
+                font-family: 'Roboto Mono', monospace;
+            }
+        }
+
+        .table_dataset_preview {
+            width: calc(100% - 15px);
+            border: 1px solid $color_light_grey;
+
+            th {
+                color: $color_purple;
+            }
+
+            tr:nth-child(even) {
+                background-color: $color_lighter_grey;
+            }
         }
     }
 

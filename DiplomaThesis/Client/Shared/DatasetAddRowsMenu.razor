@@ -1,5 +1,6 @@
 ﻿@using DiplomaThesis.Client.Services.Interfaces
 @using DiplomaThesis.Shared.Contracts
+@using System.Data;
 
 @inject IDatasetService DatasetService
 @inject IFileParsingService Parser
@@ -18,69 +19,144 @@
         }
         else
         {
-            <table class="table_info">
-                <tr>
-                    <td class="label">ID</td>
-                    <td>@Dataset.Id</td>
-                </tr>
-                <tr>
-                    <td class="label">Name</td>
-                    <td>@Dataset.Name</td>
-                </tr>
-                <tr>
-                    <td class="label">Columns</td>
-                    <td>@Dataset.ColumnNames.Count()</td>
-                </tr>
-                <tr>
-                    <td class="label">Uploaded through ReporTiny</td>
-                    <td>@Dataset.ColumnNames.Any()</td>
-                </tr>
-            </table>
-
-            <div class="section_header">Existing data preview</div>
-            @if (@Dataset.ColumnNames.Any())
+            @if (!ShowFileFormatGuide)
             {
-                <table class="table_dataset_preview">
-                    <tr>
-                        @for (int i = 0; i < Dataset.ColumnNames.Count(); i++)
-                        {
-                            <th>@Dataset.ColumnNames[i] : @Dataset.ColumnTypes[i]</th>
-                        }
-                    </tr>
-                </table>
+                <div class="section_dataset_add_rows animate__animated animate__fadeIn">
+                    <table class="table_info">
+                        <tr>
+                            <td class="label">ID</td>
+                            <td>@Dataset.Id</td>
+                        </tr>
+                        <tr>
+                            <td class="label">Name</td>
+                            <td>@Dataset.Name</td>
+                        </tr>
+                        <tr>
+                            <td class="label">Columns</td>
+                            <td>@Dataset.ColumnNames.Count()</td>
+                        </tr>
+                        <tr>
+                            <td class="label">Uploaded through ReporTiny</td>
+                            <td>@Dataset.ColumnNames.Any()</td>
+                        </tr>
+                    </table>
+
+                    <div class="section_header">Existing data preview</div>
+                    @if (@Dataset.ColumnNames.Any())
+                    {
+                        <table class="table_dataset_preview">
+                            <tr>
+                                @for (int i = 0; i < Dataset.ColumnNames.Count(); i++)
+                                {
+                                    <th>@Dataset.ColumnNames[i] : @Dataset.ColumnTypes[i]</th>
+                                }
+                            </tr>
+                        </table>
+                    }
+                    else
+                    {
+                        <div class="info_preview_not_available text_light">Data preview is only available for datasets uploaded through ReporTiny</div>
+                    }
+
+                    <div class="section_header">New data preview</div>
+
+                    @if (DataFileLoadProgress == 0)
+                    {
+                        <label @ref="fileDropContainer" class="file_drop_zone @HoverClass @((DataFileWrongType)? "file_drop_zone_warning" : "")" @ondragenter="OnDragEnter" @ondragleave="OnDragLeave" @ondragover="OnDragEnter">
+                            Click to choose a file or drag and drop the file to this area<br /><br />
+                            Supported files<br />
+                            @AllowedFileExtensions
+                            <InputFile @ref="inputFile" OnChange="@(args => LoadFile(args))" accept="@AllowedFileExtensions" />
+                        </label>
+                    }
+
+                    @if (DataFileLoadProgress == 1)
+                    {
+                        <div class="container_loading_file animate__animated animate__fadeIn">
+                            <LoaderSmall />
+                            <span>Loading the file, please wait...</span>
+                        </div>
+                    }
+
+                    @if (DataFileLoadProgress == 2 && DatasetNewDataTable != null)
+                    {
+                        <table class="table_dataset_preview animate__animated animate__fadeIn">
+                            <tr>
+                                @for (int i = 0; i < DatasetNewDataTable.Columns.Count; i++)
+                                {
+                                    <th>
+                                        @DatasetNewDataTable.Columns[i] :
+                                        <span class="text_light">@DatasetNewDataTable.Columns[i].DataType.ToString().Split('.')[1]</span>
+                                    </th>
+                                }
+                            </tr>
+                            @for (int row = 0; row < DatasetPreviewMaxRows; row++)
+                            {
+                                <tr>
+                                    @for (int column = 0; column < DatasetNewDataTable.Columns.Count; column++)
+                                    {
+                                        <td>
+                                            @DatasetNewDataTable.Rows[row].ItemArray[column]
+                                        </td>
+                                    }
+                                </tr>
+                            }
+                        </table>
+                    }
+
+                    <div class="bottom_menu">
+                        <div class="group_left">
+                            <button class="button_circle_default button_circle" @onclick="ToggleFileFormatGuide">
+                                <i class="material-icons icon">help</i>
+                            </button>
+                        </div>
+                        <div class="group_right">
+                            <button class="button_default" @onclick="SaveAndToggleDatasetMenu">Save and close</button>
+                        </div>
+                    </div>
+                </div>
             }
             else
             {
-                <div class="info_preview_not_available text_light">Data preview is only available for datasets uploaded through ReporTiny</div>
-            }
-
-            <div class="section_header">New data preview</div>
-
-            if (DataFileLoadProgress == 0)
-            {
-                <label @ref="fileDropContainer" class="file_drop_zone @HoverClass @((DataFileWrongType)? "file_drop_zone_warning" : "")" @ondragenter="OnDragEnter" @ondragleave="OnDragLeave" @ondragover="OnDragEnter">
-                    Click to choose file or drag and drop the file here<br /><br />
-                    Supported files<br />
-                    @AllowedFileExtensions
-                    <InputFile @ref="inputFile" OnChange="@(args => LoadFile(args))" accept="@AllowedFileExtensions" />
-                </label>
-            }
-
-            if (DataFileLoadProgress == 1)
-            {
-                <div class="container_loading_file animate__animated animate__fadeIn">
-                    <LoaderSmall />
-                    <span>Loading the file, please wait...</span>
+                <div class="section_file_format_guide animate__animated animate__fadeIn">
+                    <div class="section_header">File format guide</div>
+                    <div class="text_center">
+                        These examples show how the uploaded files should be formatted.
+                        Trying to upload wrongly formatted files can result in error.
+                    </div>
+                    <div class="section_header">JSON</div>
+                    <div class="text_center">
+                        Rows are indicated with '{}'.
+                        Inside rows, columns and their corresponding values should be placed in pairs divided by ':'.<br />
+                        The file should start and end with '[]' surrounding all the rows.
+                    </div><br />
+                    <div class="example_code">
+                        [<br />
+                        {"Name":"Change 1","State":"New","Source":"Internal","Date":"2020-1-1T00:00:00Z","Release":"Release 2"},<br />
+                        {"Name":"Change 2","State":"Approved","Source":"Internal","Date":"2020-1-1T00:00:00Z","Release":"Release 2"}<br />
+                        ]
+                    </div>
+                    <div class="section_header">CSV</div>
+                    <div class="text_center">
+                        Standard CSV format.
+                        First line indicates the column names, all the following lines represent rows.
+                        Every column has to be separated with ','.
+                    </div><br />
+                    <div class="example_code">
+                        Name,State,Source,Date,Release<br />
+                        Change 1,New,Internal,2020-1-1T00:00:00Z,Release 2<br />
+                        Change 2,Approved,Internal,2020-1-1T00:00:00Z,Release 2
+                    </div>
+                </div>
+                <div class="bottom_menu">
+                    <div class="group_left">
+                        <button class="button_default nomargin" @onclick="ToggleFileFormatGuide">Back</button>
+                    </div>
+                    <div class="group_right">
+                    </div>
                 </div>
             }
 
-            <div class="bottom_menu">
-                <div class="group_left">
-                </div>
-                <div class="group_right">
-                    <button class="button_default" @onclick="SaveAndToggleDatasetMenu">Save and close</button>
-                </div>
-            </div>
         }
     </div>
 </div>
@@ -93,8 +169,10 @@
     private DatasetContract? Dataset { get; set; }
 
     public bool ShowDatasetAddRowsMenu { get; set; }
-    public int DataFileLoadProgress = 0;
-    public bool DataFileWrongType = false;
+    private bool ShowFileFormatGuide = false;
+    private bool DataFileWrongType = false;
+    private int DataFileLoadProgress = 0;
+    private const int DatasetPreviewMaxRows = 5;
 
     IJSObjectReference _filePasteModule;
     IJSObjectReference _filePasteFunctionReference;
@@ -104,6 +182,9 @@
     private string HoverClass;
     private const string AllowedFileExtensions = ".json, .csv";
     private string[] AllowedFileTypes = { "application/json", "text/csv" };
+    private int MaxFileSize = 500 * 1024 * 1024; //500MB
+
+    private DataTable DatasetNewDataTable { get; set; }
 
     void OnDragEnter(DragEventArgs e) => HoverClass = "file_drop_zone_hover";
     void OnDragLeave(DragEventArgs e) => HoverClass = string.Empty;
@@ -119,6 +200,9 @@
     public async Task SaveAndToggleDatasetMenu()
     {
         ShowDatasetAddRowsMenu = !ShowDatasetAddRowsMenu;
+        DataFileLoadProgress = 0;
+        DataFileWrongType = false;
+        ShowFileFormatGuide = false;
     }
 
     public async Task ShowDataset(DatasetContract dataset)
@@ -134,6 +218,11 @@
 
     }
 
+    public void ToggleFileFormatGuide()
+    {
+        ShowFileFormatGuide = !ShowFileFormatGuide;
+    }
+
     private async Task LoadFile(InputFileChangeEventArgs e)
     {
         var file = e.File;
@@ -143,23 +232,25 @@
             Console.WriteLine(file.ContentType);
             HoverClass = string.Empty;
             DataFileWrongType = true;
-            await Task.Delay(1000);
-            DataFileWrongType = false;
+
             return;
         }
 
+        DataFileWrongType = false;
         HoverClass = string.Empty;
         DataFileLoadProgress = 1;
 
         Console.WriteLine(file.ContentType);
-        var datasetFileContent = await new StreamReader(file.OpenReadStream(maxAllowedSize: 500 * 1024 * 1024)).ReadToEndAsync();
-        Console.WriteLine(file.ContentType);
+        var datasetFileContent = await new StreamReader(file.OpenReadStream(maxAllowedSize: MaxFileSize)).ReadToEndAsync();
         string datasetJson;
 
         try
         {
             datasetJson = Parser.ParseToJson(datasetFileContent, e.File.Name.Split(".").Last());
-            //Console.WriteLine(datasetJson);
+            DatasetNewDataTable = Parser.ParseJsonToDataTable(datasetJson);
+            DataFileLoadProgress = 2;
+
+
         }
         catch
         {
