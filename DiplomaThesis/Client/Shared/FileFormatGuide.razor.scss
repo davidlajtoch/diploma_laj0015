@@ -1,0 +1,37 @@
+﻿@import '../wwwroot/css/variables';
+
+.section_file_format_guide {
+
+    .section_header {
+        width: 100%;
+        text-align: center;
+        margin-top: 5px;
+        margin-bottom: 5px;
+        color: $color_purple;
+    }
+
+    .example_code {
+        width: calc(100% - 20px);
+        background-color: $color_lighter_grey;
+        border-radius: 15px;
+        padding: 10px;
+        font-family: 'Roboto Mono', monospace;
+    }
+}
+
+.bottom_menu {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    height: 40px;
+    margin-top: 10px;
+
+    .button_circle {
+        width: 40px;
+        height: 40px;
+
+        &:hover {
+            width: 50px;
+        }
+    }
+}

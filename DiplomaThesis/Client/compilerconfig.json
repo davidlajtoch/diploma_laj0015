@@ -86,5 +86,13 @@
   {
     "outputFile": "Shared/LoaderSmall.razor.css",
     "inputFile": "Shared/LoaderSmall.razor.scss"
+  },
+  {
+    "outputFile": "Shared/DragAndDropFileUpload.razor.css",
+    "inputFile": "Shared/DragAndDropFileUpload.razor.scss"
+  },
+  {
+    "outputFile": "Shared/FileFormatGuide.razor.css",
+    "inputFile": "Shared/FileFormatGuide.razor.scss"
   }
 ]

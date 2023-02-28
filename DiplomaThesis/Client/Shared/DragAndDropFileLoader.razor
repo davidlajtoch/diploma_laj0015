@@ -1,0 +1,69 @@
+﻿@inject IJSRuntime JSRuntime
+@implements IAsyncDisposable
+
+<label @ref="fileDropContainer" class="file_drop_zone @HoverClass @((DataFileWrongType)? "file_drop_zone_warning" : "")" @ondragenter="OnDragEnter" @ondragleave="OnDragLeave" @ondragover="OnDragEnter">
+    Click to choose a file or drag and drop the file to this area<br /><br />
+    Supported files<br />
+    @AllowedFileExtensions
+    <InputFile @ref="inputFile" OnChange="@(args => LoadFile(args))" accept="@AllowedFileExtensions" />
+</label>
+
+@code {
+    [Parameter]
+    public EventCallback<IBrowserFile> OnFileLoaded { get; set; }
+
+    IJSObjectReference _filePasteModule;
+    IJSObjectReference _filePasteFunctionReference;
+
+    ElementReference fileDropContainer;
+    InputFile inputFile;
+
+    private string HoverClass;
+    private const string AllowedFileExtensions = ".json, .csv";
+    private string[] AllowedFileTypes = { "application/json", "text/csv" };
+
+    private bool DataFileWrongType = false;
+
+    void OnDragEnter(DragEventArgs e) => HoverClass = "file_drop_zone_hover";
+    void OnDragLeave(DragEventArgs e) => HoverClass = string.Empty;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            _filePasteModule = await JSRuntime.InvokeAsync<IJSObjectReference>("import", "./scripts/filePaste.js");
+            _filePasteFunctionReference = await _filePasteModule.InvokeAsync<IJSObjectReference>("initializeFilePaste", fileDropContainer, inputFile.Element);
+        }
+    }
+
+    private async Task LoadFile(InputFileChangeEventArgs e)
+    {
+        var file = e.File;
+
+        if (!AllowedFileTypes.Contains(file.ContentType))
+        {
+            Console.WriteLine(file.ContentType);
+            HoverClass = string.Empty;
+            DataFileWrongType = true;
+            return;
+        }
+
+        DataFileWrongType = false;
+        HoverClass = string.Empty;
+
+        await OnFileLoaded.InvokeAsync(file);
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (_filePasteFunctionReference != null)
+        {
+            await _filePasteFunctionReference.InvokeVoidAsync("dispose");
+            await _filePasteFunctionReference.DisposeAsync();
+        }
+        if (_filePasteModule != null)
+        {
+            await _filePasteModule.DisposeAsync();
+        }
+    }
+}

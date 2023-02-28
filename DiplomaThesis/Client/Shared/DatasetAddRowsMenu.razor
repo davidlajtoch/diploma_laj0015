@@ -7,8 +7,6 @@
 @inject IAdministrationService AdministrationService
 @inject IJSRuntime JSRuntime
 
-@implements IAsyncDisposable
-
 <div class="dataset_add_rows_menu_container animate__animated animate__fadeIn" style="display: @(ShowDatasetAddRowsMenu ? "block" : "none");">
     <div class="dataset_add_rows_menu">
         @if (Dataset is null)
@@ -62,12 +60,7 @@
 
                     @if (DataFileLoadProgress == 0)
                     {
-                        <label @ref="fileDropContainer" class="file_drop_zone @HoverClass @((DataFileWrongType)? "file_drop_zone_warning" : "")" @ondragenter="OnDragEnter" @ondragleave="OnDragLeave" @ondragover="OnDragEnter">
-                            Click to choose a file or drag and drop the file to this area<br /><br />
-                            Supported files<br />
-                            @AllowedFileExtensions
-                            <InputFile @ref="inputFile" OnChange="@(args => LoadFile(args))" accept="@AllowedFileExtensions" />
-                        </label>
+                        <DragAndDropFileLoader OnFileLoaded=@LoadDatasetFile />
                     }
 
                     @if (DataFileLoadProgress == 1)
@@ -118,43 +111,7 @@
             }
             else
             {
-                <div class="section_file_format_guide animate__animated animate__fadeIn">
-                    <div class="section_header">File format guide</div>
-                    <div class="text_center">
-                        These examples show how the uploaded files should be formatted.
-                        Trying to upload wrongly formatted files can result in error.
-                    </div>
-                    <div class="section_header">JSON</div>
-                    <div class="text_center">
-                        Rows are indicated with '{}'.
-                        Inside rows, columns and their corresponding values should be placed in pairs divided by ':'.<br />
-                        The file should start and end with '[]' surrounding all the rows.
-                    </div><br />
-                    <div class="example_code">
-                        [<br />
-                        {"Name":"Change 1","State":"New","Source":"Internal","Date":"2020-1-1T00:00:00Z","Release":"Release 2"},<br />
-                        {"Name":"Change 2","State":"Approved","Source":"Internal","Date":"2020-1-1T00:00:00Z","Release":"Release 2"}<br />
-                        ]
-                    </div>
-                    <div class="section_header">CSV</div>
-                    <div class="text_center">
-                        Standard CSV format.
-                        First line indicates the column names, all the following lines represent rows.
-                        Every column has to be separated with ','.
-                    </div><br />
-                    <div class="example_code">
-                        Name,State,Source,Date,Release<br />
-                        Change 1,New,Internal,2020-1-1T00:00:00Z,Release 2<br />
-                        Change 2,Approved,Internal,2020-1-1T00:00:00Z,Release 2
-                    </div>
-                </div>
-                <div class="bottom_menu">
-                    <div class="group_left">
-                        <button class="button_default nomargin" @onclick="ToggleFileFormatGuide">Back</button>
-                    </div>
-                    <div class="group_right">
-                    </div>
-                </div>
+                <FileFormatGuide OnHide=ToggleFileFormatGuide />
             }
 
         }
@@ -167,41 +124,18 @@
     public EventCallback OnDatasetChanged { get; set; }
 
     private DatasetContract? Dataset { get; set; }
+    private DataTable? DatasetNewDataTable { get; set; }
 
     public bool ShowDatasetAddRowsMenu { get; set; }
     private bool ShowFileFormatGuide = false;
-    private bool DataFileWrongType = false;
     private int DataFileLoadProgress = 0;
+    private int DatasetFileMaxSize = 500 * 1024 * 1024; //500MB
     private const int DatasetPreviewMaxRows = 5;
-
-    IJSObjectReference _filePasteModule;
-    IJSObjectReference _filePasteFunctionReference;
-
-    ElementReference fileDropContainer;
-    InputFile inputFile;
-    private string HoverClass;
-    private const string AllowedFileExtensions = ".json, .csv";
-    private string[] AllowedFileTypes = { "application/json", "text/csv" };
-    private int MaxFileSize = 500 * 1024 * 1024; //500MB
-
-    private DataTable DatasetNewDataTable { get; set; }
-
-    void OnDragEnter(DragEventArgs e) => HoverClass = "file_drop_zone_hover";
-    void OnDragLeave(DragEventArgs e) => HoverClass = string.Empty;
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-        {
-            _filePasteModule = await JSRuntime.InvokeAsync<IJSObjectReference>("import", "./scripts/filePaste.js");
-        }
-    }
 
     public async Task SaveAndToggleDatasetMenu()
     {
         ShowDatasetAddRowsMenu = !ShowDatasetAddRowsMenu;
         DataFileLoadProgress = 0;
-        DataFileWrongType = false;
         ShowFileFormatGuide = false;
     }
 
@@ -214,8 +148,6 @@
         StateHasChanged();
 
         await Task.Delay(200);
-        _filePasteFunctionReference = await _filePasteModule.InvokeAsync<IJSObjectReference>("initializeFilePaste", fileDropContainer, inputFile.Element);
-
     }
 
     public void ToggleFileFormatGuide()
@@ -223,30 +155,18 @@
         ShowFileFormatGuide = !ShowFileFormatGuide;
     }
 
-    private async Task LoadFile(InputFileChangeEventArgs e)
+    private async Task LoadDatasetFile(IBrowserFile datasetFile)
     {
-        var file = e.File;
-
-        if (!AllowedFileTypes.Contains(file.ContentType))
-        {
-            Console.WriteLine(file.ContentType);
-            HoverClass = string.Empty;
-            DataFileWrongType = true;
-
-            return;
-        }
-
-        DataFileWrongType = false;
-        HoverClass = string.Empty;
+        var file = datasetFile;
         DataFileLoadProgress = 1;
 
         Console.WriteLine(file.ContentType);
-        var datasetFileContent = await new StreamReader(file.OpenReadStream(maxAllowedSize: MaxFileSize)).ReadToEndAsync();
+        var datasetFileContent = await new StreamReader(file.OpenReadStream(maxAllowedSize: DatasetFileMaxSize)).ReadToEndAsync();
         string datasetJson;
 
         try
         {
-            datasetJson = Parser.ParseToJson(datasetFileContent, e.File.Name.Split(".").Last());
+            datasetJson = Parser.ParseToJson(datasetFileContent, datasetFile.Name.Split(".").Last());
             DatasetNewDataTable = Parser.ParseJsonToDataTable(datasetJson);
             DataFileLoadProgress = 2;
 
@@ -258,19 +178,6 @@
             return;
         }
 
-        DataFileLoadProgress = 2;
-    }
-
-    public async ValueTask DisposeAsync()
-    {
-        if (_filePasteFunctionReference != null)
-        {
-            await _filePasteFunctionReference.InvokeVoidAsync("dispose");
-            await _filePasteFunctionReference.DisposeAsync();
-        }
-        if (_filePasteModule != null)
-        {
-            await _filePasteModule.DisposeAsync();
-        }
+        //DataFileLoadProgress = 2;
     }
 }
