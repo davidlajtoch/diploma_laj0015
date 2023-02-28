@@ -172,6 +172,24 @@ namespace DiplomaThesis.Server.Migrations
                     b.ToTable("Datasets");
                 });
 
+            modelBuilder.Entity("DiplomaThesis.Server.Models.DatasetRow", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Data")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("DatasetId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("DatasetRows");
+                });
+
             modelBuilder.Entity("DiplomaThesis.Server.Models.ReportDb", b =>
                 {
                     b.Property<Guid>("Id")

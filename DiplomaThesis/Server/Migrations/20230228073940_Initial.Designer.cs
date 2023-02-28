@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DiplomaThesis.Server.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230224140420_Initial")]
+    [Migration("20230228073940_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -172,6 +172,24 @@ namespace DiplomaThesis.Server.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Datasets");
+                });
+
+            modelBuilder.Entity("DiplomaThesis.Server.Models.DatasetRow", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Data")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("DatasetId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("DatasetRows");
                 });
 
             modelBuilder.Entity("DiplomaThesis.Server.Models.ReportDb", b =>

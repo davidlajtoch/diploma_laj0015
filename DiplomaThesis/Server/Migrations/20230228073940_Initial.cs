@@ -57,6 +57,19 @@ namespace DiplomaThesis.Server.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "DatasetRows",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Data = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    DatasetId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_DatasetRows", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Datasets",
                 columns: table => new
                 {
@@ -430,6 +443,9 @@ namespace DiplomaThesis.Server.Migrations
 
             migrationBuilder.DropTable(
                 name: "Assignments");
+
+            migrationBuilder.DropTable(
+                name: "DatasetRows");
 
             migrationBuilder.DropTable(
                 name: "Datasets");
