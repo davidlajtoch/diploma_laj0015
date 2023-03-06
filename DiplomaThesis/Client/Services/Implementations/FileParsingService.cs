@@ -6,7 +6,6 @@ using DiplomaThesis.Client.Services.Interfaces;
 using ExcelDataReader;
 using Microsoft.AspNetCore.Components.Forms;
 using Newtonsoft.Json;
-using Microsoft.Extensions.Hosting;
 using Microsoft.PowerBI.Api.Models;
 using Microsoft.Rest.Serialization;
 

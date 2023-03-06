@@ -1,1 +1,1 @@
-﻿.page{width:100%;padding-bottom:90px;}
+﻿.page{width:calc(100% - 80px);padding:40px;padding-bottom:90px;}
