@@ -47,21 +47,18 @@ else
                     <div class="col col-1" data-label="Columns">@dataset.ColumnNames.Count()</div>
                     <div class="col col-1" data-label="Uploaded through ReporTiny">@dataset.ColumnNames.Any()</div>
                     <div class="col col-1">
-                        <button class="button_default" @onclick="() => DatasetMenu!.ShowDataset(dataset)">View</button>
-                        <button class="button_default" @onclick="() => DatasetAddRowsMenu!.ShowDataset(dataset)">Add rows</button>
+                        <button class="button_default" @onclick="() => DatasetMenu!.ShowDataset(dataset)">View / Add rows</button>
                     </div>
                 </li>
             }
         </ul>
 
         <DatasetMenu @ref="DatasetMenu" OnDatasetChanged="UpdateData" />
-        <DatasetAddRowsMenu @ref="DatasetAddRowsMenu" OnDatasetChanged="UpdateData" />
     </div>
 }
 
 @code {
     private DatasetMenu? DatasetMenu = null!;
-    private DatasetAddRowsMenu? DatasetAddRowsMenu = null!;
 
     private List<DatasetContract>? DatasetList { get; set; }
     private List<DatasetContract>? DatasetListFiltered { get; set; }
@@ -87,17 +84,6 @@ else
         Console.WriteLine(file.ContentType);
         var datasetFileContent = await new StreamReader(file.OpenReadStream()).ReadToEndAsync();
         string datasetJson;
-
-        try
-        {
-            datasetJson = Parser.ParseToJson(datasetFileContent, e.File.Name.Split(".").Last());
-            Console.WriteLine(datasetJson);
-        }
-        catch
-        {
-            Console.WriteLine("Exception");
-            return;
-        }
 
 
         if (datasetId.Equals(Guid.Empty))

@@ -31,7 +31,7 @@ else
             </div>
 
             <div class="group_right">
-                @if (!UserUserGroupLeader)
+                @if (UserUserGroupLeader)
                 {
                     <div class="input_with_button_default input_with_button">
                         <input @bind="NewAssignmentName" type="text" placeholder="Create new assignment...">
@@ -92,7 +92,7 @@ else
             </div>
 
             <div class="section_right">
-                @if (SelectedAssignment != null && !UserUserGroupLeader)
+                @if (UserUserGroupLeader && SelectedAssignment != null)
                 {
                     <div class="section_header">Name</div>
                     <input type="text" class="input_search_default input_search nohover" placeholder="Name this assignment..." @bind="AssignmentName">
@@ -145,7 +145,7 @@ else
                 }
 
 
-                @if (SelectedAssignment != null && UserUserGroupLeader)
+                @if (!UserUserGroupLeader && SelectedAssignment != null)
                 {
                     <table class="table_info">
                         <tr>
@@ -249,6 +249,7 @@ else
         CategorizeAssignments();
 
         UserInUserGroup = true;
+        Console.WriteLine(UserUserGroupLeader);
     }
 
     private async Task GetSetUserId()

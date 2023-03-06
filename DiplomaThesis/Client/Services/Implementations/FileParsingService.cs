@@ -1,27 +1,43 @@
 using System.Data;
+using System.IO;
+using System.Net.NetworkInformation;
 using System.Text;
 using DiplomaThesis.Client.Services.Interfaces;
+using ExcelDataReader;
+using Microsoft.AspNetCore.Components.Forms;
 using Newtonsoft.Json;
+using Microsoft.Extensions.Hosting;
+using Microsoft.PowerBI.Api.Models;
+using Microsoft.Rest.Serialization;
 
 namespace DiplomaThesis.Client.Services.Implementations;
 
 public class FileParsingService : IFileParsingService
 {
-    public string ParseToJson(string datasetFile, string extension)
+    private int _datasetFileMaxSize = 500 * 1024 * 1024; //500MB
+
+    public async Task<string> ParseFileToJson(IBrowserFile datasetFile, string extension)
     {
         return extension.ToLower() switch
         {
-            "json" => datasetFile,
-            "csv" => ParseCsvToJson(datasetFile),
-            "xlsx" => ParseXlsxToJson(datasetFile),
+            "json" => await ReadJson(datasetFile),
+            "csv" => await ParseCsvToJson(datasetFile),
+            "xlsx" => await ParseXlsxToJson(datasetFile),
             _ => throw new NotImplementedException()
         };
     }
 
-    private static string ParseCsvToJson(string datasetFile)
+    public async Task<string> ReadJson(IBrowserFile datasetFile)
     {
-        datasetFile = datasetFile.ReplaceLineEndings();
-        var rows = datasetFile.Split("\n");
+         return await new StreamReader(datasetFile.OpenReadStream(maxAllowedSize: _datasetFileMaxSize)).ReadToEndAsync();
+    }
+
+    public async Task<string> ParseCsvToJson(IBrowserFile datasetFile)
+    {
+        var datasetFileContent = await new StreamReader(datasetFile.OpenReadStream(maxAllowedSize: _datasetFileMaxSize)).ReadToEndAsync();
+
+        datasetFileContent = datasetFileContent.ReplaceLineEndings();
+        var rows = datasetFileContent.Split("\n");
         var columnNames = rows[0].Split(",");
 
         var sb = new StringBuilder("[\n");
@@ -46,13 +62,46 @@ public class FileParsingService : IFileParsingService
         return sb.ToString();
     }
 
+    public async Task<string> ParseXlsxToJson(IBrowserFile datasetFile)
+    {
+        var sb = new StringBuilder("[\n");
+        Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+
+        MemoryStream ms = new MemoryStream();
+        await datasetFile.OpenReadStream().CopyToAsync(ms);
+
+        using (var reader = ExcelReaderFactory.CreateReader(ms, new ExcelReaderConfiguration()
+        { FallbackEncoding = Encoding.GetEncoding(1252) }))
+        {
+            List<string> columnNames = new List<string>();
+            reader.Read();
+            for (int i = 0; i < reader.FieldCount; i++)
+            {
+                columnNames.Add(reader.GetString(i));
+            }
+
+            while (reader.Read())
+            {
+                sb.AppendLine("{");
+                for (int i = 0; i < reader.FieldCount; i++)
+                {
+                    sb.AppendLine("\"" + columnNames[i] + "\": \"" + reader.GetString(i) + "\",");
+                }
+                sb.Remove(sb.Length - 1, 1);
+                sb.AppendLine("\n},");
+
+            } while (reader.NextResult()) ;
+        }
+
+        sb.Remove(sb.Length - 1, 1);
+        sb.AppendLine("\n]");
+        return sb.ToString();
+    }
+
     public DataTable ParseJsonToDataTable(string json)
     {
         return JsonConvert.DeserializeObject<DataTable>(json);
     }
 
-    private static string ParseXlsxToJson(string datasetFile)
-    {
-        throw new NotImplementedException();
-    }
+
 }

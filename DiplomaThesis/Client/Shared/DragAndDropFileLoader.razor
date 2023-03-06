@@ -1,7 +1,7 @@
 ﻿@inject IJSRuntime JSRuntime
 @implements IAsyncDisposable
 
-<label @ref="fileDropContainer" class="file_drop_zone @HoverClass @((DataFileWrongType)? "file_drop_zone_warning" : "")" @ondragenter="OnDragEnter" @ondragleave="OnDragLeave" @ondragover="OnDragEnter">
+<label @ref="fileDropContainer" class="file_drop_zone @HoverClass @((DataFileWrongType)? "file_drop_zone_warning" : "") animate__animated animate__fadeIn" @ondragenter="OnDragEnter" @ondragleave="OnDragLeave" @ondragover="OnDragEnter">
     Click to choose a file or drag and drop the file to this area<br /><br />
     Supported files<br />
     @AllowedFileExtensions
@@ -19,8 +19,8 @@
     InputFile inputFile;
 
     private string HoverClass;
-    private const string AllowedFileExtensions = ".json, .csv";
-    private string[] AllowedFileTypes = { "application/json", "text/csv" };
+    private const string AllowedFileExtensions = ".json, .csv, .xlsx";
+    private string[] AllowedFileTypes = { "application/json", "text/csv", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" };
 
     private bool DataFileWrongType = false;
 

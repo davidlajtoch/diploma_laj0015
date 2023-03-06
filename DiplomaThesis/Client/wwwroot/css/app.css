@@ -92,7 +92,7 @@ html {
 }
 .button_circle_default .icon {
   position: relative;
-  top: 1px;
+  top: 1.5px;
 }
 .button_circle_default:hover {
   color: #7c4dff;
