@@ -6,9 +6,9 @@
     </div>
     <div class="section_header">JSON</div>
     <div class="text_center">
-        Rows are indicated with '{}'.
-        Inside rows, columns and their corresponding values should be placed in pairs divided by ':'.<br />
-        The file should start and end with '[]' surrounding all the rows.
+        Rows are indicated with '<span class="highlight_purple">{}</span>'.
+        Inside rows, columns and their corresponding values should be placed in pairs divided by '<span class="highlight_purple">:</span>'.<br />
+        The file should start and end with '<span class="highlight_purple">[]</span>' surrounding all the rows.
     </div><br />
     <div class="example_code">
         [<br />
@@ -20,13 +20,42 @@
     <div class="text_center">
         Standard CSV format.
         First line indicates the column names, all the following lines represent rows.
-        Every column has to be separated with ','.
+        Every column has to be separated with '<span class="highlight_purple">,</span>'.
     </div><br />
     <div class="example_code">
         Name,State,Source,Date,Release<br />
         Change 1,New,Internal,2020-1-1T00:00:00Z,Release 2<br />
         Change 2,Approved,Internal,2020-1-1T00:00:00Z,Release 2
     </div>
+    <div class="section_header">Excel (.xlsx)</div>
+    <div class="text_center">
+        Standard Excel format.
+        First row is automatically considered to be a header.
+        Following rows represent data.
+    </div><br />
+    <table class="example_table">
+        <tr>
+            <th>Name</th>
+            <th>State</th>
+            <th>Source</th>
+            <th>Date</th>
+            <th>Release</th>
+        </tr>
+        <tr>
+            <td>Change 1</td>
+            <td>New</td>
+            <td>Internal</td>
+            <td>2020-1-1T00:00:00Z</td>
+            <td>Release 2</td>
+        </tr>
+        <tr>
+            <td>Change 2</td>
+            <td>Approved</td>
+            <td>Internal</td>
+            <td>2020-1-1T00:00:00Z</td>
+            <td>Release 2</td>
+        </tr>
+    </table>
 </div>
 <div class="bottom_menu">
     <div class="group_left">

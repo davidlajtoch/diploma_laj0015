@@ -58,7 +58,7 @@
   /* Position the tooltip */
   position: absolute;
   top: -45px;
-  margin-left: -47px;
+  margin-left: -53px;
   z-index: 1;
 }
 .nav .group .item .tooltip::after {

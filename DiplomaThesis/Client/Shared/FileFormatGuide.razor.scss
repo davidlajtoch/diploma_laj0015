@@ -10,12 +10,30 @@
         color: $color_purple;
     }
 
+    .highlight_purple{
+        color: $color_purple;
+    }
+
     .example_code {
         width: calc(100% - 20px);
         background-color: $color_lighter_grey;
         border-radius: 15px;
         padding: 10px;
         font-family: 'Roboto Mono', monospace;
+    }
+
+    .example_table{
+        width: calc(100% - 20px);
+        background-color: $color_lighter_grey;
+        border-collapse: collapse;
+
+        td, th{
+            border: 1px solid $color_grey;
+            text-align: center;
+        }
+        th{
+            color: $color_purple;
+        }
     }
 }
 

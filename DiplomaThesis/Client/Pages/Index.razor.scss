@@ -169,10 +169,12 @@
             //background-color: $color_white;
             box-shadow: $shadow_light_grey;
             transition: all 0.2s ease-in-out;
+            padding-left: 15px;
         }
 
         .col-1 {
             flex-basis: 50%;
+            text-align: left;
         }
 
         .col-2 {

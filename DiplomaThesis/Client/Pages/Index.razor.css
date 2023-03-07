@@ -146,9 +146,11 @@
 .section_bottom .list_activity .row {
   box-shadow: 0px 0px 9px 0px rgba(0, 0, 0, 0.1);
   transition: all 0.2s ease-in-out;
+  padding-left: 15px;
 }
 .section_bottom .list_activity .col-1 {
   flex-basis: 50%;
+  text-align: left;
 }
 .section_bottom .list_activity .col-2 {
   flex-basis: 20%;

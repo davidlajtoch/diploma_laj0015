@@ -5,12 +5,27 @@
   margin-bottom: 5px;
   color: #7c4dff;
 }
+.section_file_format_guide .highlight_purple {
+  color: #7c4dff;
+}
 .section_file_format_guide .example_code {
   width: calc(100% - 20px);
   background-color: #f3f4f6;
   border-radius: 15px;
   padding: 10px;
   font-family: "Roboto Mono", monospace;
+}
+.section_file_format_guide .example_table {
+  width: calc(100% - 20px);
+  background-color: #f3f4f6;
+  border-collapse: collapse;
+}
+.section_file_format_guide .example_table td, .section_file_format_guide .example_table th {
+  border: 1px solid #6b7280;
+  text-align: center;
+}
+.section_file_format_guide .example_table th {
+  color: #7c4dff;
 }
 
 .bottom_menu {
