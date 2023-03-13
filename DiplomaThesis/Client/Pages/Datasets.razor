@@ -19,8 +19,9 @@ else
     <div class="animate__animated animate__fadeIn">
         <div class="menu">
             <div class="group_left">
+                <button class="button_default" @onclick="() => DatasetNewMenu!.Show()">New dataset</button>
                 <label class="button_input_file_default button_default">
-                    New dataset
+                    New dataset old
                     <InputFile OnChange="@(args => LoadFile(args, Guid.Empty))" />
                 </label>
             </div>
@@ -53,12 +54,14 @@ else
             }
         </ul>
 
+        <DatasetNewMenu @ref="DatasetNewMenu" OnDatasetChanged="UpdateData" />
         <DatasetMenu @ref="DatasetMenu" OnDatasetChanged="UpdateData" />
     </div>
 }
 
 @code {
     private DatasetMenu? DatasetMenu = null!;
+    private DatasetNewMenu? DatasetNewMenu = null!;
 
     private List<DatasetContract>? DatasetList { get; set; }
     private List<DatasetContract>? DatasetListFiltered { get; set; }

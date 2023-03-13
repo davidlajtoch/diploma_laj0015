@@ -178,14 +178,24 @@ public class PowerBiService
     {
         var powerBiClient = GetPowerBiClient();
 
-        var response = await powerBiClient.Datasets.PostRowsInGroupWithHttpMessagesAsync(
-            Guid.Parse(_powerBiOptions.Value.GroupId),
-            datasetId.ToString(),
-            tableName,
-            new PostRowsRequest(rows)
-        );
+        try
+        {
+            var response = await powerBiClient.Datasets.PostRowsInGroupWithHttpMessagesAsync(
+                Guid.Parse(_powerBiOptions.Value.GroupId),
+                datasetId.ToString(),
+                tableName,
+                new PostRowsRequest(rows)
+            );
+            return response.Response.IsSuccessStatusCode;
 
-        return response.Response.IsSuccessStatusCode;
+        }
+        catch (Exception ex)
+        {
+            var x = 1;
+        }
+
+        return false;
+
     }
 
     public async Task<bool> DeleteDataset(Guid datasetId)

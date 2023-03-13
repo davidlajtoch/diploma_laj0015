@@ -1,0 +1,182 @@
+﻿@using DiplomaThesis.Client.Services.Interfaces
+@using DiplomaThesis.Shared.Contracts
+@using System.Data;
+
+@inject IDatasetService DatasetService
+@inject IFileParsingService Parser
+@inject IAdministrationService AdministrationService
+@inject IJSRuntime JSRuntime
+
+<div class="dataset_menu_container animate__animated animate__fadeIn" style="display: @(ShowDatasetMenu ? "block" : "none");">
+    <div class="dataset_menu">
+        @if (!ShowFileFormatGuide)
+        {
+            <div class="section_dataset_info animate__animated animate__fadeIn">
+                <div class="section_header">New data preview</div>
+                <table class="table_info">
+                    <tr>
+                        <td class="label">Name</td>
+                        <td>@DatasetNewName</td>
+                    </tr>
+                </table>
+
+                @if (DataFileLoadProgress == 0)
+                {
+                    <DragAndDropFileLoader OnFileLoaded=@LoadDatasetFile />
+                }
+
+                @if (DataFileLoadProgress == 1)
+                {
+                    <div class="container_loading_file animate__animated animate__fadeIn">
+                        <LoaderSmall />
+                        <span>Loading the file, please wait...</span>
+                    </div>
+                }
+
+                @if (DataFileLoadProgress == 2 && DatasetNewDataTable != null)
+                {
+                    <table class="table_dataset_preview animate__animated animate__fadeIn">
+                        <tr>
+                            @for (int i = 0; i < DatasetNewDataTable.Columns.Count; i++)
+                            {
+                                <th>
+                                    @DatasetNewDataTable.Columns[i] :
+                                    <span class="text_light">@DatasetNewDataTable.Columns[i].DataType.ToString().Split('.')[1]</span>
+                                </th>
+                            }
+                        </tr>
+                        @for (int row = 0; row < DatasetNewDataTable.Rows.Count; row++)
+                        {
+                            if (row >= DatasetPreviewMaxRows) break;
+                            <tr>
+                                @for (int column = 0; column < DatasetNewDataTable.Columns.Count; column++)
+                                {
+                                    <td>
+                                        @DatasetNewDataTable.Rows[row].ItemArray[column]
+                                    </td>
+                                }
+                            </tr>
+                        }
+                    </table>
+                }
+
+                @if (DataFileLoadProgress == 3)
+                {
+                    <div class="container_uploading_file animate__animated animate__fadeIn">
+                        <LoaderSmall />
+                        <span>Uploading the file, please wait...</span>
+                    </div>
+                }
+
+                @if (DataFileLoadProgress == 4)
+                {
+                    <div class="container_loading_file_wrong_format animate__animated animate__fadeIn">
+                        <span>There seems to be an error in the file you are trying to load</span><br />
+                        <span>Please check the file and try again</span>
+                    </div>
+                }
+
+                <div class="bottom_menu">
+                    <div class="group_left">
+                        <button class="button_circle_default button_circle" @onclick="ToggleFileFormatGuide">
+                            <i class="material-icons icon">help</i>
+                        </button>
+                    </div>
+                    <div class="group_right">
+                        @if (DatasetNewJson != null && DatasetNewJson != string.Empty)
+                        {
+                            <button class="button_default" @onclick="UploadNewDataset">Upload</button>
+                        }
+
+                        <button class="button_default" @onclick="ToggleDatasetMenu">Close</button>
+                    </div>
+                </div>
+            </div>
+        }
+        else
+        {
+            <FileFormatGuide OnHide=ToggleFileFormatGuide />
+        }
+    </div>
+</div>
+
+
+@code {
+    [Parameter]
+    public EventCallback OnDatasetChanged { get; set; }
+
+    private DatasetContract? Dataset { get; set; }
+    private DataTable? DatasetNewDataTable { get; set; }
+    private string DatasetNewJson { get; set; } = string.Empty;
+    private string DatasetNewName { get; set; } = string.Empty;
+
+    public bool ShowDatasetMenu { get; set; }
+    private bool ShowFileFormatGuide = false;
+    private int DataFileLoadProgress = 0;
+    private int DatasetFileMaxSize = 500 * 1024 * 1024; //500MB
+    private const int DatasetPreviewMaxRows = 5;
+
+    public async Task SaveAndToggleDatasetMenu()
+    {
+        ShowDatasetMenu = !ShowDatasetMenu;
+        DataFileLoadProgress = 0;
+        ShowFileFormatGuide = false;
+    }
+
+    public async Task ToggleDatasetMenu()
+    {
+        ShowDatasetMenu = !ShowDatasetMenu;
+        DataFileLoadProgress = 0;
+        DatasetNewJson = string.Empty;
+        ShowFileFormatGuide = false;
+    }
+
+    public async Task Show()
+    {
+        ShowDatasetMenu = true;
+        StateHasChanged();
+    }
+
+    public void ToggleFileFormatGuide()
+    {
+        ShowFileFormatGuide = !ShowFileFormatGuide;
+    }
+
+    private async Task LoadDatasetFile(IBrowserFile datasetFile)
+    {
+        DataFileLoadProgress = 1;
+
+        try
+        {
+            string datasetFileExtension = datasetFile.Name.Split(".").Last();
+            DatasetNewJson = await Parser.ParseFileToJson(datasetFile, datasetFileExtension);
+            DatasetNewName = datasetFile.Name.Split(".").First();
+            DatasetNewDataTable = Parser.ParseJsonToDataTable(DatasetNewJson);
+            DataFileLoadProgress = 2;
+        }
+        catch
+        {
+            DataFileLoadProgress = 4;
+            StateHasChanged();
+            await Task.Delay(6000);
+            DataFileLoadProgress = 0;
+        }
+    }
+
+    private async Task UploadNewDataset()
+    {
+        if (DatasetNewJson == null || DatasetNewJson == string.Empty)
+        {
+            return;
+        }
+
+        DataFileLoadProgress = 3;
+
+        if (await DatasetService.UploadNewDataset(DatasetNewName, DatasetNewJson))
+        {
+            await OnDatasetChanged.InvokeAsync();
+            await SaveAndToggleDatasetMenu();
+            return;
+        }
+    }
+}

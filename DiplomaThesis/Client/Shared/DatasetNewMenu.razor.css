@@ -75,8 +75,3 @@
 .dataset_menu_container .dataset_menu .table_dataset_preview tr:nth-child(even) {
   background-color: #f3f4f6;
 }
-.dataset_menu_container .info_preview_not_available {
-  width: 100%;
-  color: #9ca3af;
-  text-align: center;
-}

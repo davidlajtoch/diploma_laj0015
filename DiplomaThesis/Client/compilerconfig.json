@@ -94,5 +94,9 @@
   {
     "outputFile": "Shared/FileFormatGuide.razor.css",
     "inputFile": "Shared/FileFormatGuide.razor.scss"
+  },
+  {
+    "outputFile": "Shared/DatasetNewMenu.razor.css",
+    "inputFile": "Shared/DatasetNewMenu.razor.scss"
   }
 ]

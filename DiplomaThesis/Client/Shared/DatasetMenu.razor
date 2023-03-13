@@ -7,7 +7,7 @@
 @inject IAdministrationService AdministrationService
 @inject IJSRuntime JSRuntime
 
-<div class="dataset_menu_container animate__animated animate__fadeIn" style="display: @(ShowDatasetAddRowsMenu ? "block" : "none");">
+<div class="dataset_menu_container animate__animated animate__fadeIn" style="display: @(ShowDatasetMenu ? "block" : "none");">
     <div class="dataset_menu">
         @if (Dataset is null)
         {
@@ -100,6 +100,14 @@
 
                     @if (DataFileLoadProgress == 3)
                     {
+                        <div class="container_uploading_file animate__animated animate__fadeIn">
+                            <LoaderSmall />
+                            <span>Uploading the file, please wait...</span>
+                        </div>
+                    }
+
+                    @if (DataFileLoadProgress == 4)
+                    {
                         <div class="container_loading_file_wrong_format animate__animated animate__fadeIn">
                             <span>There seems to be an error in the file you are trying to load</span><br />
                             <span>Please check the file and try again</span>
@@ -113,7 +121,11 @@
                             </button>
                         </div>
                         <div class="group_right">
-                            <button class="button_default" @onclick="SaveAndToggleDatasetMenu">Save and close</button>
+                            @if(DatasetNewJson != null && DatasetNewJson != string.Empty)
+                            {
+                                <button class="button_default" @onclick="() => AddRowsToDataset(DatasetNewJson)">Add rows</button>
+                            }
+                            <button class="button_default" @onclick="SaveAndToggleDatasetMenu">Close</button>
                         </div>
                     </div>
                 </div>
@@ -134,24 +146,27 @@
 
     private DatasetContract? Dataset { get; set; }
     private DataTable? DatasetNewDataTable { get; set; }
+    private string DatasetNewJson { get; set; } = string.Empty;
+    private string DatasetNewName { get; set; } = string.Empty;
 
-    public bool ShowDatasetAddRowsMenu { get; set; }
+    public bool ShowDatasetMenu { get; set; }
     private bool ShowFileFormatGuide = false;
     private int DataFileLoadProgress = 0;
-    private int DatasetFileMaxSize = 500 * 1024 * 1024; //500MB
     private const int DatasetPreviewMaxRows = 5;
 
     public async Task SaveAndToggleDatasetMenu()
     {
-        ShowDatasetAddRowsMenu = !ShowDatasetAddRowsMenu;
+        ShowDatasetMenu = !ShowDatasetMenu;
         DataFileLoadProgress = 0;
+        DatasetNewJson = string.Empty;
         ShowFileFormatGuide = false;
+        
     }
 
     public async Task ShowDataset(DatasetContract dataset)
     {
         Dataset = dataset;
-        ShowDatasetAddRowsMenu = true;
+        ShowDatasetMenu = true;
 
         StateHasChanged();
     }
@@ -163,25 +178,45 @@
 
     private async Task LoadDatasetFile(IBrowserFile datasetFile)
     {
+        if(Dataset == null || Dataset.Id == Guid.Empty)
+        {
+            return;
+        }
+
         DataFileLoadProgress = 1;
-        var file = datasetFile;
-        string datasetFileExtension = datasetFile.Name.Split(".").Last();
 
         try
         {
-            string datasetJson = await Parser.ParseFileToJson(file, datasetFileExtension);
-            DatasetNewDataTable = Parser.ParseJsonToDataTable(datasetJson);
+            string datasetFileExtension = datasetFile.Name.Split(".").Last();
+            DatasetNewJson = await Parser.ParseFileToJson(datasetFile, datasetFileExtension);
+            DatasetNewName = datasetFile.Name.Split(".").First();
+            DatasetNewDataTable = Parser.ParseJsonToDataTable(DatasetNewJson);
             DataFileLoadProgress = 2;
-            Console.WriteLine("xd");
         }
         catch
         {
-            DataFileLoadProgress = 3;
+            DataFileLoadProgress = 4;
             StateHasChanged();
             await Task.Delay(6000);
             DataFileLoadProgress = 0;
         }
+    }
 
-        return;
+    private async Task AddRowsToDataset(string datasetJson)
+    {
+        if (Dataset == null || Dataset.Id == Guid.Empty || DatasetNewJson == null || DatasetNewJson == string.Empty)
+        {
+            return;
+        }
+
+        DataFileLoadProgress = 3;
+
+        if (await DatasetService.UploadRowsToDataset(Dataset.Id, DatasetNewJson))
+        {
+            await OnDatasetChanged.InvokeAsync();
+            await SaveAndToggleDatasetMenu();
+            Console.WriteLine("xd2");
+            return;
+        }
     }
 }
