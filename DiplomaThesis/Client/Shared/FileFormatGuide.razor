@@ -4,7 +4,7 @@
         These examples show how the uploaded files should be formatted.
         Trying to upload wrongly formatted files can result in error.
     </div>
-    <div class="section_header">JSON</div>
+    <div class="section_header">JSON (.json)</div>
     <div class="text_center">
         Rows are indicated with '<span class="highlight_purple">{}</span>'.
         Inside rows, columns and their corresponding values should be placed in pairs divided by '<span class="highlight_purple">:</span>'.<br />
@@ -16,7 +16,7 @@
         {"Name":"Change 2","State":"Approved","Source":"Internal","Date":"2020-1-1T00:00:00Z","Release":"Release 2"}<br />
         ]
     </div>
-    <div class="section_header">CSV</div>
+    <div class="section_header">CSV (.csv)</div>
     <div class="text_center">
         Standard CSV format.
         First line indicates the column names, all the following lines represent rows.
@@ -56,6 +56,12 @@
             <td>Release 2</td>
         </tr>
     </table>
+
+    <div class="section_header">Aditional info</div>
+    <div class="text_center">
+        Column data types are detected automatically. If the column type is not what you expected, check the file for incorrect values.<br />
+        Default column type is <span class="highlight_purple">String</span>.
+    </div>
 </div>
 <div class="bottom_menu">
     <div class="group_left">

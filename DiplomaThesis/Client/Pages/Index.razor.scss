@@ -115,14 +115,8 @@
 
         .group_right, .group_left {
             height: 40px;
-        }
-
-        .group_right {
             display: flex;
-        }
-
-        .group_left {
-            display: flex;
+            gap: 10px;
 
             .selected {
                 color: $color_purple;
@@ -135,6 +129,7 @@
             & {
                 flex-direction: column;
             }
+
             .group_left {
                 margin-bottom: 10px;
                 margin-left: -5px;
@@ -174,7 +169,6 @@
 
         .col-1 {
             flex-basis: 50%;
-            text-align: left;
         }
 
         .col-2 {
@@ -202,8 +196,8 @@
             }
 
             .col {
-                flex-basis: 100%;
                 text-align: left;
+                flex-basis: 100%;
             }
 
             .col {

@@ -1,0 +1,28 @@
+﻿@import '../wwwroot/css/variables';
+
+.animate__animated.animate__fadeIn {
+    --animate-duration: 0.2s;
+}
+
+.table_dataset_preview {
+    width: 100%;
+    border: 1px solid $color_light_grey;
+    overflow-x: scroll;
+
+    th {
+        color: $color_purple;
+        max-width: 50px;
+    }
+
+    td{
+        max-width: 50px;
+    }
+
+    tr:nth-child(even) {
+        background-color: $color_lighter_grey;
+    }
+}
+
+.control_menu{
+    display: flex;
+}

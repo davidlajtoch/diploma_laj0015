@@ -38,10 +38,6 @@ html {
   padding-left: 30px;
   padding-right: 30px;
 }
-.button_default:not(.nomargin), .button_warning:not(.nomargin) {
-  margin-left: 5px;
-  margin-right: 5px;
-}
 
 .button_warning:hover {
   color: #ff1744 !important;

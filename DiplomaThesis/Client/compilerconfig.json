@@ -98,5 +98,9 @@
   {
     "outputFile": "Shared/DatasetNewMenu.razor.css",
     "inputFile": "Shared/DatasetNewMenu.razor.scss"
+  },
+  {
+    "outputFile": "Shared/DatasetPreviewTable.razor.css",
+    "inputFile": "Shared/DatasetPreviewTable.razor.scss"
   }
 ]

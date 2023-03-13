@@ -1,0 +1,161 @@
+﻿@using System.Data;
+@using System.Globalization;
+
+@if (DatasetDataTable != null)
+{
+    <table class="table_dataset_preview animate__animated animate__fadeIn">
+        <tr>
+            @for (int i = 0; i < DatasetDataTable!.Columns.Count; i++)
+            {
+                <th>
+                    @DatasetDataTable.Columns[i] :
+                    <span class="text_light">@DatasetDataTable.Columns[i].DataType.ToString().Split('.')[1]</span>
+                </th>
+            }
+        </tr>
+        @for (int row = 0; row < DatasetDataTable.Rows.Count; row++)
+        {
+            if (row >= DatasetPreviewMaxRows) break;
+            <tr>
+                @for (int column = 0; column < DatasetDataTable.Columns.Count; column++)
+                {
+                    <td>
+                        @DatasetDataTable.Rows[row].ItemArray[column]
+                    </td>
+                }
+            </tr>
+        }
+    </table>
+
+    <!--
+    <div class="control_menu">
+        <button class="button_default" @onclick="AutoCorrectDataTypes">Auto correct data types</button>
+    </div>
+    -->
+}
+
+@code {
+    [Parameter]
+    public EventCallback<DataTable> OnDatasetDataTableUpdated { get; set; }
+    [Parameter]
+    public DataTable DatasetDataTable { get; set; }
+    [Parameter]
+    public bool RefreshData { get; set; }
+
+    private const int DatasetPreviewMaxRows = 5;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await AutoCorrectDataTypes();
+    }
+
+    private async Task UpdateDatasetDataTable()
+    {
+        await OnDatasetDataTableUpdated.InvokeAsync(DatasetDataTable);
+    }
+
+    private async Task AutoCorrectDataTypes()
+    {
+        if(!RefreshData)
+        {
+            return;
+        }
+
+        List<Type> newColumnDatatypesList = new();
+
+        for (int c = 0; c < DatasetDataTable.Columns.Count; c++)
+        {
+            bool isDateTime = true;
+            bool isDouble = true;
+            bool isBool = true;
+
+            var columnName = DatasetDataTable.Columns[c].ToString();
+            newColumnDatatypesList.Add(typeof(string));
+
+            for (int r = 1; r < DatasetDataTable.Rows.Count; r++)
+            {
+                if (!DateTime.TryParse(DatasetDataTable.Rows[r][columnName].ToString(), out _))
+                {
+                    isDateTime = false;
+                }
+
+                if (!double.TryParse(DatasetDataTable.Rows[r][columnName].ToString(), NumberStyles.Any, CultureInfo.InvariantCulture, out _))
+                {
+                    isDouble = false;
+                }
+
+                if (!bool.TryParse(DatasetDataTable.Rows[r][columnName].ToString(), out _))
+                {
+                    isBool = false;
+                }
+            }
+
+            if (isDateTime)
+            {
+                newColumnDatatypesList[c] = typeof(DateTime);
+                continue;
+            }
+            if (isDouble)
+            {
+                newColumnDatatypesList[c] = typeof(double);
+                continue;
+            }
+            if (isBool)
+            {
+                newColumnDatatypesList[c] = typeof(bool);
+                continue;
+            }
+        }
+
+        for (int c = 0; c < DatasetDataTable.Columns.Count; c++)
+        {
+            ChangeColumnDataType(DatasetDataTable, DatasetDataTable.Columns[c].ToString(), newColumnDatatypesList[c]);
+        }
+
+        StateHasChanged();
+
+        await UpdateDatasetDataTable();
+    }
+
+    public static bool ChangeColumnDataType(DataTable table, string columnname, Type newtype)
+    {
+        if (table.Columns.Contains(columnname) == false)
+            return false;
+
+        DataColumn column = table.Columns[columnname];
+        if (column.DataType == newtype)
+            return true;
+
+        try
+        {
+            DataColumn newcolumn = new DataColumn("temporary", newtype);
+            table.Columns.Add(newcolumn);
+
+            foreach (DataRow row in table.Rows)
+            {
+                try
+                {
+                    if(newtype == typeof(double))
+                    {
+                        row["temporary"] = (decimal)Convert.ChangeType(row[columnname], typeof(decimal), CultureInfo.InvariantCulture);
+                    }
+                    else
+                    {
+                        row["temporary"] = Convert.ChangeType(row[columnname], newtype);
+                    }
+                    
+                }
+                catch { }
+            }
+            newcolumn.SetOrdinal(column.Ordinal);
+            table.Columns.Remove(columnname);
+            newcolumn.ColumnName = columnname;
+        }
+        catch (Exception)
+        {
+            return false;
+        }
+
+        return true;
+    }
+}

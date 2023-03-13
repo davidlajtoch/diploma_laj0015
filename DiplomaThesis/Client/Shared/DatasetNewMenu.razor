@@ -12,7 +12,7 @@
         @if (!ShowFileFormatGuide)
         {
             <div class="section_dataset_info animate__animated animate__fadeIn">
-                <div class="section_header">New data preview</div>
+                <div class="section_header">New dataset preview</div>
                 <table class="table_info">
                     <tr>
                         <td class="label">Name</td>
@@ -35,29 +35,7 @@
 
                 @if (DataFileLoadProgress == 2 && DatasetNewDataTable != null)
                 {
-                    <table class="table_dataset_preview animate__animated animate__fadeIn">
-                        <tr>
-                            @for (int i = 0; i < DatasetNewDataTable.Columns.Count; i++)
-                            {
-                                <th>
-                                    @DatasetNewDataTable.Columns[i] :
-                                    <span class="text_light">@DatasetNewDataTable.Columns[i].DataType.ToString().Split('.')[1]</span>
-                                </th>
-                            }
-                        </tr>
-                        @for (int row = 0; row < DatasetNewDataTable.Rows.Count; row++)
-                        {
-                            if (row >= DatasetPreviewMaxRows) break;
-                            <tr>
-                                @for (int column = 0; column < DatasetNewDataTable.Columns.Count; column++)
-                                {
-                                    <td>
-                                        @DatasetNewDataTable.Rows[row].ItemArray[column]
-                                    </td>
-                                }
-                            </tr>
-                        }
-                    </table>
+                    <DatasetPreviewTable DatasetDataTable="DatasetNewDataTable" RefreshData="DataFileChanged" OnDatasetDataTableUpdated="UpdateDatasetDataTable" />
                 }
 
                 @if (DataFileLoadProgress == 3)
@@ -78,9 +56,7 @@
 
                 <div class="bottom_menu">
                     <div class="group_left">
-                        <button class="button_circle_default button_circle" @onclick="ToggleFileFormatGuide">
-                            <i class="material-icons icon">help</i>
-                        </button>
+                        <button class="button_default" @onclick="ToggleFileFormatGuide">Format guide</button>
                     </div>
                     <div class="group_right">
                         @if (DatasetNewJson != null && DatasetNewJson != string.Empty)
@@ -112,6 +88,7 @@
 
     public bool ShowDatasetMenu { get; set; }
     private bool ShowFileFormatGuide = false;
+    private bool DataFileChanged = false;
     private int DataFileLoadProgress = 0;
     private int DatasetFileMaxSize = 500 * 1024 * 1024; //500MB
     private const int DatasetPreviewMaxRows = 5;
@@ -152,6 +129,7 @@
             DatasetNewJson = await Parser.ParseFileToJson(datasetFile, datasetFileExtension);
             DatasetNewName = datasetFile.Name.Split(".").First();
             DatasetNewDataTable = Parser.ParseJsonToDataTable(DatasetNewJson);
+            DataFileChanged = true;
             DataFileLoadProgress = 2;
         }
         catch
@@ -178,5 +156,11 @@
             await SaveAndToggleDatasetMenu();
             return;
         }
+    }
+
+    private async Task UpdateDatasetDataTable(DataTable updatedDatasetDataTable)
+    {
+        DatasetNewDataTable = updatedDatasetDataTable;
+        DataFileChanged = false;
     }
 }

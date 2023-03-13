@@ -46,14 +46,17 @@
                             <tr>
                                 @for (int i = 0; i < Dataset.ColumnNames.Count(); i++)
                                 {
-                                    <th>@Dataset.ColumnNames[i] : @Dataset.ColumnTypes[i]</th>
+                                    <th>
+                                        @Dataset.ColumnNames[i] : 
+                                        <span class="text_light">@Dataset.ColumnTypes[i]</span>
+                                    </th>
                                 }
                             </tr>
                         </table>
                     }
                     else
                     {
-                        <div class="info_preview_not_available text_light">Data preview is only available for datasets uploaded through ReporTiny</div>
+                        <div class="info_preview_not_available text_light">Existing data preview is only available for datasets uploaded through ReporTiny</div>
                     }
 
                     <div class="section_header">New data preview</div>
@@ -73,29 +76,7 @@
 
                     @if (DataFileLoadProgress == 2 && DatasetNewDataTable != null)
                     {
-                        <table class="table_dataset_preview animate__animated animate__fadeIn">
-                            <tr>
-                                @for (int i = 0; i < DatasetNewDataTable.Columns.Count; i++)
-                                {
-                                    <th>
-                                        @DatasetNewDataTable.Columns[i] :
-                                        <span class="text_light">@DatasetNewDataTable.Columns[i].DataType.ToString().Split('.')[1]</span>
-                                    </th>
-                                }
-                            </tr>
-                            @for (int row = 0; row < DatasetNewDataTable.Rows.Count; row++)
-                            {
-                                if (row >= DatasetPreviewMaxRows) break;
-                                <tr>
-                                    @for (int column = 0; column < DatasetNewDataTable.Columns.Count; column++)
-                                    {
-                                        <td>
-                                            @DatasetNewDataTable.Rows[row].ItemArray[column]
-                                        </td>
-                                    }
-                                </tr>
-                            }
-                        </table>
+                        <DatasetPreviewTable DatasetDataTable="DatasetNewDataTable" RefreshData="DataFileChanged" OnDatasetDataTableUpdated="UpdateDatasetDataTable"/>
                     }
 
                     @if (DataFileLoadProgress == 3)
@@ -116,14 +97,12 @@
 
                     <div class="bottom_menu">
                         <div class="group_left">
-                            <button class="button_circle_default button_circle" @onclick="ToggleFileFormatGuide">
-                                <i class="material-icons icon">help</i>
-                            </button>
+                            <button class="button_default" @onclick="ToggleFileFormatGuide">Format guide</button>
                         </div>
                         <div class="group_right">
                             @if(DatasetNewJson != null && DatasetNewJson != string.Empty)
                             {
-                                <button class="button_default" @onclick="() => AddRowsToDataset(DatasetNewJson)">Add rows</button>
+                                <button class="button_default" @onclick="() => AddRowsToDataset(DatasetNewJson)">Upload rows</button>
                             }
                             <button class="button_default" @onclick="SaveAndToggleDatasetMenu">Close</button>
                         </div>
@@ -151,6 +130,7 @@
 
     public bool ShowDatasetMenu { get; set; }
     private bool ShowFileFormatGuide = false;
+    private bool DataFileChanged = false;
     private int DataFileLoadProgress = 0;
     private const int DatasetPreviewMaxRows = 5;
 
@@ -160,7 +140,7 @@
         DataFileLoadProgress = 0;
         DatasetNewJson = string.Empty;
         ShowFileFormatGuide = false;
-        
+
     }
 
     public async Task ShowDataset(DatasetContract dataset)
@@ -191,6 +171,7 @@
             DatasetNewJson = await Parser.ParseFileToJson(datasetFile, datasetFileExtension);
             DatasetNewName = datasetFile.Name.Split(".").First();
             DatasetNewDataTable = Parser.ParseJsonToDataTable(DatasetNewJson);
+            DataFileChanged = true;
             DataFileLoadProgress = 2;
         }
         catch
@@ -218,5 +199,11 @@
             Console.WriteLine("xd2");
             return;
         }
+    }
+
+    private async Task UpdateDatasetDataTable(DataTable updatedDatasetDataTable)
+    {
+        DatasetNewDataTable = updatedDatasetDataTable;
+        DataFileChanged = false;
     }
 }

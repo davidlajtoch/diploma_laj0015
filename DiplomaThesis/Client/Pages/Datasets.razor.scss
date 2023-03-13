@@ -8,14 +8,8 @@
 
     .group_right, .group_left {
         height: 40px;
-    }
-
-    .group_right {
         display: flex;
-    }
-
-    .group_left {
-        display: flex;
+        gap: 10px;
 
         .selected {
             color: $color_purple;

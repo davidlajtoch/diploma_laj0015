@@ -101,14 +101,10 @@
 }
 .section_bottom .menu .group_right, .section_bottom .menu .group_left {
   height: 40px;
-}
-.section_bottom .menu .group_right {
   display: flex;
+  gap: 10px;
 }
-.section_bottom .menu .group_left {
-  display: flex;
-}
-.section_bottom .menu .group_left .selected {
+.section_bottom .menu .group_right .selected, .section_bottom .menu .group_left .selected {
   color: #7c4dff;
   padding-left: 30px;
   padding-right: 30px;
@@ -150,7 +146,6 @@
 }
 .section_bottom .list_activity .col-1 {
   flex-basis: 50%;
-  text-align: left;
 }
 .section_bottom .list_activity .col-2 {
   flex-basis: 20%;
@@ -169,8 +164,8 @@
     display: block;
   }
   .section_bottom .list_activity .col {
-    flex-basis: 100%;
     text-align: left;
+    flex-basis: 100%;
   }
   .section_bottom .list_activity .col {
     display: flex;

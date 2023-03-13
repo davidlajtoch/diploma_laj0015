@@ -26,18 +26,19 @@
   background-color: #fff;
 }
 .dataset_menu_container .dataset_menu .bottom_menu {
+  width: 100%;
+  margin-top: 10px;
   display: flex;
   justify-content: space-between;
-  width: 100%;
-  height: 40px;
-  margin-top: 10px;
 }
-.dataset_menu_container .dataset_menu .bottom_menu .button_circle {
-  width: 40px;
-  height: 40px;
+.dataset_menu_container .dataset_menu .bottom_menu .group_right, .dataset_menu_container .dataset_menu .bottom_menu .group_left {
+  display: flex;
+  gap: 10px;
 }
-.dataset_menu_container .dataset_menu .bottom_menu .button_circle:hover {
-  width: 50px;
+.dataset_menu_container .dataset_menu .bottom_menu .group_right .selected, .dataset_menu_container .dataset_menu .bottom_menu .group_left .selected {
+  color: #7c4dff;
+  padding-left: 30px;
+  padding-right: 30px;
 }
 .dataset_menu_container .dataset_menu .section_header {
   width: 100%;
