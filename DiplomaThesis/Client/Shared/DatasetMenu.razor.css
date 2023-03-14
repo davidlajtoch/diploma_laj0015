@@ -81,3 +81,9 @@
   color: #9ca3af;
   text-align: center;
 }
+.dataset_menu_container .info_columns_do_not_match {
+  width: 100%;
+  margin-top: 10px;
+  color: #ff1744;
+  text-align: center;
+}

@@ -4,8 +4,6 @@
 
 @inject IDatasetService DatasetService
 @inject IFileParsingService Parser
-@inject IAdministrationService AdministrationService
-@inject IJSRuntime JSRuntime
 
 <div class="dataset_menu_container animate__animated animate__fadeIn" style="display: @(ShowDatasetMenu ? "block" : "none");">
     <div class="dataset_menu">
@@ -17,103 +15,113 @@
         }
         else
         {
-            @if (!ShowFileFormatGuide)
-            {
-                <div class="section_dataset_info animate__animated animate__fadeIn">
-                    <table class="table_info">
+            <div class="section_dataset_info animate__animated animate__fadeIn @(ShowFileFormatGuide ? "hidden" : "")">
+                <table class="table_info">
+                    <tr>
+                        <td class="label">ID</td>
+                        <td>@Dataset.Id</td>
+                    </tr>
+                    <tr>
+                        <td class="label">Name</td>
+                        <td>@Dataset.Name</td>
+                    </tr>
+                    <tr>
+                        <td class="label">Columns</td>
+                        <td>@Dataset.ColumnNames.Count()</td>
+                    </tr>
+                    <tr>
+                        <td class="label">Uploaded through ReporTiny</td>
+                        <td>@Dataset.ColumnNames.Any()</td>
+                    </tr>
+                </table>
+
+                <div class="section_header">Existing data preview</div>
+                @if (@Dataset.ColumnNames.Any())
+                {
+                    <table class="table_dataset_preview">
                         <tr>
-                            <td class="label">ID</td>
-                            <td>@Dataset.Id</td>
-                        </tr>
-                        <tr>
-                            <td class="label">Name</td>
-                            <td>@Dataset.Name</td>
-                        </tr>
-                        <tr>
-                            <td class="label">Columns</td>
-                            <td>@Dataset.ColumnNames.Count()</td>
-                        </tr>
-                        <tr>
-                            <td class="label">Uploaded through ReporTiny</td>
-                            <td>@Dataset.ColumnNames.Any()</td>
+                            @for (int i = 0; i < Dataset.ColumnNames.Count(); i++)
+                            {
+                                <th>
+                                    @Dataset.ColumnNames[i] :
+                                    <span class="text_light">@Dataset.ColumnTypes[i]</span>
+                                </th>
+                            }
                         </tr>
                     </table>
+                }
+                else
+                {
+                    <div class="info_preview_not_available text_light">Existing data preview is only available for datasets uploaded through ReporTiny</div>
+                }
 
-                    <div class="section_header">Existing data preview</div>
-                    @if (@Dataset.ColumnNames.Any())
-                    {
-                        <table class="table_dataset_preview">
-                            <tr>
-                                @for (int i = 0; i < Dataset.ColumnNames.Count(); i++)
-                                {
-                                    <th>
-                                        @Dataset.ColumnNames[i] : 
-                                        <span class="text_light">@Dataset.ColumnTypes[i]</span>
-                                    </th>
-                                }
-                            </tr>
-                        </table>
-                    }
-                    else
-                    {
-                        <div class="info_preview_not_available text_light">Existing data preview is only available for datasets uploaded through ReporTiny</div>
-                    }
+                <div class="section_header">New data preview</div>
 
-                    <div class="section_header">New data preview</div>
+                @if (DatasetFileLoadProgress == 0)
+                {
+                    <DragAndDropFileLoader OnFileLoaded=@LoadDatasetFile />
+                }
 
-                    @if (DataFileLoadProgress == 0)
-                    {
-                        <DragAndDropFileLoader OnFileLoaded=@LoadDatasetFile />
-                    }
+                @if (DatasetFileLoadProgress == 1)
+                {
+                    <div class="container_loading_file animate__animated animate__fadeIn">
+                        <LoaderSmall />
+                        <span>Loading the file, please wait...</span>
+                    </div>
+                }
 
-                    @if (DataFileLoadProgress == 1)
-                    {
-                        <div class="container_loading_file animate__animated animate__fadeIn">
-                            <LoaderSmall />
-                            <span>Loading the file, please wait...</span>
-                        </div>
-                    }
+                @if (DatasetFileLoadProgress == 2 && DatasetNewDataTable != null)
+                {
+                    <DatasetPreviewTable DatasetDataTable="DatasetNewDataTable" OnDatasetFileLoaded="CompareDatasetColumnTypes" />
+                }
 
-                    @if (DataFileLoadProgress == 2 && DatasetNewDataTable != null)
-                    {
-                        <DatasetPreviewTable DatasetDataTable="DatasetNewDataTable" RefreshData="DataFileChanged" OnDatasetDataTableUpdated="UpdateDatasetDataTable"/>
-                    }
+                @if (DatasetFileLoadProgress == 3)
+                {
+                    <div class="container_uploading_file animate__animated animate__fadeIn">
+                        <LoaderSmall />
+                        <span>Uploading the file, please wait...</span>
+                    </div>
+                }
 
-                    @if (DataFileLoadProgress == 3)
-                    {
-                        <div class="container_uploading_file animate__animated animate__fadeIn">
-                            <LoaderSmall />
-                            <span>Uploading the file, please wait...</span>
-                        </div>
-                    }
+                @if (DatasetFileLoadProgress == 4)
+                {
+                    <div class="container_loading_file_wrong_format animate__animated animate__fadeIn">
+                        <span>There seems to be an error in the file you are trying to load</span><br />
+                        <span>Please check the file and try again</span>
+                    </div>
+                }
 
-                    @if (DataFileLoadProgress == 4)
-                    {
-                        <div class="container_loading_file_wrong_format animate__animated animate__fadeIn">
-                            <span>There seems to be an error in the file you are trying to load</span><br />
-                            <span>Please check the file and try again</span>
-                        </div>
-                    }
+                @if (!DatasetColumnTypesMatch)
+                {
+                    <div class="info_columns_do_not_match animate__animated animate__fadeIn">
+                        <span>Column types of existing Dataset do not match with the column types of this file.</span><br />
+                        <span>Try correcting the file and try again.</span>
+                    </div>
+                }
 
-                    <div class="bottom_menu">
-                        <div class="group_left">
-                            <button class="button_default" @onclick="ToggleFileFormatGuide">Format guide</button>
-                        </div>
-                        <div class="group_right">
-                            @if(DatasetNewJson != null && DatasetNewJson != string.Empty)
-                            {
-                                <button class="button_default" @onclick="() => AddRowsToDataset(DatasetNewJson)">Upload rows</button>
-                            }
-                            <button class="button_default" @onclick="SaveAndToggleDatasetMenu">Close</button>
-                        </div>
+                <div class="bottom_menu">
+                    <div class="group_left">
+                        <button class="button_default" @onclick="ToggleFileFormatGuide">Format guide</button>
+                        <button class="button_warning" @onclick="DeleteDataset" @onmouseout="ResetDatasetDeleteConfirm">
+                            @(DeleteDatasetConfirmation ? "Are you sure?" : "Delete dataset")
+                        </button>
+                    </div>
+                    <div class="group_right">
+                        @if (DatasetFileLoadProgress == 2 || DatasetFileLoadProgress == 4)
+                        {
+                            <button class="button_default animate__animated animate__fadeIn" @onclick="ResetDatasetFileUploadState">Choose another file</button>
+                        }
+                        @if (DatasetNewJson != null && DatasetNewJson != string.Empty && DatasetColumnTypesMatch)
+                        {
+                            <button class="button_default" @onclick="() => AddRowsToDataset(DatasetNewJson)">Upload rows</button>
+                        }
+                        <button class="button_default" @onclick="SaveAndToggleDatasetMenu">Close</button>
                     </div>
                 </div>
-            }
-            else
-            {
+            </div>
+            <div class="@(ShowFileFormatGuide ? "" : "hidden")">
                 <FileFormatGuide OnHide=ToggleFileFormatGuide />
-            }
-
+            </div>
         }
     </div>
 </div>
@@ -127,20 +135,19 @@
     private DataTable? DatasetNewDataTable { get; set; }
     private string DatasetNewJson { get; set; } = string.Empty;
     private string DatasetNewName { get; set; } = string.Empty;
+    private List<string>? DatasetNewColumnTypes { get; set; }
 
     public bool ShowDatasetMenu { get; set; }
     private bool ShowFileFormatGuide = false;
-    private bool DataFileChanged = false;
-    private int DataFileLoadProgress = 0;
+    private bool DatasetColumnTypesMatch = true;
+    private bool DeleteDatasetConfirmation = false;
+    private int DatasetFileLoadProgress = 0;
     private const int DatasetPreviewMaxRows = 5;
 
     public async Task SaveAndToggleDatasetMenu()
     {
         ShowDatasetMenu = !ShowDatasetMenu;
-        DataFileLoadProgress = 0;
-        DatasetNewJson = string.Empty;
-        ShowFileFormatGuide = false;
-
+        ResetDatasetFileUploadState();
     }
 
     public async Task ShowDataset(DatasetContract dataset)
@@ -151,35 +158,52 @@
         StateHasChanged();
     }
 
-    public void ToggleFileFormatGuide()
+    private void ResetDatasetFileUploadState()
     {
-        ShowFileFormatGuide = !ShowFileFormatGuide;
+        DatasetFileLoadProgress = 0;
+        DatasetNewDataTable = null;
+        DatasetNewJson = string.Empty;
+        ShowFileFormatGuide = false;
+    }
+
+    private void ResetDatasetDeleteConfirm()
+    {
+        DeleteDatasetConfirmation = false;
+    }
+
+    private async Task CompareDatasetColumnTypes(List<string> newDatasetColumnTypes)
+    {
+        if (!Dataset!.ColumnTypes.SequenceEqual(newDatasetColumnTypes))
+        {
+            DatasetColumnTypesMatch = false;
+            return;
+        }
+        DatasetColumnTypesMatch = true;
     }
 
     private async Task LoadDatasetFile(IBrowserFile datasetFile)
     {
-        if(Dataset == null || Dataset.Id == Guid.Empty)
+        if (Dataset == null || Dataset.Id == Guid.Empty)
         {
             return;
         }
 
-        DataFileLoadProgress = 1;
+        DatasetFileLoadProgress = 1;
 
         try
         {
             string datasetFileExtension = datasetFile.Name.Split(".").Last();
-            DatasetNewJson = await Parser.ParseFileToJson(datasetFile, datasetFileExtension);
             DatasetNewName = datasetFile.Name.Split(".").First();
-            DatasetNewDataTable = Parser.ParseJsonToDataTable(DatasetNewJson);
-            DataFileChanged = true;
-            DataFileLoadProgress = 2;
+            DatasetNewJson = await Parser.ParseFileToJson(datasetFile, datasetFileExtension);
+            DatasetNewDataTable = await Parser.ParseJsonToDataTable(DatasetNewJson);
+            DatasetFileLoadProgress = 2;
         }
         catch
         {
-            DataFileLoadProgress = 4;
+            DatasetFileLoadProgress = 4;
             StateHasChanged();
             await Task.Delay(6000);
-            DataFileLoadProgress = 0;
+            DatasetFileLoadProgress = 0;
         }
     }
 
@@ -190,20 +214,39 @@
             return;
         }
 
-        DataFileLoadProgress = 3;
+        DatasetFileLoadProgress = 3;
 
         if (await DatasetService.UploadRowsToDataset(Dataset.Id, DatasetNewJson))
         {
             await OnDatasetChanged.InvokeAsync();
             await SaveAndToggleDatasetMenu();
-            Console.WriteLine("xd2");
             return;
         }
     }
 
-    private async Task UpdateDatasetDataTable(DataTable updatedDatasetDataTable)
+
+    public void ToggleFileFormatGuide()
     {
-        DatasetNewDataTable = updatedDatasetDataTable;
-        DataFileChanged = false;
+        ShowFileFormatGuide = !ShowFileFormatGuide;
+    }
+
+    private async Task DeleteDataset()
+    {
+        if (DeleteDatasetConfirmation == false)
+        {
+            DeleteDatasetConfirmation = true;
+            return;
+        }
+
+        if (Dataset is null)
+        {
+            return;
+        }
+
+        if (await DatasetService.DeleteDataset(Dataset.PowerBiId))
+        {
+            await OnDatasetChanged.InvokeAsync();
+            await SaveAndToggleDatasetMenu();
+        }
     }
 }

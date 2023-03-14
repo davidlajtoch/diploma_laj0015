@@ -11,6 +11,8 @@ public class PowerBiService
     private readonly AadService _aadService;
     private readonly IOptions<PowerBiOptions> _powerBiOptions;
 
+    private const string _defaultTableName = "Data";
+
     public PowerBiService(AadService aadService, IOptions<PowerBiOptions> powerBiOptions)
     {
         _aadService = aadService;
@@ -159,7 +161,7 @@ public class PowerBiService
     {
         var powerBiClient = GetPowerBiClient();
 
-        var table = new Table("Data", columns.ToList());
+        var table = new Table(_defaultTableName, columns.ToList());
 
         var createDatasetRequest = new CreateDatasetRequest(
             datasetName,
@@ -174,28 +176,18 @@ public class PowerBiService
         return response.Response.IsSuccessStatusCode ? response.Body : null;
     }
 
-    public async Task<bool> PushRowsToDataset(Guid datasetId, List<object> rows, string tableName = "Data")
+    public async Task<bool> PushRowsToDataset(Guid datasetId, List<object> rows, string tableName = _defaultTableName)
     {
         var powerBiClient = GetPowerBiClient();
 
-        try
-        {
-            var response = await powerBiClient.Datasets.PostRowsInGroupWithHttpMessagesAsync(
-                Guid.Parse(_powerBiOptions.Value.GroupId),
-                datasetId.ToString(),
-                tableName,
-                new PostRowsRequest(rows)
-            );
-            return response.Response.IsSuccessStatusCode;
+        var response = await powerBiClient.Datasets.PostRowsInGroupWithHttpMessagesAsync(
+            Guid.Parse(_powerBiOptions.Value.GroupId),
+            datasetId.ToString(),
+            tableName,
+            new PostRowsRequest(rows)
+        );
 
-        }
-        catch (Exception ex)
-        {
-            var x = 1;
-        }
-
-        return false;
-
+        return response.Response.IsSuccessStatusCode;
     }
 
     public async Task<bool> DeleteDataset(Guid datasetId)

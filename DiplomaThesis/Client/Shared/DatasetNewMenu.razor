@@ -9,8 +9,7 @@
 
 <div class="dataset_menu_container animate__animated animate__fadeIn" style="display: @(ShowDatasetMenu ? "block" : "none");">
     <div class="dataset_menu">
-        @if (!ShowFileFormatGuide)
-        {
+        <div class="@(ShowFileFormatGuide ? "hidden" : "")">
             <div class="section_dataset_info animate__animated animate__fadeIn">
                 <div class="section_header">New dataset preview</div>
                 <table class="table_info">
@@ -20,12 +19,12 @@
                     </tr>
                 </table>
 
-                @if (DataFileLoadProgress == 0)
+                @if (DatasetFileLoadProgress == 0)
                 {
                     <DragAndDropFileLoader OnFileLoaded=@LoadDatasetFile />
                 }
 
-                @if (DataFileLoadProgress == 1)
+                @if (DatasetFileLoadProgress == 1)
                 {
                     <div class="container_loading_file animate__animated animate__fadeIn">
                         <LoaderSmall />
@@ -33,12 +32,12 @@
                     </div>
                 }
 
-                @if (DataFileLoadProgress == 2 && DatasetNewDataTable != null)
+                @if (DatasetFileLoadProgress == 2 && DatasetNewDataTable != null)
                 {
-                    <DatasetPreviewTable DatasetDataTable="DatasetNewDataTable" RefreshData="DataFileChanged" OnDatasetDataTableUpdated="UpdateDatasetDataTable" />
+                    <DatasetPreviewTable DatasetDataTable="DatasetNewDataTable" />
                 }
 
-                @if (DataFileLoadProgress == 3)
+                @if (DatasetFileLoadProgress == 3)
                 {
                     <div class="container_uploading_file animate__animated animate__fadeIn">
                         <LoaderSmall />
@@ -46,7 +45,7 @@
                     </div>
                 }
 
-                @if (DataFileLoadProgress == 4)
+                @if (DatasetFileLoadProgress == 4)
                 {
                     <div class="container_loading_file_wrong_format animate__animated animate__fadeIn">
                         <span>There seems to be an error in the file you are trying to load</span><br />
@@ -59,20 +58,23 @@
                         <button class="button_default" @onclick="ToggleFileFormatGuide">Format guide</button>
                     </div>
                     <div class="group_right">
+                        @if (DatasetFileLoadProgress == 2 || DatasetFileLoadProgress == 4)
+                        {
+                            <button class="button_default animate__animated animate__fadeIn" @onclick="ResetDatasetFileUploadState">Choose another file</button>
+                        }
                         @if (DatasetNewJson != null && DatasetNewJson != string.Empty)
                         {
                             <button class="button_default" @onclick="UploadNewDataset">Upload</button>
                         }
 
-                        <button class="button_default" @onclick="ToggleDatasetMenu">Close</button>
+                        <button class="button_default" @onclick="SaveAndToggleDatasetMenu">Close</button>
                     </div>
                 </div>
             </div>
-        }
-        else
-        {
+        </div>
+        <div class="@(ShowFileFormatGuide ? "" : "hidden")">
             <FileFormatGuide OnHide=ToggleFileFormatGuide />
-        }
+        </div>
     </div>
 </div>
 
@@ -88,24 +90,14 @@
 
     public bool ShowDatasetMenu { get; set; }
     private bool ShowFileFormatGuide = false;
-    private bool DataFileChanged = false;
-    private int DataFileLoadProgress = 0;
+    private int DatasetFileLoadProgress = 0;
     private int DatasetFileMaxSize = 500 * 1024 * 1024; //500MB
     private const int DatasetPreviewMaxRows = 5;
 
     public async Task SaveAndToggleDatasetMenu()
     {
         ShowDatasetMenu = !ShowDatasetMenu;
-        DataFileLoadProgress = 0;
-        ShowFileFormatGuide = false;
-    }
-
-    public async Task ToggleDatasetMenu()
-    {
-        ShowDatasetMenu = !ShowDatasetMenu;
-        DataFileLoadProgress = 0;
-        DatasetNewJson = string.Empty;
-        ShowFileFormatGuide = false;
+        ResetDatasetFileUploadState();
     }
 
     public async Task Show()
@@ -114,30 +106,32 @@
         StateHasChanged();
     }
 
-    public void ToggleFileFormatGuide()
+    private void ResetDatasetFileUploadState()
     {
-        ShowFileFormatGuide = !ShowFileFormatGuide;
+        DatasetFileLoadProgress = 0;
+        DatasetNewDataTable = null;
+        DatasetNewJson = string.Empty;
+        ShowFileFormatGuide = false;
     }
 
     private async Task LoadDatasetFile(IBrowserFile datasetFile)
     {
-        DataFileLoadProgress = 1;
+        DatasetFileLoadProgress = 1;
 
         try
         {
             string datasetFileExtension = datasetFile.Name.Split(".").Last();
-            DatasetNewJson = await Parser.ParseFileToJson(datasetFile, datasetFileExtension);
             DatasetNewName = datasetFile.Name.Split(".").First();
-            DatasetNewDataTable = Parser.ParseJsonToDataTable(DatasetNewJson);
-            DataFileChanged = true;
-            DataFileLoadProgress = 2;
+            DatasetNewJson = await Parser.ParseFileToJson(datasetFile, datasetFileExtension);
+            DatasetNewDataTable = await Parser.ParseJsonToDataTable(DatasetNewJson);
+            DatasetFileLoadProgress = 2;
         }
         catch
         {
-            DataFileLoadProgress = 4;
+            DatasetFileLoadProgress = 4;
             StateHasChanged();
             await Task.Delay(6000);
-            DataFileLoadProgress = 0;
+            DatasetFileLoadProgress = 0;
         }
     }
 
@@ -148,7 +142,7 @@
             return;
         }
 
-        DataFileLoadProgress = 3;
+        DatasetFileLoadProgress = 3;
 
         if (await DatasetService.UploadNewDataset(DatasetNewName, DatasetNewJson))
         {
@@ -158,9 +152,8 @@
         }
     }
 
-    private async Task UpdateDatasetDataTable(DataTable updatedDatasetDataTable)
+    public void ToggleFileFormatGuide()
     {
-        DatasetNewDataTable = updatedDatasetDataTable;
-        DataFileChanged = false;
+        ShowFileFormatGuide = !ShowFileFormatGuide;
     }
 }

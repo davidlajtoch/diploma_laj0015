@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Components.Forms;
 using Newtonsoft.Json;
 using Microsoft.PowerBI.Api.Models;
 using Microsoft.Rest.Serialization;
+using System.Globalization;
 
 namespace DiplomaThesis.Client.Services.Implementations;
 
@@ -28,7 +29,7 @@ public class FileParsingService : IFileParsingService
 
     public async Task<string> ReadJson(IBrowserFile datasetFile)
     {
-         return await new StreamReader(datasetFile.OpenReadStream(maxAllowedSize: _datasetFileMaxSize)).ReadToEndAsync();
+        return await new StreamReader(datasetFile.OpenReadStream(maxAllowedSize: _datasetFileMaxSize)).ReadToEndAsync();
     }
 
     public async Task<string> ParseCsvToJson(IBrowserFile datasetFile)
@@ -97,10 +98,51 @@ public class FileParsingService : IFileParsingService
         return sb.ToString();
     }
 
-    public DataTable ParseJsonToDataTable(string json)
+    public async Task<DataTable> ParseJsonToDataTable(string json)
     {
         return JsonConvert.DeserializeObject<DataTable>(json);
     }
 
+    public static bool ChangeColumnDataType(DataTable table, string columnname, Type newtype)
+    {
+        if (table.Columns.Contains(columnname) == false)
+            return false;
+
+        DataColumn column = table.Columns[columnname];
+        if (column.DataType == newtype)
+            return true;
+
+        try
+        {
+            DataColumn newcolumn = new DataColumn("temporary", newtype);
+            table.Columns.Add(newcolumn);
+
+            foreach (DataRow row in table.Rows)
+            {
+                try
+                {
+                    if (newtype == typeof(double))
+                    {
+                        row["temporary"] = (decimal)Convert.ChangeType(row[columnname], typeof(decimal), CultureInfo.InvariantCulture);
+                    }
+                    else
+                    {
+                        row["temporary"] = Convert.ChangeType(row[columnname], newtype);
+                    }
+
+                }
+                catch { }
+            }
+            newcolumn.SetOrdinal(column.Ordinal);
+            table.Columns.Remove(columnname);
+            newcolumn.ColumnName = columnname;
+        }
+        catch (Exception)
+        {
+            return false;
+        }
+
+        return true;
+    }
 
 }

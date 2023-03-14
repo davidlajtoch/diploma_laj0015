@@ -94,4 +94,11 @@
         color: $color_light_grey;
         text-align: center;
     }
+
+    .info_columns_do_not_match{
+        width: 100%;
+        margin-top: 10px;
+        color: $color_red;
+        text-align: center;
+    }
 }

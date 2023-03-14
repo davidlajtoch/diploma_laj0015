@@ -6,8 +6,11 @@ using DiplomaThesis.Shared.Contracts;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.PowerBI.Api.Models;
 using Newtonsoft.Json.Linq;
+using System.Collections.Generic;
+using System.Globalization;
 
 namespace DiplomaThesis.Server.Controllers;
 
@@ -35,7 +38,7 @@ public class DatasetController : ControllerBase
         if (datasetInPowerBi is null) return NotFound();
 
         var datasetsInDb = await _context.Datasets.ToListAsync();
-        var datasetInDb = datasetsInDb.Find(datasetDb => datasetDb.PowerBiId.Equals(Guid.Parse(datasetInPowerBi.Id)));
+        var datasetInDb = datasetsInDb.Find(d => d.PowerBiId.Equals(Guid.Parse(datasetInPowerBi.Id)));
 
         return Ok(new DatasetContract
         {
@@ -48,7 +51,7 @@ public class DatasetController : ControllerBase
 
     [Authorize(Roles = "Architect")]
     [HttpGet]
-    public async Task<ActionResult> ListDatasets()
+    public async Task<ActionResult> GetDatasetsAll()
     {
         var datasetsInPowerBi = await _service.GetDatasets();
         var datasetsInDb = await _context.Datasets.ToListAsync();
@@ -57,11 +60,12 @@ public class DatasetController : ControllerBase
 
         foreach (var dataset in datasetsInPowerBi)
         {
-            var datasetInDb = datasetsInDb.Find(datasetDb => datasetDb.PowerBiId.Equals(Guid.Parse(dataset.Id)));
+            var datasetInDb = datasetsInDb.Find(d => d.PowerBiId.Equals(Guid.Parse(dataset.Id)));
 
             result.Add(new DatasetContract
             {
                 Id = Guid.Parse(dataset.Id),
+                PowerBiId = Guid.Parse(dataset.Id),
                 Name = dataset.Name,
                 ColumnNames = datasetInDb?.ColumnNames ?? new List<string>(),
                 ColumnTypes = datasetInDb?.ColumnTypes ?? new List<string>()
@@ -81,7 +85,7 @@ public class DatasetController : ControllerBase
 
         var result = await _service.CreateDataset(
             createDatasetCommand.Name,
-            createDatasetCommand.Columns.Select(name => new Column(name, "string"))
+            createDatasetCommand.Columns.Select(name => new Microsoft.PowerBI.Api.Models.Column(name, "string"))
         );
 
         if (result is null) return StatusCode(500);
@@ -98,14 +102,19 @@ public class DatasetController : ControllerBase
     {
         if (datasetName.Length == 0 || rows.Count == 0) return BadRequest();
 
-        var columns = new List<Column>();
+        var columns = new List<Microsoft.PowerBI.Api.Models.Column>();
         foreach (var element in ((JObject)rows[0]).Properties())
+        {
             if (DateTime.TryParse(element.Value.ToString(), out _))
-                columns.Add(new Column(element.Name, "datetime"));
-            else if (long.TryParse(element.Value.ToString(), out _))
-                columns.Add(new Column(element.Name, "int64"));
+                columns.Add(new Microsoft.PowerBI.Api.Models.Column(element.Name, "DateTime"));
+            else if (double.TryParse(element.Value.ToString(), NumberStyles.Any, CultureInfo.InvariantCulture, out _))
+                columns.Add(new Microsoft.PowerBI.Api.Models.Column(element.Name, "Double"));
+            else if (bool.TryParse(element.Value.ToString(), out _))
+                columns.Add(new Microsoft.PowerBI.Api.Models.Column(element.Name, "Bool"));
             else
-                columns.Add(new Column(element.Name, "string"));
+                columns.Add(new Microsoft.PowerBI.Api.Models.Column(element.Name, "String"));
+        }
+
 
         var dataset = await _service.CreateDataset(datasetName, columns);
         if (dataset is null) return StatusCode(500);
@@ -142,13 +151,23 @@ public class DatasetController : ControllerBase
     [Authorize(Roles = "Architect")]
     [HttpDelete]
     public async Task<ActionResult> DeleteDataset(
-        [FromRoute] Guid datasetId
+        [FromBody] DeleteDatasetCommand deleteDatasetCommand
     )
     {
-        var dataset = await _service.GetDataset(datasetId);
-        if (dataset is null) return Ok();
+        var datasetPowerBi = await _service.GetDataset(deleteDatasetCommand.PowerBiId);
+        if (datasetPowerBi is null) return StatusCode(500);
 
-        var result = await _service.DeleteDataset(datasetId);
-        return result ? Ok() : StatusCode(500);
+        var result = await _service.DeleteDataset(deleteDatasetCommand.PowerBiId);
+        if (!result) return StatusCode(500);
+
+        var datasetDb = _context.Datasets.Where(d => d.PowerBiId == Guid.Parse(datasetPowerBi.Id)).FirstOrDefault();
+
+        if (datasetDb != null)
+        {
+            _context.Datasets.Remove(datasetDb);
+            _context.SaveChanges();
+        }
+
+        return Ok();
     }
 }

@@ -1,6 +1,8 @@
 using System.Net.Http.Json;
 using System.Text;
+using DiplomaThesis.Client.Extensions;
 using DiplomaThesis.Client.Services.Interfaces;
+using DiplomaThesis.Shared.Commands;
 using DiplomaThesis.Shared.Contracts;
 using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
 
@@ -19,7 +21,7 @@ public class DatasetService : IDatasetService
     {
         try
         {
-            var response = await _http.GetFromJsonAsync<List<DatasetContract>?>("Dataset/ListDatasets");
+            var response = await _http.GetFromJsonAsync<List<DatasetContract>?>("Dataset/GetDatasetsAll");
             return response;
         }
         catch (AccessTokenNotAvailableException exception)
@@ -53,6 +55,24 @@ public class DatasetService : IDatasetService
             var content = new StringContent(datasetJson, Encoding.UTF8, "application/json");
             var response = await _http.PostAsync($"Dataset/UploadRowsToDataset/{datasetId}", content);
 
+            return response.IsSuccessStatusCode;
+        }
+        catch (AccessTokenNotAvailableException exception)
+        {
+            exception.Redirect();
+        }
+
+        return false;
+    }
+
+    public async Task<bool> DeleteDataset(Guid datasetPowerBiId)
+    {
+        try
+        {
+            var response = await _http.DeleteAsJsonAsync(
+                "Dataset/DeleteDataset",
+                new DeleteDatasetCommand { PowerBiId = datasetPowerBiId }
+            );
             return response.IsSuccessStatusCode;
         }
         catch (AccessTokenNotAvailableException exception)

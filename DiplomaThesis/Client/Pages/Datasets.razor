@@ -1,4 +1,4 @@
-@page "/data-sources"
+@page "/datasets"
 @using DiplomaThesis.Client.Services.Interfaces
 @using DiplomaThesis.Shared.Contracts
 @using Microsoft.AspNetCore.Authorization
@@ -7,7 +7,7 @@
 @inject IDatasetService DatasetService
 @inject IFileParsingService Parser
 
-<PageTitle>Datasets</PageTitle>
+<PageTitle>Datasets - ReporTiny</PageTitle>
 <PageHeader Text="Datasets" />
 
 @if (DatasetList is null)
@@ -20,10 +20,6 @@ else
         <div class="menu">
             <div class="group_left">
                 <button class="button_default" @onclick="() => DatasetNewMenu!.Show()">New dataset</button>
-                <label class="button_input_file_default button_default">
-                    New dataset old
-                    <InputFile OnChange="@(args => LoadFile(args, Guid.Empty))" />
-                </label>
             </div>
 
             <div class="group_right">
@@ -38,18 +34,14 @@ else
                 <div class="col col-1">Name</div>
                 <div class="col col-1">Columns</div>
                 <div class="col col-1">Uploaded through ReporTiny</div>
-                <div class="col col-1"></div>
             </li>
             @foreach (var dataset in DatasetListFiltered!)
             {
-                <li class="row">
+                <li class="row" @onclick="() => DatasetMenu!.ShowDataset(dataset)">
                     <div class="col col-1" data-label="ID">@dataset.Id</div>
                     <div class="col col-1" data-label="Name">@dataset.Name</div>
                     <div class="col col-1" data-label="Columns">@dataset.ColumnNames.Count()</div>
                     <div class="col col-1" data-label="Uploaded through ReporTiny">@dataset.ColumnNames.Any()</div>
-                    <div class="col col-1">
-                        <button class="button_default" @onclick="() => DatasetMenu!.ShowDataset(dataset)">View / Upload rows</button>
-                    </div>
                 </li>
             }
         </ul>
@@ -65,7 +57,7 @@ else
 
     private List<DatasetContract>? DatasetList { get; set; }
     private List<DatasetContract>? DatasetListFiltered { get; set; }
-    private string SearchValue { get; set; } = "";
+    private string SearchValue { get; set; } = string.Empty;
 
     protected override async Task OnInitializedAsync()
     {
@@ -79,26 +71,6 @@ else
         DatasetListFiltered = datasets;
 
         StateHasChanged();
-    }
-
-    private async Task LoadFile(InputFileChangeEventArgs e, Guid datasetId)
-    {
-        var file = e.File;
-        Console.WriteLine(file.ContentType);
-        var datasetFileContent = await new StreamReader(file.OpenReadStream()).ReadToEndAsync();
-        string datasetJson;
-
-
-        if (datasetId.Equals(Guid.Empty))
-        {
-            Console.WriteLine("Database datasetId is Guid.Empty");
-            //if (await DatasetService.UploadNewDataset(e.File.Name.Split(".")[0], datasetJson)) _ = UpdateData();
-        }
-        else
-        {
-            Console.WriteLine("Database datasetId is NOT Guid.Empty");
-            //if (await DatasetService.UploadRowsToDataset(datasetId, datasetJson)) _ = UpdateData();
-        }
     }
 
     private void SearchDatasetByName(string searched_dataset_name)

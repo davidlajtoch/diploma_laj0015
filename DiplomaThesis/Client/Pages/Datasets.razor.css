@@ -52,6 +52,7 @@
   background-color: #fff;
   box-shadow: 0px 0px 9px 0px rgba(0, 0, 0, 0.1);
   transition: all 0.2s ease-in-out;
+  cursor: pointer;
 }
 .list_datasets .row:hover {
   color: #7c4dff;

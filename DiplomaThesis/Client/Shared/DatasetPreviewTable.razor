@@ -9,7 +9,7 @@
             {
                 <th>
                     @DatasetDataTable.Columns[i] :
-                    <span class="text_light">@DatasetDataTable.Columns[i].DataType.ToString().Split('.')[1]</span>
+                    <span class="text_light">@DatasetColumnTypes![i]</span>
                 </th>
             }
         </tr>
@@ -36,32 +36,22 @@
 
 @code {
     [Parameter]
-    public EventCallback<DataTable> OnDatasetDataTableUpdated { get; set; }
-    [Parameter]
     public DataTable DatasetDataTable { get; set; }
     [Parameter]
-    public bool RefreshData { get; set; }
+    public EventCallback<List<string>> OnDatasetFileLoaded { get; set; }
 
+    private List<string>? DatasetColumnTypes { get; set; }
     private const int DatasetPreviewMaxRows = 5;
 
     protected override async Task OnInitializedAsync()
     {
-        await AutoCorrectDataTypes();
+        await GetDatasetDataTableColumnTypes();
+        StateHasChanged();
     }
 
-    private async Task UpdateDatasetDataTable()
+    private async Task GetDatasetDataTableColumnTypes()
     {
-        await OnDatasetDataTableUpdated.InvokeAsync(DatasetDataTable);
-    }
-
-    private async Task AutoCorrectDataTypes()
-    {
-        if(!RefreshData)
-        {
-            return;
-        }
-
-        List<Type> newColumnDatatypesList = new();
+        List<string> datasetColumnDatatypesList = new();
 
         for (int c = 0; c < DatasetDataTable.Columns.Count; c++)
         {
@@ -70,7 +60,7 @@
             bool isBool = true;
 
             var columnName = DatasetDataTable.Columns[c].ToString();
-            newColumnDatatypesList.Add(typeof(string));
+            datasetColumnDatatypesList.Add("String");
 
             for (int r = 1; r < DatasetDataTable.Rows.Count; r++)
             {
@@ -92,70 +82,23 @@
 
             if (isDateTime)
             {
-                newColumnDatatypesList[c] = typeof(DateTime);
+                datasetColumnDatatypesList[c] = "DateTime";
                 continue;
             }
             if (isDouble)
             {
-                newColumnDatatypesList[c] = typeof(double);
+                datasetColumnDatatypesList[c] = "Double";
                 continue;
             }
             if (isBool)
             {
-                newColumnDatatypesList[c] = typeof(bool);
+                datasetColumnDatatypesList[c] = "Bool";
                 continue;
             }
         }
 
-        for (int c = 0; c < DatasetDataTable.Columns.Count; c++)
-        {
-            ChangeColumnDataType(DatasetDataTable, DatasetDataTable.Columns[c].ToString(), newColumnDatatypesList[c]);
-        }
+        DatasetColumnTypes = datasetColumnDatatypesList;
 
-        StateHasChanged();
-
-        await UpdateDatasetDataTable();
-    }
-
-    public static bool ChangeColumnDataType(DataTable table, string columnname, Type newtype)
-    {
-        if (table.Columns.Contains(columnname) == false)
-            return false;
-
-        DataColumn column = table.Columns[columnname];
-        if (column.DataType == newtype)
-            return true;
-
-        try
-        {
-            DataColumn newcolumn = new DataColumn("temporary", newtype);
-            table.Columns.Add(newcolumn);
-
-            foreach (DataRow row in table.Rows)
-            {
-                try
-                {
-                    if(newtype == typeof(double))
-                    {
-                        row["temporary"] = (decimal)Convert.ChangeType(row[columnname], typeof(decimal), CultureInfo.InvariantCulture);
-                    }
-                    else
-                    {
-                        row["temporary"] = Convert.ChangeType(row[columnname], newtype);
-                    }
-                    
-                }
-                catch { }
-            }
-            newcolumn.SetOrdinal(column.Ordinal);
-            table.Columns.Remove(columnname);
-            newcolumn.ColumnName = columnname;
-        }
-        catch (Exception)
-        {
-            return false;
-        }
-
-        return true;
+        await OnDatasetFileLoaded.InvokeAsync(DatasetColumnTypes);
     }
 }
