@@ -19,6 +19,7 @@ else
 {
     <div class="animate__animated animate__fadeIn">
         <div class="menu">
+            <div class="group_left"></div>
             <div class="group_right">
                 <input type="text" class="input_search_default" placeholder="Search by name..."
                    @oninput="@((e) => SearchReport(e.Value!.ToString()!))">
@@ -31,6 +32,7 @@ else
                     <div id="@report.Id" class="item @(_expandedReportId == report.Id ? "item_expanded" : "")">
                         <ReportContainer Report="@report" />
                         <div class="menu">
+                            <div class="group_left"></div>
                             <div class="group_right">
                                 <button class="button_default" @onclick="() => ExpandReport(report.Id)">
                                     @(_expandedReportId == report.Id ? "Shrink" : "Expand")

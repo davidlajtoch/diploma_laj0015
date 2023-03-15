@@ -1,17 +1,27 @@
 ﻿.menu {
   width: 100%;
-  height: 40px;
-  font-family: "Nunito", sans-serif;
-  color: #6b7280;
-  margin-bottom: 10px;
-}
-.menu .group_left {
-  float: left;
+  margin-bottom: 20px;
   display: flex;
-  flex-direction: row;
+  justify-content: space-between;
 }
-.menu .group_right {
-  float: right;
+.menu .group_right, .menu .group_left {
+  height: 40px;
+  display: flex;
+  gap: 10px;
+}
+.menu .group_right .selected, .menu .group_left .selected {
+  color: #7c4dff;
+  padding-left: 30px;
+  padding-right: 30px;
+}
+@media only screen and (max-width: 600px) {
+  .menu {
+    flex-direction: column;
+  }
+  .menu .group_left {
+    margin-bottom: 10px;
+    margin-left: -5px;
+  }
 }
 
 .list_reports {
@@ -20,6 +30,7 @@
   flex-direction: row;
   flex-wrap: wrap;
   justify-content: space-around;
+  gap: 20px;
 }
 .list_reports .item {
   width: calc(50% - 40px);

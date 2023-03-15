@@ -5,11 +5,11 @@
 }
 
 .report_menu_container {
-    width: 100%;
-    height: 100%;
+    width: 100vw;
+    height: 100vh;
     position: fixed;
     top: 0px;
-    left: 70px;
+    left: 0px;
     background-color: rgba(255, 255, 255, 0.8);
     z-index: 5;
 
@@ -19,7 +19,7 @@
         margin: 0;
         position: absolute;
         top: 50%;
-        left: calc(50% - 35px);
+        left: calc(50% - 30px);
         -ms-transform: translate(-50%, -50%);
         transform: translate(-50%, -50%);
         border-radius: 15px;
@@ -28,35 +28,24 @@
 
         .bottom_menu {
             width: 100%;
-            height: 40px;
             margin-top: 10px;
+            display: flex;
+            justify-content: space-between;
 
-            .group_left{
-                margin-left: -5px;
-                float: left;
-            }
+            .group_right, .group_left {
+                display: flex;
+                gap: 10px;
 
-            .group_right{
-                margin-right: -5px;
-                float: right;
+                .selected {
+                    color: $color_purple;
+                    padding-left: 30px;
+                    padding-right: 30px;
+                }
             }
         }
 
-        .table_info {
-            text-align: center;
-            width: 100%;
-            box-sizing: border-box;
-            margin-top: 5px;
-            margin-bottom: 5px;
-
-            td {
-                text-align: right;
-            }
-
-            .label {
-                color: $color_purple;
-                text-align: left;
-            }
+        .input_search{
+            width: calc(100% - 40px);
         }
 
         .section_header {
@@ -65,10 +54,6 @@
             margin-top: 5px;
             margin-bottom: 5px;
             color: $color_purple;
-        }
-
-        .input_search {
-            width: calc(100% - 40px) !important;
         }
 
         .list_user_groups, .list_datasets {

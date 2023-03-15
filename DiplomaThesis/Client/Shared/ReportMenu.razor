@@ -81,14 +81,14 @@
 
             <div class="section_header">Clone report</div>
             <div class="input_with_button_default input_with_button">
-                <input class="nohover" @bind="_newReportName" type="text" placeholder="New report name...">
-                <button @onclick="CloneReportButton"><i class="material-icons icon">add</i></button>
+                <input class="nohover" @bind="NewReportName" type="text" placeholder="New report name...">
+                <button class="button1" @onclick="CloneReportButton"><i class="material-icons icon">add</i></button>
             </div>
 
             <div class="bottom_menu">
                 <div class="group_left">
                     <button class="button_warning" @onclick="DeleteReportButton" @onmouseout="ResetReportDeleteConfirm">
-                        @(_deleteReportConfirmation ? "Are you sure?" : "Delete report")
+                        @(DeleteReportConfirmation ? "Are you sure?" : "Delete report")
                     </button>
                 </div>
                 <div class="group_right">
@@ -109,7 +109,7 @@
     private string? AssignedUserGroupName { get; set; }
     private string? AssignedDatasetName { get; set; }
 
-    private bool _deleteReportConfirmation = false;
+    private bool DeleteReportConfirmation = false;
 
     public ReportContract? Report
     {
@@ -155,7 +155,7 @@
 
     public bool ShowMenu { get; set; }
 
-    private string _newReportName = "";
+    private string NewReportName = string.Empty;
 
     protected override async Task OnInitializedAsync()
     {
@@ -170,6 +170,8 @@
         AssignedDatasetName = Datasets!.FirstOrDefault(
                                     Datasets => Datasets?.Id.Equals(_report!.DatasetId) ?? false, null
                                 )?.Name;
+
+        NewReportName = string.Empty;
         ShowMenu = !ShowMenu;
     }
 
@@ -237,7 +239,7 @@
 
     private async Task CloneReportButton()
     {
-        if (await ReportService.CloneReport(Report!.Id, _newReportName))
+        if (await ReportService.CloneReport(Report!.Id, NewReportName))
         {
             await OnReportChanged.InvokeAsync();
             StateHasChanged();
@@ -246,9 +248,9 @@
 
     private async Task DeleteReportButton()
     {
-        if (_deleteReportConfirmation == false)
+        if (DeleteReportConfirmation == false)
         {
-            _deleteReportConfirmation = true;
+            DeleteReportConfirmation = true;
             return;
         }
         if (await ReportService.DeleteReport(Report?.Id ?? Guid.Empty))
@@ -260,10 +262,7 @@
 
     private void ResetReportDeleteConfirm()
     {
-        if (_deleteReportConfirmation == true)
-        {
-            _deleteReportConfirmation = false;
-        }
+        DeleteReportConfirmation = false;
     }
 
     private void SearchUserGroup(string searched_user_group)
