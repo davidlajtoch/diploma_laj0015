@@ -19,6 +19,7 @@ builder.Services.AddSingleton<IFileParsingService, FileParsingService>();
 // Supply HttpClient instances that include access tokens when making requests to the server project
 builder.Services.AddScoped(sp => sp.GetRequiredService<IHttpClientFactory>().CreateClient("DiplomaThesis.ServerAPI"));
 builder.Services.AddScoped<IDatasetService, DatasetService>();
+builder.Services.AddScoped<IDatasetRowService, DatasetRowService>();
 builder.Services.AddScoped<IReportService, ReportService>();
 builder.Services.AddScoped<IAdministrationService, AdministrationService>();
 builder.Services.AddScoped<IActivityService, ActivityService>();

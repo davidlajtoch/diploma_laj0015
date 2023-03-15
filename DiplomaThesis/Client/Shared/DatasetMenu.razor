@@ -3,6 +3,7 @@
 @using System.Data;
 
 @inject IDatasetService DatasetService
+@inject IDatasetRowService DatasetRowService
 @inject IFileParsingService Parser
 
 <div class="dataset_menu_container animate__animated animate__fadeIn" style="display: @(ShowDatasetMenu ? "block" : "none");">
@@ -48,6 +49,18 @@
                                 </th>
                             }
                         </tr>
+                        @if(DatasetRowsExistingData != null)
+                        {
+                            foreach (var row in DatasetRowsExistingData)
+                            {
+                                <tr>
+                                    @foreach(var value in row)
+                                    {
+                                        <td>@value</td>
+                                    }
+                                </tr>
+                            }
+                        }
                     </table>
                 }
                 else
@@ -135,6 +148,7 @@
     private DataTable? DatasetNewDataTable { get; set; }
     private string DatasetNewJson { get; set; } = string.Empty;
     private string DatasetNewName { get; set; } = string.Empty;
+    private List<List<string>>? DatasetRowsExistingData { get; set; }
     private List<string>? DatasetNewColumnTypes { get; set; }
 
     public bool ShowDatasetMenu { get; set; }
@@ -153,6 +167,8 @@
     public async Task ShowDataset(DatasetContract dataset)
     {
         Dataset = dataset;
+        DatasetRowsExistingData = await DatasetRowService.GetDatasetRowsByDatasetId(dataset.Id);
+
         ShowDatasetMenu = true;
 
         StateHasChanged();

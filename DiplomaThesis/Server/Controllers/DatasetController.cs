@@ -22,6 +22,8 @@ public class DatasetController : ControllerBase
     private readonly ApplicationDbContext _context;
     private readonly PowerBiService _service;
 
+    private const int _datasetRowInsertLimit = 5;
+
     public DatasetController(PowerBiService service, ApplicationDbContext context)
     {
         _service = service;
@@ -58,15 +60,15 @@ public class DatasetController : ControllerBase
 
         var result = new List<DatasetContract>();
 
-        foreach (var dataset in datasetsInPowerBi)
+        foreach (var datasetInPowerBi in datasetsInPowerBi)
         {
-            var datasetInDb = datasetsInDb.Find(d => d.PowerBiId.Equals(Guid.Parse(dataset.Id)));
+            var datasetInDb = datasetsInDb.Find(d => d.PowerBiId.Equals(Guid.Parse(datasetInPowerBi.Id)));
 
             result.Add(new DatasetContract
             {
-                Id = Guid.Parse(dataset.Id),
-                PowerBiId = Guid.Parse(dataset.Id),
-                Name = dataset.Name,
+                Id = Guid.Parse(datasetInPowerBi.Id),
+                PowerBiId = Guid.Parse(datasetInPowerBi.Id),
+                Name = datasetInPowerBi.Name,
                 ColumnNames = datasetInDb?.ColumnNames ?? new List<string>(),
                 ColumnTypes = datasetInDb?.ColumnTypes ?? new List<string>()
             });
@@ -105,11 +107,12 @@ public class DatasetController : ControllerBase
         var columns = new List<Microsoft.PowerBI.Api.Models.Column>();
         foreach (var element in ((JObject)rows[0]).Properties())
         {
-            if (DateTime.TryParse(element.Value.ToString(), out _))
+            var elementValueString = element.Value.ToString();
+            if (DateTime.TryParse(elementValueString, out _))
                 columns.Add(new Microsoft.PowerBI.Api.Models.Column(element.Name, "DateTime"));
-            else if (double.TryParse(element.Value.ToString(), NumberStyles.Any, CultureInfo.InvariantCulture, out _))
+            else if (double.TryParse(elementValueString, NumberStyles.Any, CultureInfo.InvariantCulture, out _))
                 columns.Add(new Microsoft.PowerBI.Api.Models.Column(element.Name, "Double"));
-            else if (bool.TryParse(element.Value.ToString(), out _))
+            else if (bool.TryParse(elementValueString, out _))
                 columns.Add(new Microsoft.PowerBI.Api.Models.Column(element.Name, "Bool"));
             else
                 columns.Add(new Microsoft.PowerBI.Api.Models.Column(element.Name, "String"));
@@ -126,6 +129,20 @@ public class DatasetController : ControllerBase
             ColumnNames = columns.Select(column => column.Name).ToList(),
             ColumnTypes = columns.Select(column => column.DataType).ToList()
         };
+
+        for (int r = 0; r < _datasetRowInsertLimit; r++)
+        {
+            List<string> datasetRowData = new();
+            foreach (var element in ((JObject)rows[r]).Values())
+            {
+                datasetRowData.Add(element.ToString());
+            }
+            _context.DatasetRows.Add(new DatasetRow
+            {
+                DatasetPowerBiId = datasetInDb.PowerBiId,
+                RowData = datasetRowData
+            });
+        }
 
         _context.Datasets.Add(datasetInDb);
         await _context.SaveChangesAsync();
@@ -164,6 +181,15 @@ public class DatasetController : ControllerBase
 
         if (datasetDb != null)
         {
+            var datasetDbRows = _context.DatasetRows.Where(d => d.DatasetPowerBiId == datasetDb.Id);
+
+            if (datasetDbRows.Any())
+            {
+                foreach (var row in datasetDbRows)
+                {
+                    _context.DatasetRows.Remove(row);
+                }
+            }
             _context.Datasets.Remove(datasetDb);
             _context.SaveChanges();
         }

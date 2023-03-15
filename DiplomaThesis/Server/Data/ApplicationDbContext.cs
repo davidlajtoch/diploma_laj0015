@@ -45,6 +45,7 @@ public class ApplicationDbContext : ApiAuthorizationDbContext<ApplicationUser>
         );
         builder.Entity<DatasetDb>().Property(nameof(DatasetDb.ColumnNames)).HasConversion(splitStringConverter);
         builder.Entity<DatasetDb>().Property(nameof(DatasetDb.ColumnTypes)).HasConversion(splitStringConverter);
+        builder.Entity<DatasetRow>().Property(nameof(DatasetRow.RowData)).HasConversion(splitStringConverter);
 
         builder.Entity<IdentityRole>().HasData(new IdentityRole
         {
