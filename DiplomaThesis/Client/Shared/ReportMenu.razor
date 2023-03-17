@@ -33,12 +33,10 @@
                 }
                 else
                 {
-                    <div class="animate__animated animate__fadeInUp">
-                        <div class="name">@AssignedUserGroupName</div>
-                        <button class="button_tiny_default" @onclick="() => RemoveReportFromUserGroup(Report)">
-                            <i class="material-icons icon">remove</i>
-                        </button>
-                    </div>
+                    <div class="name animate__animated animate__fadeInUp">@AssignedUserGroupName</div>
+                    <button class="button_tiny_default animate__animated animate__fadeInUp" @onclick="() => RemoveReportFromUserGroup(Report)">
+                        <i class="material-icons icon">remove</i>
+                    </button>
                 }
             </div>
 
@@ -48,7 +46,7 @@
                 @foreach (var userGroup in UserGroupsFiltered!)
                 {
                     if (userGroup.Id == Report.UserGroupId) { continue; }
-                    <div class="user_group" @onclick="()=> SelectedUserGroupChanged(userGroup)">
+                    <div class="user_group" @onclick="()=> MoveReportToUserGroup(userGroup)">
                         @userGroup.Name
                     </div>
                 }
@@ -73,7 +71,7 @@
             <div class="list_datasets">
                 @foreach (var dataset in DatasetsFiltered!)
                 {
-                    <div class="dataset" @onclick="()=> SelectedDatasetChanged(dataset)">
+                    <div class="dataset" @onclick="()=> RebindReportToDataset(dataset)">
                         @dataset.Name
                     </div>
                 }
@@ -88,11 +86,11 @@
             <div class="bottom_menu">
                 <div class="group_left">
                     <button class="button_warning" @onclick="DeleteReportButton" @onmouseout="ResetReportDeleteConfirm">
-                        @(DeleteReportConfirmation ? "Are you sure?" : "Delete report")
+                        @(DeleteReportConfirmation ? "Are you sure?" : "Delete metric")
                     </button>
                 </div>
                 <div class="group_right">
-                    <button class="button_default" @onclick="ToggleReportMenu">Save and close</button>
+                    <button class="button_default" @onclick="HideReportMenu">Save and close</button>
                 </div>
             </div>
         }
@@ -104,75 +102,47 @@
     [Parameter]
     public EventCallback OnReportChanged { get; set; }
 
-    private ReportContract? _report = null;
-
-    private string? AssignedUserGroupName { get; set; }
-    private string? AssignedDatasetName { get; set; }
-
-    private bool DeleteReportConfirmation = false;
-
-    public ReportContract? Report
-    {
-        get => _report;
-        set
-        {
-            _report = value;
-            SelectedUserGroupId = (value?.UserGroupId ?? Guid.Empty).ToString();
-            SelectedDatasetId = (value?.DatasetId ?? Guid.Empty).ToString();
-            ShowMenu = true;
-            StateHasChanged();
-        }
-    }
-
-    private string _selectedUserGroupId = Guid.Empty.ToString();
-
-    private string SelectedUserGroupId
-    {
-        get => _selectedUserGroupId;
-        set
-        {
-            _selectedUserGroupId = value;
-            StateHasChanged();
-        }
-    }
-
-    private string _selectedDatasetId = Guid.Empty.ToString();
-
-    private string SelectedDatasetId
-    {
-        get => _selectedDatasetId;
-        set
-        {
-            _selectedDatasetId = value;
-            StateHasChanged();
-        }
-    }
+    private ReportContract? Report { get; set; } = null;
 
     private List<UserGroupContract>? UserGroups { get; set; }
     private List<UserGroupContract>? UserGroupsFiltered { get; set; }
     private List<DatasetContract>? Datasets { get; set; }
     private List<DatasetContract>? DatasetsFiltered { get; set; }
 
-    public bool ShowMenu { get; set; }
-
+    private string? AssignedUserGroupName { get; set; }
+    private string? AssignedDatasetName { get; set; }
+    private string? SelectedUserGroupId { get; set; }
+    private string? SelectedDatasetId { get; set; }
     private string NewReportName = string.Empty;
+
+    public bool ShowMenu { get; set; }
+    private bool DeleteReportConfirmation = false;
 
     protected override async Task OnInitializedAsync()
     {
         await UpdateData();
     }
 
-    public void ToggleReportMenu()
+    public void ShowReportMenu(ReportContract report)
     {
+        Report = report;
+        SelectedUserGroupId = report.UserGroupId.ToString();
+        SelectedDatasetId = report.DatasetId.ToString();
+
         AssignedUserGroupName = UserGroups!.FirstOrDefault(
-                                    UserGroups => UserGroups?.Id.Equals(_report!.UserGroupId) ?? false, null
+                                    ug => ug?.Id.Equals(Report!.UserGroupId) ?? false, null
                                 )?.Name;
         AssignedDatasetName = Datasets!.FirstOrDefault(
-                                    Datasets => Datasets?.Id.Equals(_report!.DatasetId) ?? false, null
+                                    Datasets => Datasets?.Id.Equals(Report!.DatasetId) ?? false, null
                                 )?.Name;
 
         NewReportName = string.Empty;
-        ShowMenu = !ShowMenu;
+        ShowMenu = true;
+    }
+
+    public void HideReportMenu()
+    {
+        ShowMenu = false;
     }
 
     private async Task UpdateData()
@@ -184,9 +154,11 @@
         var datasets = await DatasetService.GetDatasets();
         Datasets = datasets;
         DatasetsFiltered = Datasets;
+
+        StateHasChanged();
     }
 
-    private async Task SelectedDatasetChanged(DatasetContract dataset)
+    private async Task RebindReportToDataset(DatasetContract dataset)
     {
         if (dataset is null)
         {
@@ -204,9 +176,9 @@
         }
     }
 
-    private async Task SelectedUserGroupChanged(UserGroupContract userGroup)
+    private async Task MoveReportToUserGroup(UserGroupContract userGroup)
     {
-        if (userGroup is null)
+        if (userGroup == null)
         {
             return;
         }
@@ -215,8 +187,9 @@
         {
             if (await ReportService.MoveReportToUserGroup(Report!.Id, userGroup.Id))
             {
-                await OnReportChanged.InvokeAsync();
                 AssignedUserGroupName = userGroup.Name;
+                Report.UserGroupId = userGroup.Id;
+                await OnReportChanged.InvokeAsync();
                 StateHasChanged();
             }
         }
@@ -224,15 +197,18 @@
 
     private async Task RemoveReportFromUserGroup(ReportContract report)
     {
-        if (report is null || Report is null)
+        if (report is null || Report is null || report.UserGroupId == Guid.Empty)
         {
             return;
         }
 
-        if (await ReportService.MoveReportToUserGroup(Report!.Id, Report.UserGroupId))
+        var userGroupOld = UserGroups!.Find(ug => ug.Id == report.UserGroupId);
+
+        if (await ReportService.RemoveReportFromUserGroup(report.Id))
         {
-            await OnReportChanged.InvokeAsync();
             AssignedUserGroupName = null;
+            Report.UserGroupId = null;
+            await OnReportChanged.InvokeAsync();
             StateHasChanged();
         }
     }
@@ -255,7 +231,7 @@
         }
         if (await ReportService.DeleteReport(Report?.Id ?? Guid.Empty))
         {
-            ToggleReportMenu();
+            ShowMenu = false;
             await OnReportChanged.InvokeAsync();
         }
     }

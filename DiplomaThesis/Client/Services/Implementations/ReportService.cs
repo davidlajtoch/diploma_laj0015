@@ -65,13 +65,13 @@ public class ReportService : IReportService
         return false;
     }
 
-    public async Task<bool> RemoveReportFromUserGroup(Guid reportId, Guid selectedUserGroupId)
+    public async Task<bool> RemoveReportFromUserGroup(Guid reportId)
     {
         try
         {
             var response = await _http.PutAsJsonAsync(
                 "Report/RemoveReportFromUserGroup",
-                new RemoveReportFromUserGroupCommand { ReportId = reportId, UserGroupId = selectedUserGroupId }
+                new RemoveReportFromUserGroupCommand { ReportId = reportId }
             );
             return response.IsSuccessStatusCode;
         }

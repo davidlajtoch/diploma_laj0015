@@ -63,12 +63,10 @@
                 }
                 else
                 {
-                    <div class="animate__animated animate__fadeInUp">
-                        <div class="name">@_assignedUserGroupName</div>
-                        <button class="button_tiny_default" @onclick="() => RemoveUserFromUserGroup(User)">
-                            <i class="material-icons icon">remove</i>
-                        </button>
-                    </div>
+                    <div class="name animate__animated animate__fadeInUp">@_assignedUserGroupName</div>
+                    <button class="button_tiny_default animate__animated animate__fadeInUp" @onclick="() => RemoveUserFromUserGroup(User)">
+                        <i class="material-icons icon">remove</i>
+                    </button>
                 }
             </div>
 
@@ -151,7 +149,7 @@
 
         if (await AdministrationService.MoveUserToUserGroup(User!.Id, userGroup.Id))
         {
-            
+
             User.UserGroupId = userGroup.Id;
             _assignedUserGroupName = userGroup.Name;
             await OnUserChanged.InvokeAsync();

@@ -30,7 +30,7 @@ else
         <div class="section_middle">
             <div class="grid_links">
                 <NavLink style="text-decoration: none;" href="" Match="NavLinkMatch.All">
-                    <div class="tile">
+                    <div class="tile effect_clicky">
                         <i class="material-icons icon">home</i>
                         <span class="name">Home</span>
                         <span class="description">Go to the home page and view the recent activity</span>
@@ -38,7 +38,7 @@ else
                 </NavLink>
                 <AuthorizeView>
                     <NavLink style="text-decoration: none;" href="metrics">
-                        <div class="tile">
+                        <div class="tile effect_clicky">
                             <i class="material-icons icon">timeline</i>
                             <span class="name">Metrics</span>
                             <span class="description">View the metrics and edit their settings</span>
@@ -48,7 +48,7 @@ else
 
                 <AuthorizeView Roles="Architect">
                     <NavLink style="text-decoration: none;" href="datasets">
-                        <div class="tile">
+                        <div class="tile effect_clicky">
                             <i class="material-icons icon">storage</i>
                             <span class="name">Datasets</span>
                             <span class="description">View the datasets and edit their settings</span>
@@ -58,7 +58,7 @@ else
 
                 <AuthorizeView>
                     <NavLink style="text-decoration: none;" href="assignments">
-                        <div class="tile">
+                        <div class="tile effect_clicky">
                             <i class="material-icons icon">event_note</i>
                             <span class="name">Assignments</span>
                             <span class="description">View the assignments</span>
@@ -68,7 +68,7 @@ else
 
                 <AuthorizeView Roles="Admin">
                     <NavLink style="text-decoration: none;" href="administration">
-                        <div class="tile">
+                        <div class="tile effect_clicky">
                             <i class="material-icons icon">supervisor_account</i>
                             <span class="name">Administration</span>
                             <span class="description">View and manage users and user groups</span>
@@ -78,7 +78,7 @@ else
 
                 <AuthorizeView>
                     <NavLink style="text-decoration: none;" href="chat">
-                        <div class="tile">
+                        <div class="tile effect_clicky">
                             <i class="material-icons icon">chat</i>
                             <span class="name">Chat</span>
                             <span class="description">Chat with the members of your user group</span>
@@ -88,7 +88,7 @@ else
 
                 <AuthorizeView>
                     <NavLink style="text-decoration: none;" href="authentication/profile">
-                        <div class="tile">
+                        <div class="tile effect_clicky">
                             <i class="material-icons icon">face</i>
                             <span class="name">@context.User.Identity?.Name</span>
                             <span class="description">Edit your account information</span>
@@ -98,7 +98,7 @@ else
 
                 <AuthorizeView>
                     <NavLink style="text-decoration: none;" @onclick="BeginSignOut">
-                        <div class="tile">
+                        <div class="tile effect_clicky">
                             <i class="material-icons icon">https</i>
                             <span class="name">Log out</span>
                             <span class="description">End your session and switch to another user.</span>
@@ -146,7 +146,7 @@ else
                             @foreach (var activity in _activityUserGroupSearched!)
                             {
                                 <li class="row">
-                                    <div class="col col-1" data-label="Activity">@activity.Message</div>
+                                    <div class="col col-1 col_align_left" data-label="Activity">@activity.Message</div>
                                     <div class="col col-2" data-label="User Group">@activity.UserGroupName</div>
                                     <div class="col col-3" data-label="Created">@activity.Created</div>
                                 </li>
@@ -165,7 +165,7 @@ else
                             @foreach (var activity in _activityAllSearched!)
                             {
                                 <li class="row">
-                                    <div class="col col-1" data-label="Activity">@activity.Message</div>
+                                    <div class="col col-1 col_align_left" data-label="Activity">@activity.Message</div>
                                     <div class="col col-2" data-label="User Group">@activity.UserGroupName</div>
                                     <div class="col col-3" data-label="Created">@activity.Created</div>
                                 </li>

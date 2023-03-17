@@ -11,7 +11,7 @@
 <PageTitle>Metrics - ReporTiny</PageTitle>
 <PageHeader Text="Metrics" />
 
-@if (_reports is null || _reports.Count() == 0)
+@if (Reports is null)
 {
     <Loader />
 }
@@ -27,7 +27,7 @@ else
         </div>
         <AuthorizeView Roles="Architect">
             <div class="list_reports">
-                @foreach (var report in _reports_searched!)
+                @foreach (var report in ReportsFiletered!)
                 {
                     <div id="@report.Id" class="item @(_expandedReportId == report.Id ? "item_expanded" : "")">
                         <ReportContainer Report="@report" />
@@ -37,7 +37,7 @@ else
                                 <button class="button_default" @onclick="() => ExpandReport(report.Id)">
                                     @(_expandedReportId == report.Id ? "Shrink" : "Expand")
                                 </button>
-                                <button class="button_default" @onclick="() => SelectReport(report)">
+                                <button class="button_default" @onclick="() => ReportMenu.ShowReportMenu(report)">
                                     Options
                                 </button>
                             </div>
@@ -49,16 +49,16 @@ else
 
         <div>
             <AuthorizeView Roles="Architect">
-                <ReportMenu @ref="_reportMenu" OnReportChanged="UpdateData" />
+                <ReportMenu @ref="ReportMenu" OnReportChanged="UpdateData" />
             </AuthorizeView>
         </div>
     </div>
 }
 
 @code {
-    ReportMenu _reportMenu = null!;
-    List<ReportContract>? _reports;
-    private List<ReportContract>? _reports_searched { get; set; }
+    private ReportMenu ReportMenu = null!;
+    List<ReportContract>? Reports;
+    private List<ReportContract>? ReportsFiletered { get; set; }
 
     private Guid? _expandedReportId { get; set; }
 
@@ -82,7 +82,6 @@ else
     protected override async Task OnInitializedAsync()
     {
         await UpdateData();
-        StateHasChanged();
     }
 
     private async Task UpdateData()
@@ -91,8 +90,8 @@ else
 
         if (reports is not null)
         {
-            _reports = reports;
-            _reports_searched = reports;
+            Reports = reports;
+            ReportsFiletered = reports;
         }
 
         StateHasChanged();
@@ -110,18 +109,13 @@ else
         await _embedModuleJs!.InvokeVoidAsync("scrollToElementById", reportId.ToString());
     }
 
-    private void SelectReport(ReportContract report)
+    private void SearchReport(string searchedReportName)
     {
-        _reportMenu.Report = report;
-    }
-
-    private void SearchReport(string searched_report)
-    {
-        if (searched_report is null)
+        if (searchedReportName is null)
         {
             return;
         }
-        _reports_searched = _reports!.FindAll(r => r.Name.Contains(searched_report));
+        ReportsFiletered = Reports!.FindAll(r => r.Name.Contains(searchedReportName));
     }
 
 }

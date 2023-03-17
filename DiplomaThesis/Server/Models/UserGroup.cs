@@ -7,5 +7,5 @@ public class UserGroup
     public string Description { get; set; } = string.Empty;
     public Guid? LeaderId { get; set; }
     public List<ApplicationUser>? Users { get; set; }
-    public List<ReportDb>? Reports { get; set; }
+    public List<ReportDb>? Reports { get; set; } = new();
 }

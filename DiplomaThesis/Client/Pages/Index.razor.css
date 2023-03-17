@@ -104,11 +104,6 @@
   display: flex;
   gap: 10px;
 }
-.section_bottom .menu .group_right .selected, .section_bottom .menu .group_left .selected {
-  color: #7c4dff;
-  padding-left: 30px;
-  padding-right: 30px;
-}
 @media only screen and (max-width: 600px) {
   .section_bottom .menu {
     flex-direction: column;
@@ -155,6 +150,9 @@
 }
 .section_bottom .list_activity .col-4 {
   flex-basis: 25%;
+}
+.section_bottom .list_activity .col_align_left {
+  text-align: left;
 }
 @media all and (max-width: 767px) {
   .section_bottom .list_activity .header {

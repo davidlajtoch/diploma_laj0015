@@ -9,11 +9,6 @@
   display: flex;
   gap: 10px;
 }
-.menu .group_right .selected, .menu .group_left .selected {
-  color: #7c4dff;
-  padding-left: 30px;
-  padding-right: 30px;
-}
 @media only screen and (max-width: 600px) {
   .menu {
     flex-direction: column;

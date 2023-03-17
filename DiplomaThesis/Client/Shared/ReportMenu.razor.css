@@ -34,13 +34,11 @@
   display: flex;
   gap: 10px;
 }
-.report_menu_container .report_menu .bottom_menu .group_right .selected, .report_menu_container .report_menu .bottom_menu .group_left .selected {
-  color: #7c4dff;
-  padding-left: 30px;
-  padding-right: 30px;
-}
 .report_menu_container .report_menu .input_search {
   width: calc(100% - 40px);
+}
+.report_menu_container .report_menu .input_with_button {
+  width: calc(100% - 5px);
 }
 .report_menu_container .report_menu .section_header {
   width: 100%;

@@ -11,7 +11,7 @@ html {
     margin: 0px;
 }
 
-.hidden{
+.hidden {
     display: none;
 }
 
@@ -21,6 +21,7 @@ html {
 }
 
 .button_default, .button_warning {
+    position: relative;
     height: 40px;
     padding: 10px;
     padding-left: 20px;
@@ -42,14 +43,20 @@ html {
 
     &:hover {
         color: $color_purple;
-        padding-left: 30px;
-        padding-right: 30px;
+        padding-left: 25px;
+        padding-right: 25px;
     }
 }
 
+.button_default.selected {
+    color: $color_purple;
+    padding-left: 25px;
+    padding-right: 25px;
+}
+
 .button_warning:hover {
-    color: $color_red !important;
-    background-color: $color_light_red !important;
+    color: $color_red;
+    background-color: $color_light_red;
 }
 
 .button_input_file_default {
@@ -59,8 +66,8 @@ html {
     line-height: 40px;
 
     &:hover {
-        padding-left: 30px;
-        padding-right: 30px;
+        padding-left: 25px;
+        padding-right: 25px;
     }
 
     input[type="file"] {
@@ -120,8 +127,8 @@ html {
     transition: 0.2s ease-in-out;
 
     &:not(.nohover):hover {
-        padding-left: 30px;
-        padding-right: 30px;
+        padding-left: 25px;
+        padding-right: 25px;
     }
 }
 
@@ -144,8 +151,8 @@ html {
         transition: 0.2s ease-in-out;
 
         &:not(.nohover):hover {
-            padding-left: 30px;
-            padding-right: 55px;
+            padding-left: 25px;
+            padding-right: 50px;
         }
     }
 
@@ -238,7 +245,7 @@ html {
 }
 
 .effect_clicky {
-    transition: transform ease-in-out 0.1s;
+    transition: transform ease-in-out 0.2s;
 
     &:hover {
         transform: scale(1.03);
@@ -248,6 +255,30 @@ html {
         transform: scale(1);
     }
 }
+
+//Scrollbar
+/* width */
+::-webkit-scrollbar {
+    width: 5px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+    background: $color_white;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+    background: $color_grey;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+    background: $color_purple;
+}
+
+
+//Bootstrap
 
 h1:focus {
     outline: none;
@@ -329,24 +360,4 @@ a, .btn-link {
     background: white;
     padding: 10px;
     border-radius: 10px;
-}
-
-/* width */
-::-webkit-scrollbar {
-    width: 5px;
-}
-
-/* Track */
-::-webkit-scrollbar-track {
-    background: white;
-}
-
-/* Handle */
-::-webkit-scrollbar-thumb {
-    background: #bdbdbd;
-}
-
-/* Handle on hover */
-::-webkit-scrollbar-thumb:hover {
-    background: #751aff;
 }

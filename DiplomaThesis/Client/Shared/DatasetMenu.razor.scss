@@ -36,12 +36,6 @@
             .group_right, .group_left {
                 display: flex;
                 gap: 10px;
-
-                .selected {
-                    color: $color_purple;
-                    padding-left: 30px;
-                    padding-right: 30px;
-                }
             }
         }
 

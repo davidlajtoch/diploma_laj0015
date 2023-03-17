@@ -19,6 +19,7 @@ html {
 }
 
 .button_default, .button_warning {
+  position: relative;
   height: 40px;
   padding: 10px;
   padding-left: 20px;
@@ -39,13 +40,19 @@ html {
 }
 .button_default:hover, .button_warning:hover {
   color: #7c4dff;
-  padding-left: 30px;
-  padding-right: 30px;
+  padding-left: 25px;
+  padding-right: 25px;
+}
+
+.button_default.selected {
+  color: #7c4dff;
+  padding-left: 25px;
+  padding-right: 25px;
 }
 
 .button_warning:hover {
-  color: #ff1744 !important;
-  background-color: #ffebee !important;
+  color: #ff1744;
+  background-color: #ffebee;
 }
 
 .button_input_file_default {
@@ -55,8 +62,8 @@ html {
   line-height: 40px;
 }
 .button_input_file_default:hover {
-  padding-left: 30px;
-  padding-right: 30px;
+  padding-left: 25px;
+  padding-right: 25px;
 }
 .button_input_file_default input[type=file] {
   display: none;
@@ -111,8 +118,8 @@ html {
   transition: 0.2s ease-in-out;
 }
 .input_search_default:not(.nohover):hover {
-  padding-left: 30px;
-  padding-right: 30px;
+  padding-left: 25px;
+  padding-right: 25px;
 }
 
 .input_with_button_default {
@@ -134,8 +141,8 @@ html {
   transition: 0.2s ease-in-out;
 }
 .input_with_button_default input:not(.nohover):hover {
-  padding-left: 30px;
-  padding-right: 55px;
+  padding-left: 25px;
+  padding-right: 50px;
 }
 .input_with_button_default button {
   width: 40px;
@@ -216,13 +223,33 @@ html {
   }
 }
 .effect_clicky {
-  transition: transform ease-in-out 0.1s;
+  transition: transform ease-in-out 0.2s;
 }
 .effect_clicky:hover {
   transform: scale(1.03);
 }
 .effect_clicky:active {
   transform: scale(1);
+}
+
+/* width */
+::-webkit-scrollbar {
+  width: 5px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #fff;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #6b7280;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #7c4dff;
 }
 
 h1:focus {
@@ -305,24 +332,4 @@ a, .btn-link {
   background: white;
   padding: 10px;
   border-radius: 10px;
-}
-
-/* width */
-::-webkit-scrollbar {
-  width: 5px;
-}
-
-/* Track */
-::-webkit-scrollbar-track {
-  background: white;
-}
-
-/* Handle */
-::-webkit-scrollbar-thumb {
-  background: #bdbdbd;
-}
-
-/* Handle on hover */
-::-webkit-scrollbar-thumb:hover {
-  background: #751aff;
 }

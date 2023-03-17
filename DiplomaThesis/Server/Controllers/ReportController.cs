@@ -49,7 +49,6 @@ public class ReportController : ControllerBase
             {
                 Id = Guid.NewGuid(),
                 PowerBiId = reportId,
-                UserGroup = null
             };
             _context.Reports.Add(newReportDb);
             await _context.SaveChangesAsync();
@@ -81,17 +80,16 @@ public class ReportController : ControllerBase
         var roles = await _userManager.GetRolesAsync(loggedInUser);
 
         var response = new List<ReportContract>();
-        foreach (var report in result)
+        foreach (var reportInPowerBi in result)
         {
             var reportInDb = reportsInDb.FirstOrDefault(
-                reportDb => reportDb?.PowerBiId.Equals(report.Id) ?? false, null);
+                reportDb => reportDb?.PowerBiId.Equals(reportInPowerBi.Id) ?? false, null);
             if (reportInDb is null)
             {
                 var newReportDb = new ReportDb
                 {
                     Id = Guid.NewGuid(),
-                    PowerBiId = report.Id,
-                    UserGroup = null
+                    PowerBiId = reportInPowerBi.Id,
                 };
                 _context.Reports.Add(newReportDb);
                 await _context.SaveChangesAsync();
@@ -102,22 +100,22 @@ public class ReportController : ControllerBase
             if (roles.Contains("Architect"))
                 response.Add(new ReportContract
                 {
-                    Id = report.Id,
-                    Name = report.Name,
-                    EmbedUrl = report.EmbedUrl,
-                    EmbedToken = _service.GetEmbedTokenForReport(report.Id, Guid.Parse(report.DatasetId), true),
+                    Id = reportInPowerBi.Id,
+                    Name = reportInPowerBi.Name,
+                    EmbedUrl = reportInPowerBi.EmbedUrl,
+                    EmbedToken = _service.GetEmbedTokenForReport(reportInPowerBi.Id, Guid.Parse(reportInPowerBi.DatasetId), true),
                     UserGroupId = reportInDb.UserGroupId ?? Guid.Empty,
-                    DatasetId = Guid.Parse(report.DatasetId)
+                    DatasetId = Guid.Parse(reportInPowerBi.DatasetId)
                 });
             else if (reportInDb.UserGroupId?.Equals(loggedInUsersGroupId) ?? true)
                 response.Add(new ReportContract
                 {
-                    Id = report.Id,
-                    Name = report.Name,
-                    EmbedUrl = report.EmbedUrl,
-                    EmbedToken = _service.GetEmbedTokenForReport(report.Id, Guid.Parse(report.DatasetId)),
+                    Id = reportInPowerBi.Id,
+                    Name = reportInPowerBi.Name,
+                    EmbedUrl = reportInPowerBi.EmbedUrl,
+                    EmbedToken = _service.GetEmbedTokenForReport(reportInPowerBi.Id, Guid.Parse(reportInPowerBi.DatasetId)),
                     UserGroupId = reportInDb.UserGroupId ?? Guid.Empty,
-                    DatasetId = Guid.Parse(report.DatasetId)
+                    DatasetId = Guid.Parse(reportInPowerBi.DatasetId)
                 });
         }
 
@@ -145,7 +143,6 @@ public class ReportController : ControllerBase
         {
             Id = Guid.NewGuid(),
             PowerBiId = report.Id,
-            UserGroup = null
         };
         _context.Reports.Add(newReportDb);
         await _context.SaveChangesAsync();
@@ -170,29 +167,24 @@ public class ReportController : ControllerBase
     )
     {
         var reports = _context.Reports.ToList();
-        var report = reports.FirstOrDefault(
-            reportDb => reportDb?.PowerBiId.Equals(moveReportToUserGroupCommand.ReportId) ?? false, null);
+
+        var report = reports.FirstOrDefault(reportDb => reportDb?.PowerBiId.Equals(moveReportToUserGroupCommand.ReportId) ?? false, null);
         if (report is null) return NotFound();
 
-        if (moveReportToUserGroupCommand.UserGroupId.Equals(Guid.Empty))
+        if(report.UserGroupId != null && report.UserGroupId != Guid.Empty)
         {
-            var userGroups = _context.UserGroups.ToList();
-            var userGroup = userGroups.FirstOrDefault(
-                group =>
-                {
-                    if (group is null || group.Reports is null) return false;
-                    return group.Users.Any(userInGroup => userInGroup.Id.Equals(report.Id.ToString()));
-                }, null);
-            report.UserGroup = null;
-            userGroup?.Reports.Remove(report);
+            var userGroupOld = _context.UserGroups.Find(report.UserGroupId);
+            if (userGroupOld != null && userGroupOld.Reports != null) { 
+                userGroupOld.Reports!.Remove(report);   
+            }
         }
-        else
-        {
-            var userGroup = _context.UserGroups.Find(moveReportToUserGroupCommand.UserGroupId);
-            if (userGroup is null) return NotFound();
 
-            report.UserGroup = userGroup;
-        }
+        var userGroup = _context.UserGroups.Find(moveReportToUserGroupCommand.UserGroupId);
+        if (userGroup is null) return NotFound();
+
+        report.UserGroupId = userGroup.Id;
+        report.UserGroup = userGroup;
+        userGroup.Reports!.Add(report);
 
         _context.SaveChanges();
 
@@ -204,14 +196,15 @@ public class ReportController : ControllerBase
     public async Task<ActionResult> RemoveReportFromUserGroup(
         [FromBody] RemoveReportFromUserGroupCommand removeReportFromUserGroupCommand)
     {
-        var report = await _context.Reports.FindAsync(removeReportFromUserGroupCommand.ReportId);
+        var report = _context.Reports.Where(r => r.PowerBiId == removeReportFromUserGroupCommand.ReportId).FirstOrDefault();
         if (report is null) return NotFound();
 
-        var user_group = await _context.UserGroups.FindAsync(removeReportFromUserGroupCommand.UserGroupId);
-        if (user_group is null) return NotFound();
+        var userGroup = await _context.UserGroups.FindAsync(report.UserGroupId);
+        if (userGroup is null) return NotFound();
 
+        report.UserGroupId = null;
         report.UserGroup = null;
-        user_group.Reports!.Remove(report);
+        userGroup.Reports!.Remove(report);
 
         _context.SaveChanges();
 

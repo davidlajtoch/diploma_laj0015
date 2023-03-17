@@ -47,7 +47,7 @@
             <div class="user_list">
                 @foreach (var user in UsersMembersFiltered!)
                 {
-                    <div class="user animate__animated animate__fadeInUp">
+                    <div class="user">
                         <div class="name">@user.Name</div>
                         <div class="buttons">
                             @if (user.Id != UserGroup.LeaderId)

@@ -12,12 +12,15 @@ $color_lighter_purple: #f8f4ff;
 $color_red: #ff1744;
 $color_light_red: #ffebee;
 
-$color_green: #69f0ae;
-$color_light_green: #b9f6ca;
+$color_green: #6ee7b7;
 
 $color_yellow: #eab308;
 $color_light_yellow: #fef08a;
 $color_lighter_yellow: #fef9c3;
+
+//Background gradients
+$bg_gradient_blue_purple: linear-gradient(to right, #5737af, #603cc2, #6942d6, #7347eb, #7c4dff);
+$bg_purple: linear-gradient(to right, #7c4dff, #7c4dff, #7c4dff, #7c4dff, #7c4dff);
 
 // Shadows
 $shadow_dark_grey: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
