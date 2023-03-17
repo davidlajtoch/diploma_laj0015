@@ -5,13 +5,15 @@
 
 @inject IJSRuntime Js
 @inject IReportService ReportService
+@inject IAdministrationService AdministrationService
+@inject AuthenticationStateProvider AuthenticationStateProvider;
 
 @attribute [Authorize]
 
 <PageTitle>Metrics - ReporTiny</PageTitle>
 <PageHeader Text="Metrics" />
 
-@if (Reports is null)
+@if (ReportsAll is null)
 {
     <Loader />
 }
@@ -19,7 +21,10 @@ else
 {
     <div class="animate__animated animate__fadeIn">
         <div class="menu">
-            <div class="group_left"></div>
+            <div class="group_left">
+                <button class="button_default @(ShowUserGroupReports ? "selected" : "")" @onclick="() => ShowUserGroupReports = true">User group reports</button>
+                <button class="button_default @(!ShowUserGroupReports ? "selected" : "")" @onclick="() => ShowUserGroupReports = false">All reports</button>
+            </div>
             <div class="group_right">
                 <input type="text" class="input_search_default" placeholder="Search by name..."
                    @oninput="@((e) => SearchReport(e.Value!.ToString()!))">
@@ -27,23 +32,55 @@ else
         </div>
         <AuthorizeView Roles="Architect">
             <div class="list_reports">
-                @foreach (var report in ReportsFiletered!)
+                @if (ShowUserGroupReports)
                 {
-                    <div id="@report.Id" class="item @(_expandedReportId == report.Id ? "item_expanded" : "")">
-                        <ReportContainer Report="@report" />
-                        <div class="menu">
-                            <div class="group_left"></div>
-                            <div class="group_right">
-                                <button class="button_default" @onclick="() => ExpandReport(report.Id)">
-                                    @(_expandedReportId == report.Id ? "Shrink" : "Expand")
-                                </button>
-                                <button class="button_default" @onclick="() => ReportMenu.ShowReportMenu(report)">
-                                    Options
-                                </button>
+                    foreach (var report in ReportsUserGroupFiltered!)
+                    {
+                        <div id="@report.Id" class="item @(_expandedReportId == report.Id ? "item_expanded" : "")">
+                            <ReportContainer Report="@report" />
+                            <div class="menu">
+                                <div class="group_left"></div>
+                                <div class="group_right">
+                                    <button class="button_default" @onclick="() => ExpandReport(report.Id)">
+                                        @(_expandedReportId == report.Id ? "Shrink" : "Expand")
+                                    </button>
+                                    <button class="button_default" @onclick="() => ReportMenu!.ShowReportMenu(report)">
+                                        Options
+                                    </button>
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    }
+                    if(ReportsUserGroupFiltered == null || !ReportsUserGroupFiltered.Any())
+                    {
+                        <div class="info_nothing_here animate__animated animate__fadeIn">There are no reports to display</div>
+                    }
                 }
+                else
+                {
+                    foreach (var report in ReportsAllFiletered!)
+                    {
+                        <div id="@report.Id" class="item @(_expandedReportId == report.Id ? "item_expanded" : "")">
+                            <ReportContainer Report="@report" />
+                            <div class="menu">
+                                <div class="group_left"></div>
+                                <div class="group_right">
+                                    <button class="button_default" @onclick="() => ExpandReport(report.Id)">
+                                        @(_expandedReportId == report.Id ? "Shrink" : "Expand")
+                                    </button>
+                                    <button class="button_default" @onclick="() => ReportMenu!.ShowReportMenu(report)">
+                                        Options
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    if (ReportsAllFiletered == null || !ReportsAllFiletered.Any())
+                    {
+                        <div class="info_nothing_here animate__animated animate__fadeIn">There are no reports to display</div>
+                    }
+                }
+
             </div>
         </AuthorizeView>
 
@@ -56,11 +93,17 @@ else
 }
 
 @code {
-    private ReportMenu ReportMenu = null!;
-    List<ReportContract>? Reports;
-    private List<ReportContract>? ReportsFiletered { get; set; }
+    private ReportMenu? ReportMenu = null!;
+    private UserGroupContract? UserGroup { get; set; }
+    private List<ReportContract>? ReportsAll { get; set; }
+    private List<ReportContract>? ReportsAllFiletered { get; set; } = new();
+    private List<ReportContract>? ReportsUserGroup { get; set; }
+    private List<ReportContract>? ReportsUserGroupFiltered { get; set; } = new();
 
     private Guid? _expandedReportId { get; set; }
+    private Guid UserId { get; set; } = Guid.Empty;
+
+    private bool ShowUserGroupReports = true;
 
     IJSObjectReference? _embedModuleJs;
 
@@ -86,15 +129,31 @@ else
 
     private async Task UpdateData()
     {
+        await GetSetUserId();
+        UserGroup = await AdministrationService.GetUserUserGroup(UserId);
+
         var reports = await ReportService.GetReportsFromBackend();
 
         if (reports is not null)
         {
-            Reports = reports;
-            ReportsFiletered = reports;
+            ReportsAll = reports;
+            ReportsAllFiletered = reports;
+
+            if (UserGroup != null)
+            {
+                ReportsUserGroup = reports.Where(r => r.UserGroupId == UserGroup.Id).ToList();
+                ReportsUserGroupFiltered = ReportsUserGroup;
+            }
         }
 
         StateHasChanged();
+    }
+
+    private async Task GetSetUserId()
+    {
+        var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
+        var userId = user.FindFirst(u => u.Type.Contains("sub"))?.Value;
+        UserId = Guid.Parse(userId!);
     }
 
     private async Task ExpandReport(Guid reportId)
@@ -115,7 +174,8 @@ else
         {
             return;
         }
-        ReportsFiletered = Reports!.FindAll(r => r.Name.Contains(searchedReportName));
+        ReportsAllFiletered = ReportsAll!.FindAll(r => r.Name.Contains(searchedReportName));
+        ReportsUserGroupFiltered = ReportsUserGroup!.FindAll(r => r.Name.Contains(searchedReportName));
     }
 
 }
