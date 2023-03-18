@@ -43,7 +43,11 @@ else
 
         @if (_showUsers)
         {
-            @if (_users_searched!.Any())
+            @if (!_users_searched!.Any())
+            {
+                <div class="info_nothing_here_default animate__animated animate__fadeIn">No records to display</div>
+            }
+            else
             {
                 <ul class="list_users animate__animated animate__fadeIn">
                     <li class="header">
@@ -93,7 +97,11 @@ else
         }
         else
         {
-            @if (_user_groups_searched!.Any())
+            @if (!_user_groups_searched!.Any())
+            {
+                <div class="info_nothing_here_default animate__animated animate__fadeIn">No records to display</div>
+            }
+            else
             {
                 <ul class="list_groups animate__animated animate__fadeIn">
                     <li class="header">

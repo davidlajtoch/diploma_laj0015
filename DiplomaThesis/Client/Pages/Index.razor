@@ -137,40 +137,62 @@ else
 
                     @if (_showUserGroupActivity)
                     {
-                        <ul class="list_activity animate__animated animate__fadeIn">
-                            <li class="header">
-                                <div class="col col-1">Activity</div>
-                                <div class="col col-2">User Group</div>
-                                <div class="col col-3">Created</div>
-                            </li>
-                            @foreach (var activity in _activityUserGroupSearched!)
-                            {
-                                <li class="row">
-                                    <div class="col col-1 col_align_left" data-label="Activity">@activity.Message</div>
-                                    <div class="col col-2" data-label="User Group">@activity.UserGroupName</div>
-                                    <div class="col col-3" data-label="Created">@activity.Created</div>
+                        @if (!_activityUserGroupSearched!.Any())
+                        {
+                            <div class="info_nothing_here_default animate__animated animate__fadeIn">No records to display</div>
+                        }
+                        else
+                        {
+                            <ul class="list_activity animate__animated animate__fadeIn">
+                                <li class="header">
+                                    <div class="col col-1">Activity</div>
+                                    <div class="col col-2">User Group</div>
+                                    <div class="col col-3">Created</div>
                                 </li>
-
-                            }
-                        </ul>
+                                @foreach (var activity in _activityUserGroupSearched!)
+                                {
+                                    <li class="row">
+                                        <div class="col col-1 col_align_left" data-label="Activity">@activity.Message</div>
+                                        <div class="col col-2" data-label="User Group">@activity.UserGroupName</div>
+                                        <div class="col col-3" data-label="Created">@activity.Created</div>
+                                    </li>
+                                }
+                            </ul>
+                        }
                     }
                     else
                     {
-                        <ul class="list_activity animate__animated animate__fadeIn">
-                            <li class="header">
-                                <div class="col col-1">Activity</div>
-                                <div class="col col-2">User Group</div>
-                                <div class="col col-3">Created</div>
-                            </li>
-                            @foreach (var activity in _activityAllSearched!)
-                            {
-                                <li class="row">
-                                    <div class="col col-1 col_align_left" data-label="Activity">@activity.Message</div>
-                                    <div class="col col-2" data-label="User Group">@activity.UserGroupName</div>
-                                    <div class="col col-3" data-label="Created">@activity.Created</div>
+                        @if (!_activityAllSearched!.Any())
+                        {
+                            <div class="info_nothing_here_default animate__animated animate__fadeIn">No records to display</div>
+                        }
+                        else
+                        {
+                            <ul class="list_activity animate__animated animate__fadeIn">
+                                <li class="header">
+                                    <div class="col col-1">Activity</div>
+                                    <div class="col col-2">User Group</div>
+                                    <div class="col col-3">Created</div>
                                 </li>
-                            }
-                        </ul>
+                                @foreach (var activity in _activityAllSearched!)
+                                {
+                                    <li class="row">
+                                        <div class="col col-1 col_align_left" data-label="Activity">@activity.Message</div>
+                                        <div class="col col-2" data-label="User Group">
+                                            @if (activity.UserGroupName != string.Empty)
+                                            {
+                                                @activity.UserGroupName
+                                            }
+                                            else
+                                            {
+                                                <span class="text_light">Not specified</span>
+                                            }
+                                        </div>
+                                        <div class="col col-3" data-label="Created">@activity.Created</div>
+                                    </li>
+                                }
+                            </ul>
+                        }
                     }
                 </div>
             </Authorized>

@@ -11,6 +11,10 @@ html {
     margin: 0px;
 }
 
+.animate__animated.animate__fadeInUp, .animate__animated.animate__fadeInDown {
+    --animate-duration: 0.2s;
+}
+
 .hidden {
     display: none;
 }
@@ -212,6 +216,12 @@ html {
         color: $color_purple;
         text-align: left;
     }
+}
+
+.info_nothing_here_default{
+    width: 100%;
+    text-align: center;
+    color: $color_light_grey;
 }
 
 .text_light {

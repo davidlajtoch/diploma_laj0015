@@ -37,9 +37,22 @@ public class ActivityController : ControllerBase
     [HttpGet]
     public async Task<ActionResult> GetAllActivity()
     {
-        var result = await _context.Activities.ToListAsync();
-        var resultOrdered = result.OrderByDescending(r => r.Created).ToList().Take(30);
-        return Ok(resultOrdered);
+        var acitvities = await _context.Activities.ToListAsync();
+        var acitivtiesOrdered = acitvities.OrderByDescending(r => r.Created).ToList().Take(30);
+
+        List<ActivityContract> result = new();
+        foreach(var activity in acitivtiesOrdered)
+        {
+            result.Add(new ActivityContract
+            {
+                Id= activity.Id,
+                Message=activity.Message,
+                Created=activity.Created,
+                UserGroupName=(activity.UserGroupName == null)? string.Empty : activity.UserGroupName,
+            });
+        }
+
+        return Ok(result);
     }
 
     [HttpGet]
@@ -50,15 +63,27 @@ public class ActivityController : ControllerBase
         var loggedInUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         var loggedInUser = await _context.Users.FindAsync(loggedInUserId);
 
+        List<ActivityContract> result = new();
         if (loggedInUser == null || loggedInUser.UserGroupId == null || loggedInUser.UserGroupId == Guid.Empty)
         {
-            return Ok(new List<ActivityContract>());
+            return Ok(result);
         }
 
-        var result = activityAll.FindAll(a => a.UserGroupId == loggedInUser.UserGroupId);
-        var resultOrdered = result.OrderByDescending(r => r.Created).ToList().Take(30);
+        var activities = activityAll.FindAll(a => a.UserGroupId == loggedInUser.UserGroupId);
+        var acitivtiesOrdered = activities.OrderByDescending(r => r.Created).ToList().Take(30);
 
-        return Ok(resultOrdered);
+        foreach(var activity in acitivtiesOrdered)
+        {
+            result.Add(new ActivityContract
+            {
+                Id= activity.Id,
+                Message=activity.Message,
+                Created=activity.Created,
+                UserGroupName=(activity.UserGroupName == null)? string.Empty : activity.UserGroupName,
+            });
+        }
+
+        return Ok(result);
     }
 }
 

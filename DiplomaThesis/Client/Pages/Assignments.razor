@@ -110,12 +110,10 @@ else
                         }
                         else
                         {
-                            <div class="animate__animated animate__fadeInUp">
-                                <div class="name">@SelectedAssignment.User.Name</div>
-                                <button class="button_tiny_default" @onclick="() => RemoveUserFromAssignment(SelectedAssignment!)">
-                                    <i class="material-icons icon">remove</i>
-                                </button>
-                            </div>
+                            <div class="name animate__animated animate__fadeInUp">@SelectedAssignment.User.Name</div>
+                            <button class="button_tiny_default animate__animated animate__fadeInUp" @onclick="() => RemoveUserFromAssignment(SelectedAssignment!)">
+                                <i class="material-icons icon">remove</i>
+                            </button>
                         }
                     </div>
 

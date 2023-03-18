@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Microsoft.PowerBI.Api;
 using Microsoft.PowerBI.Api.Models;
 using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
@@ -28,6 +29,23 @@ public class DatasetController : ControllerBase
     {
         _service = service;
         _context = context;
+    }
+
+    private async Task<ActionResult> RecordActivity(string message, Guid? userGroupId)
+    {
+        var userGroup = await _context.UserGroups.FindAsync(userGroupId);
+
+        Activity newActivity = new Activity
+        {
+            Message = message,
+            Created = DateTime.Now,
+            UserGroupName = (userGroup == null) ? null : userGroup.Name,
+            UserGroupId = userGroupId
+        };
+
+        _context.Activities.Add(newActivity);
+
+        return Ok();
     }
 
     [Authorize(Roles = "Architect")]
@@ -118,36 +136,40 @@ public class DatasetController : ControllerBase
                 columns.Add(new Microsoft.PowerBI.Api.Models.Column(element.Name, "String"));
         }
 
-
         var dataset = await _service.CreateDataset(datasetName, columns);
         if (dataset is null) return StatusCode(500);
 
-        var datasetInDb = new DatasetDb
-        {
-            Id = Guid.NewGuid(),
-            PowerBiId = Guid.Parse(dataset.Id),
-            ColumnNames = columns.Select(column => column.Name).ToList(),
-            ColumnTypes = columns.Select(column => column.DataType).ToList()
-        };
+        var result = await _service.PushRowsToDataset(Guid.Parse(dataset.Id), rows);
 
-        for (int r = 0; r < _datasetRowInsertLimit; r++)
+        if (result)
         {
-            List<string> datasetRowData = new();
-            foreach (var element in ((JObject)rows[r]).Values())
+            var datasetInDb = new DatasetDb
             {
-                datasetRowData.Add(element.ToString());
+                Id = Guid.NewGuid(),
+                PowerBiId = Guid.Parse(dataset.Id),
+                ColumnNames = columns.Select(column => column.Name).ToList(),
+                ColumnTypes = columns.Select(column => column.DataType).ToList()
+            };
+
+            for (int r = 0; r < _datasetRowInsertLimit; r++)
+            {
+                List<string> datasetRowData = new();
+                foreach (var element in ((JObject)rows[r]).Values())
+                {
+                    datasetRowData.Add(element.ToString());
+                }
+                _context.DatasetRows.Add(new DatasetRow
+                {
+                    DatasetPowerBiId = datasetInDb.PowerBiId,
+                    RowData = datasetRowData
+                });
             }
-            _context.DatasetRows.Add(new DatasetRow
-            {
-                DatasetPowerBiId = datasetInDb.PowerBiId,
-                RowData = datasetRowData
-            });
+
+            _context.Datasets.Add(datasetInDb);
+            await RecordActivity("New dataset " + datasetName + " was created", null);
+            await _context.SaveChangesAsync();
         }
 
-        _context.Datasets.Add(datasetInDb);
-        await _context.SaveChangesAsync();
-
-        var result = await _service.PushRowsToDataset(Guid.Parse(dataset.Id), rows);
         return result ? Ok() : StatusCode(500);
     }
 
@@ -162,6 +184,7 @@ public class DatasetController : ControllerBase
         if (dataset is null) return NotFound();
 
         var result = await _service.PushRowsToDataset(datasetId, rows);
+
         return result ? Ok() : StatusCode(500);
     }
 
@@ -191,6 +214,9 @@ public class DatasetController : ControllerBase
                 }
             }
             _context.Datasets.Remove(datasetDb);
+
+            await RecordActivity("Dataset " + datasetPowerBi.Name + " was deleted", null);
+
             _context.SaveChanges();
         }
 

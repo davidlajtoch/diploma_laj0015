@@ -1,8 +1,6 @@
 using System.Data;
-using System.Linq;
 using System.Security.Claims;
 using DiplomaThesis.Server.Data;
-//using DiplomaThesis.Server.Data.Migrations;
 using DiplomaThesis.Server.Models;
 using DiplomaThesis.Shared.Commands;
 using DiplomaThesis.Shared.Contracts;
@@ -11,8 +9,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.PowerBI.Api;
-using Microsoft.PowerBI.Api.Models;
 
 namespace DiplomaThesis.Server.Controllers;
 
@@ -299,13 +295,14 @@ public class AdministrationController : ControllerBase
 
         var userGroup = new UserGroup
         {
+            Id = Guid.NewGuid(),
             Name = createUserGroupCommand.Name,
             Users = new List<ApplicationUser>()
         };
 
         _context.UserGroups.Add(userGroup);
 
-        await RecordActivity("User group " + createUserGroupCommand.Name + " was created", null);
+        await RecordActivity("User group " + createUserGroupCommand.Name + " was created", userGroup.Id);
 
         _context.SaveChanges();
 

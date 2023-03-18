@@ -26,7 +26,7 @@
                     <td>
                         @if (UsersMembers != null && UserGroup.LeaderId != null && UserGroup.LeaderId != Guid.Empty)
                         {
-                            @UsersMembers.FirstOrDefault(u => u.Id == UserGroup.LeaderId)!.Name
+                            <span class="animate__animated animate__fadeInUp">@UsersMembers.FirstOrDefault(u => u.Id == UserGroup.LeaderId)!.Name</span>
                         }
                         else
                         {
@@ -47,7 +47,7 @@
             <div class="user_list">
                 @foreach (var user in UsersMembersFiltered!)
                 {
-                    <div class="user">
+                    <div class="user animate__animated animate__fadeInUp">
                         <div class="name">@user.Name</div>
                         <div class="buttons">
                             @if (user.Id != UserGroup.LeaderId)
