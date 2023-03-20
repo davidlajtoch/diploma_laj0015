@@ -222,6 +222,14 @@ html {
     width: 100%;
     text-align: center;
     color: $color_light_grey;
+
+    &:is(.vh_centered){
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        -ms-transform: translate(-50%, -50%);
+        transform: translate(-50%, -50%);
+    }
 }
 
 .text_light {

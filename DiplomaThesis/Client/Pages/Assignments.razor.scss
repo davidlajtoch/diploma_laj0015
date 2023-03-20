@@ -1,5 +1,21 @@
 ﻿@import '../wwwroot/css/variables';
 
+.warning_no_user_group {
+    width: 180px;
+    padding: 10px;
+    background-color: $color_light_red;
+    text-align: center;
+    color: $color_red;
+    border-radius: 15px;
+    margin: 0 auto;
+    position: relative;
+    top: 50%;
+
+    .icon {
+        width: 100%;
+    }
+}
+
 .menu {
     width: 100%;
     margin-bottom: 20px;
@@ -266,7 +282,7 @@
             }
         }
 
-        .notification_nothing_here {
+        .info_nothing_here {
             position: absolute;
             top: 50%;
             left: 50%;

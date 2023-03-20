@@ -204,6 +204,13 @@ html {
   text-align: center;
   color: #9ca3af;
 }
+.info_nothing_here_default:is(.vh_centered) {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  -ms-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+}
 
 .text_light {
   color: #9ca3af !important;

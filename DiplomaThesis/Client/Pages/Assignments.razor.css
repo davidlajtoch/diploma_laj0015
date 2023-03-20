@@ -1,4 +1,19 @@
-﻿.menu {
+﻿.warning_no_user_group {
+  width: 180px;
+  padding: 10px;
+  background-color: #ffebee;
+  text-align: center;
+  color: #ff1744;
+  border-radius: 15px;
+  margin: 0 auto;
+  position: relative;
+  top: 50%;
+}
+.warning_no_user_group .icon {
+  width: 100%;
+}
+
+.menu {
   width: 100%;
   margin-bottom: 20px;
   display: flex;
@@ -222,7 +237,7 @@
 .container_sections .section_right .bottom_menu button {
   margin: 0px;
 }
-.container_sections .section_right .notification_nothing_here {
+.container_sections .section_right .info_nothing_here {
   position: absolute;
   top: 50%;
   left: 50%;

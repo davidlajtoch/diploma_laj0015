@@ -20,10 +20,11 @@
 
 @if (!UserInUserGroup)
 {
-    <div class="warning_no_user_group animate__animated animate__bounceIn animate__delay-2s">
-        <i class="material-icons icon">report</i><br />
-        You need to be in a user group to chat.
-    </div>
+        <div class="warning_no_user_group animate__animated animate__bounceIn animate__delay-2s">
+            <i class="material-icons icon">report</i><br />
+            You need to be in a user group to chat.
+        </div>
+
 }
 else
 {
@@ -249,7 +250,7 @@ else
                 UsersChatConnected = UsersChatConnectedTmp;
                 StateHasChanged();
             }
-            
+
         }
     }
 
