@@ -110,5 +110,9 @@
   {
     "outputFile": "Shared/LogoAnimatedSmall.razor.css",
     "inputFile": "Shared/LogoAnimatedSmall.razor.scss"
+  },
+  {
+    "outputFile": "Shared/DragAndDropFileLoader.razor.css",
+    "inputFile": "Shared/DragAndDropFileLoader.razor.scss"
   }
 ]

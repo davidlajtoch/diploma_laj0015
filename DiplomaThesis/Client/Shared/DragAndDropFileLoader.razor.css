@@ -6,7 +6,7 @@
   justify-content: center;
   align-items: center;
   text-align: center;
-  border: 2px dashed #9ca3af;
+  border: 2px dashed #94a3b8;
   border-radius: 15px;
   transition: 0.2s ease-in-out;
 }
@@ -21,14 +21,14 @@
 }
 .file_drop_zone:hover, .container_loading_file:hover {
   color: #7c4dff;
-  background-color: #f3f4f6;
+  background-color: #f1f5f9;
 }
 
 .file_drop_zone_hover {
   color: #7c4dff;
   border-style: solid;
   border-color: #7c4dff;
-  background-color: #f3f4f6;
+  background-color: #f1f5f9;
 }
 
 .file_drop_zone_warning {

@@ -16,7 +16,7 @@
 
     .example_code {
         width: calc(100% - 20px);
-        background-color: $color_lighter_grey;
+        background-color: $color_lightest_grey;
         border-radius: 15px;
         padding: 10px;
         font-family: 'Roboto Mono', monospace;
@@ -24,7 +24,7 @@
 
     .example_table{
         width: calc(100% - 20px);
-        background-color: $color_lighter_grey;
+        background-color: $color_lightest_grey;
         border-collapse: collapse;
 
         td, th{

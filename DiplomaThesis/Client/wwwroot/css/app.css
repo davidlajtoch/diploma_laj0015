@@ -6,6 +6,7 @@
 
 html {
   overflow-y: scroll;
+  overflow-x: hidden;
   margin: 0px;
 }
 
@@ -203,18 +204,19 @@ html {
 }
 .list_default .header {
   color: #7c4dff;
-  padding-top: 10px;
-  padding-bottom: 10px;
+  padding: 10px;
   margin-top: 0px;
 }
 .list_default .row {
   background-color: #f1f5f9;
   transition: all 0.2s ease-in-out;
-  padding-left: 15px;
 }
 .list_default .row:is(.selectable):hover {
   color: #7c4dff;
   cursor: pointer;
+}
+.list_default .col_10 {
+  flex-basis: 10%;
 }
 .list_default .col_20 {
   flex-basis: 20%;
@@ -227,6 +229,7 @@ html {
 }
 .list_default .col_align_left {
   text-align: left;
+  margin-left: 15px;
 }
 @media all and (max-width: 767px) {
   .list_default .header {

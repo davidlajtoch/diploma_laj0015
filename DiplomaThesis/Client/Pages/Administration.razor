@@ -105,7 +105,7 @@ else
             {
                 <ul class="list_default list_groups animate__animated animate__fadeIn">
                     <li class="header">
-                        <div class="col col_20">ID</div>
+                        <div class="col col_25">ID</div>
                         <div class="col col_20">Name</div>
                         <div class="col col_20">Leader</div>
                         <div class="col col_20">Description</div>
@@ -114,7 +114,7 @@ else
                     @foreach (var userGroup in _user_groups_searched!)
                     {
                         <li class="row selectable" @onclick="() => _userGroupMenu!.ShowUserGroup(userGroup)">
-                            <div class="col col_20" data-label="ID">@userGroup.Id</div>
+                            <div class="col col_25" data-label="ID">@userGroup.Id</div>
                             <div class="col col_20" data-label="Name">@userGroup.Name</div>
                             <div class="col col_20" data-label="Leader">
                                 @if (userGroup.Users != null)

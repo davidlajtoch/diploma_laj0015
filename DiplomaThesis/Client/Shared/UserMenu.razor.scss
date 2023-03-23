@@ -10,7 +10,7 @@
     position: fixed;
     top: 0px;
     left: 0px;
-    background-color: rgba(247, 242, 255, 0.8);
+    background-color: rgba(0, 0, 0, 0.4);
     z-index: 5;
 
     .user_menu {
@@ -23,6 +23,7 @@
         -ms-transform: translate(-50%, -50%);
         transform: translate(-50%, -50%);
         border-radius: 15px;
+        box-shadow: $shadow_grey;
         background-color: $color_white;
 
         .bottom_menu {

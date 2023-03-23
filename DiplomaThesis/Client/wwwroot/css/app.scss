@@ -8,6 +8,7 @@ body {
 
 html {
     overflow-y: scroll;
+    overflow-x: hidden;
     margin: 0px;
 }
 
@@ -221,8 +222,7 @@ html {
 
     .header {
         color: $color_purple;
-        padding-top: 10px;
-        padding-bottom: 10px;
+        padding: 10px;
         margin-top: 0px;
     }
 
@@ -230,11 +230,14 @@ html {
         //box-shadow: $shadow_light_grey;
         background-color: $color_lightest_grey;
         transition: all 0.2s ease-in-out;
-        padding-left: 15px;
     }
     .row:is(.selectable):hover{
         color: $color_purple;
         cursor: pointer;
+    }
+
+    .col_10{
+        flex-basis: 10%;
     }
 
     .col_20{
@@ -251,6 +254,7 @@ html {
 
     .col_align_left {
         text-align: left;
+        margin-left: 15px;
     }
 
     @media all and (max-width: 767px) {

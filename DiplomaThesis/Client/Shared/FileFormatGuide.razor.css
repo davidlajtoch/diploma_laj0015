@@ -10,14 +10,14 @@
 }
 .section_file_format_guide .example_code {
   width: calc(100% - 20px);
-  background-color: #cbd5e1;
+  background-color: #f1f5f9;
   border-radius: 15px;
   padding: 10px;
   font-family: "Roboto Mono", monospace;
 }
 .section_file_format_guide .example_table {
   width: calc(100% - 20px);
-  background-color: #cbd5e1;
+  background-color: #f1f5f9;
   border-collapse: collapse;
 }
 .section_file_format_guide .example_table td, .section_file_format_guide .example_table th {

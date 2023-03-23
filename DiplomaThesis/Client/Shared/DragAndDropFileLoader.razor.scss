@@ -24,7 +24,7 @@
 
     &:hover {
         color: $color_purple;
-        background-color: $color_lighter_grey;
+        background-color: $color_lightest_grey;
     }
 }
 
@@ -32,7 +32,7 @@
     color: $color_purple;
     border-style: solid;
     border-color: $color_purple;
-    background-color: $color_lighter_grey;
+    background-color: $color_lightest_grey;
 }
 
 .file_drop_zone_warning {
