@@ -17,16 +17,6 @@
 else
 {
     <div class="animate__animated animate__fadeIn">
-        <div class="section_top">
-            <div class="centered_container">
-                <LogoAnimatedLarge />
-
-                <div class="about">
-                    The tiniest PowerBI client
-                </div>
-            </div>
-        </div>
-
         <div class="section_middle">
             <div class="grid_links">
                 <NavLink style="text-decoration: none;" href="" Match="NavLinkMatch.All">
@@ -143,18 +133,18 @@ else
                         }
                         else
                         {
-                            <ul class="list_activity animate__animated animate__fadeIn">
+                            <ul class="list_default list_activity animate__animated animate__fadeIn">
                                 <li class="header">
-                                    <div class="col col-1">Activity</div>
-                                    <div class="col col-2">User Group</div>
-                                    <div class="col col-3">Created</div>
+                                    <div class="col col_50">Activity</div>
+                                    <div class="col col_25">User Group</div>
+                                    <div class="col col_25">Created</div>
                                 </li>
                                 @foreach (var activity in _activityUserGroupSearched!)
                                 {
                                     <li class="row">
-                                        <div class="col col-1 col_align_left" data-label="Activity">@activity.Message</div>
-                                        <div class="col col-2" data-label="User Group">@activity.UserGroupName</div>
-                                        <div class="col col-3" data-label="Created">@activity.Created</div>
+                                        <div class="col col_50 col_align_left" data-label="Activity">@activity.Message</div>
+                                        <div class="col col_25" data-label="User Group">@activity.UserGroupName</div>
+                                        <div class="col col_25" data-label="Created">@activity.Created</div>
                                     </li>
                                 }
                             </ul>
@@ -168,17 +158,17 @@ else
                         }
                         else
                         {
-                            <ul class="list_activity animate__animated animate__fadeIn">
+                            <ul class="list_default list_activity animate__animated animate__fadeIn">
                                 <li class="header">
-                                    <div class="col col-1">Activity</div>
-                                    <div class="col col-2">User Group</div>
-                                    <div class="col col-3">Created</div>
+                                    <div class="col col_50">Activity</div>
+                                    <div class="col col_25">User Group</div>
+                                    <div class="col col_25">Created</div>
                                 </li>
                                 @foreach (var activity in _activityAllSearched!)
                                 {
                                     <li class="row">
-                                        <div class="col col-1 col_align_left" data-label="Activity">@activity.Message</div>
-                                        <div class="col col-2" data-label="User Group">
+                                        <div class="col col_50 col_align_left" data-label="Activity">@activity.Message</div>
+                                        <div class="col col_25" data-label="User Group">
                                             @if (activity.UserGroupName != string.Empty)
                                             {
                                                 @activity.UserGroupName
@@ -188,7 +178,7 @@ else
                                                 <span class="text_light">Not specified</span>
                                             }
                                         </div>
-                                        <div class="col col-3" data-label="Created">@activity.Created</div>
+                                        <div class="col col_25" data-label="Created">@activity.Created</div>
                                     </li>
                                 }
                             </ul>

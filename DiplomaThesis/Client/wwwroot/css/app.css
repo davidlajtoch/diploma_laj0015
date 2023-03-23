@@ -1,6 +1,6 @@
 ﻿body {
   font-family: "Nunito", sans-serif;
-  color: #6b7280;
+  color: #64748b;
   margin: 0px;
 }
 
@@ -33,8 +33,8 @@ html {
   font-size: 16px;
   border-radius: 500px;
   border: none;
-  color: #6b7280;
-  background-color: #f3f4f6;
+  color: #64748b;
+  background-color: #f1f5f9;
   transition: 0.2s ease-in-out;
   cursor: pointer;
 }
@@ -79,8 +79,8 @@ html {
   position: relative;
   top: -2px;
   cursor: pointer;
-  background-color: #f3f4f6;
-  color: #6b7280;
+  background-color: #f1f5f9;
+  color: #64748b;
   border: none;
   border-radius: 500px;
   transition: 0.2s ease-in-out;
@@ -95,7 +95,8 @@ html {
   border: none;
   border-radius: 500px;
   font-family: "Nunito", sans-serif;
-  color: #6b7280;
+  color: #64748b;
+  background-color: #f1f5f9;
   cursor: pointer;
   transition: 0.2s ease-in-out;
 }
@@ -115,7 +116,7 @@ html {
   font-family: "Nunito", sans-serif;
   font-size: 16px;
   color: #7c4dff;
-  background-color: #f3f4f6;
+  background-color: #f1f5f9;
   border: none;
   border-radius: 500px;
   outline: none;
@@ -137,7 +138,7 @@ html {
   padding-right: 45px;
   border: none;
   outline: none;
-  background-color: #f3f4f6;
+  background-color: #f1f5f9;
   color: #7c4dff;
   font-family: "Nunito", sans-serif;
   font-size: 16px;
@@ -156,7 +157,7 @@ html {
   outline: none;
   border: none;
   cursor: pointer;
-  color: #6b7280;
+  color: #64748b;
   transition: 0.1s ease-in-out;
 }
 .input_with_button_default button:hover {
@@ -177,12 +178,79 @@ html {
 .textarea_default {
   padding: 10px;
   color: #7c4dff;
-  background-color: #f3f4f6;
+  background-color: #f1f5f9;
   border-radius: 15px;
   border: none;
   font-family: "Nunito", sans-serif;
   font-size: 16px;
   outline: none;
+}
+
+.list_default {
+  width: 100%;
+  padding: 0px;
+}
+.list_default li {
+  width: 100%;
+  border-radius: 15px;
+  padding-top: 20px;
+  padding-bottom: 20px;
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  text-align: center;
+}
+.list_default .header {
+  color: #7c4dff;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  margin-top: 0px;
+}
+.list_default .row {
+  background-color: #f1f5f9;
+  transition: all 0.2s ease-in-out;
+  padding-left: 15px;
+}
+.list_default .row:is(.selectable):hover {
+  color: #7c4dff;
+  cursor: pointer;
+}
+.list_default .col_20 {
+  flex-basis: 20%;
+}
+.list_default .col_25 {
+  flex-basis: 25%;
+}
+.list_default .col_50 {
+  flex-basis: 50%;
+}
+.list_default .col_align_left {
+  text-align: left;
+}
+@media all and (max-width: 767px) {
+  .list_default .header {
+    display: none;
+  }
+  .list_default li {
+    display: block;
+  }
+  .list_default .col {
+    text-align: left;
+    flex-basis: 100%;
+  }
+  .list_default .col {
+    display: flex;
+    padding: 10px 0;
+  }
+  .list_default .col:before {
+    color: #7c4dff;
+    padding-right: 10px;
+    padding-left: 10px;
+    content: attr(data-label);
+    flex-basis: 20%;
+    text-align: center;
+  }
 }
 
 .table_info {
@@ -202,7 +270,7 @@ html {
 .info_nothing_here_default {
   width: 100%;
   text-align: center;
-  color: #9ca3af;
+  color: #94a3b8;
 }
 .info_nothing_here_default:is(.vh_centered) {
   position: absolute;
@@ -213,7 +281,7 @@ html {
 }
 
 .text_light {
-  color: #9ca3af !important;
+  color: #94a3b8 !important;
 }
 
 .text_purple {
@@ -256,12 +324,12 @@ html {
 
 /* Track */
 ::-webkit-scrollbar-track {
-  background: #fff;
+  background: rgba(0, 0, 0, 0);
 }
 
 /* Handle */
 ::-webkit-scrollbar-thumb {
-  background: #6b7280;
+  background: #64748b;
 }
 
 /* Handle on hover */

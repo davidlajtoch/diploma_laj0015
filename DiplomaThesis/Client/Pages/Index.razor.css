@@ -13,7 +13,7 @@
   width: 100%;
   margin-top: 10px;
   text-align: center;
-  color: #9ca3af;
+  color: #94a3b8;
   font-family: "Nunito", sans-serif;
 }
 .section_top .centered_container .buttons {
@@ -31,8 +31,8 @@
   margin-right: 5px;
   text-decoration: none;
   border-radius: 500px;
-  color: #6b7280;
-  background-color: #f3f4f6;
+  color: #64748b;
+  background-color: #cbd5e1;
   transition: 0.2s ease-in-out;
   cursor: pointer;
 }
@@ -69,8 +69,8 @@
   flex-direction: column;
   text-align: center;
   padding: 15px;
-  color: #6b7280;
-  box-shadow: 0px 0px 9px 0px rgba(0, 0, 0, 0.15);
+  color: #64748b;
+  background-color: #f1f5f9;
   border-radius: 15px;
   transition: all ease-in-out 0.1s;
   cursor: pointer;
@@ -87,7 +87,7 @@
   margin-bottom: 10px;
 }
 .section_middle .grid_links .tile .description {
-  color: #9ca3af;
+  color: #94a3b8;
 }
 
 .section_bottom {
@@ -111,70 +111,5 @@
   .section_bottom .menu .group_left {
     margin-bottom: 10px;
     margin-left: -5px;
-  }
-}
-.section_bottom .list_activity {
-  width: 100%;
-  padding: 0px;
-}
-.section_bottom .list_activity li {
-  width: 100%;
-  border-radius: 15px;
-  padding-top: 20px;
-  padding-bottom: 20px;
-  display: flex;
-  justify-content: space-between;
-  margin-top: 10px;
-  margin-bottom: 10px;
-  text-align: center;
-}
-.section_bottom .list_activity .header {
-  color: #7c4dff;
-  padding-top: 10px;
-  padding-bottom: 10px;
-  margin-top: 0px;
-}
-.section_bottom .list_activity .row {
-  box-shadow: 0px 0px 9px 0px rgba(0, 0, 0, 0.1);
-  transition: all 0.2s ease-in-out;
-  padding-left: 15px;
-}
-.section_bottom .list_activity .col-1 {
-  flex-basis: 50%;
-}
-.section_bottom .list_activity .col-2 {
-  flex-basis: 20%;
-}
-.section_bottom .list_activity .col-3 {
-  flex-basis: 25%;
-}
-.section_bottom .list_activity .col-4 {
-  flex-basis: 25%;
-}
-.section_bottom .list_activity .col_align_left {
-  text-align: left;
-}
-@media all and (max-width: 767px) {
-  .section_bottom .list_activity .header {
-    display: none;
-  }
-  .section_bottom .list_activity li {
-    display: block;
-  }
-  .section_bottom .list_activity .col {
-    text-align: left;
-    flex-basis: 100%;
-  }
-  .section_bottom .list_activity .col {
-    display: flex;
-    padding: 10px 0;
-  }
-  .section_bottom .list_activity .col:before {
-    color: #7c4dff;
-    padding-right: 10px;
-    padding-left: 10px;
-    content: attr(data-label);
-    flex-basis: 20%;
-    text-align: center;
   }
 }

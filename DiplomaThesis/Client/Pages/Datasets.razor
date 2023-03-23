@@ -28,20 +28,20 @@ else
             </div>
         </div>
 
-        <ul class="list_datasets animate__animated animate__fadeIn">
+        <ul class="list_default list_datasets animate__animated animate__fadeIn">
             <li class="header">
-                <div class="col col-1">ID</div>
-                <div class="col col-1">Name</div>
-                <div class="col col-1">Columns</div>
-                <div class="col col-1">Uploaded through ReporTiny</div>
+                <div class="col col_25">ID</div>
+                <div class="col col_25">Name</div>
+                <div class="col col_25">Columns</div>
+                <div class="col col_25">Uploaded through ReporTiny</div>
             </li>
             @foreach (var dataset in DatasetListFiltered!)
             {
-                <li class="row" @onclick="() => DatasetMenu!.ShowDataset(dataset)">
-                    <div class="col col-1" data-label="ID">@dataset.Id</div>
-                    <div class="col col-1" data-label="Name">@dataset.Name</div>
-                    <div class="col col-1" data-label="Columns">@dataset.ColumnNames.Count()</div>
-                    <div class="col col-1" data-label="Uploaded through ReporTiny">@dataset.ColumnNames.Any()</div>
+                <li class="row selectable" @onclick="() => DatasetMenu!.ShowDataset(dataset)">
+                    <div class="col col_25" data-label="ID">@dataset.Id</div>
+                    <div class="col col_25" data-label="Name">@dataset.Name</div>
+                    <div class="col col_25" data-label="Columns">@dataset.ColumnNames.Count()</div>
+                    <div class="col col_25" data-label="Uploaded through ReporTiny">@dataset.ColumnNames.Any()</div>
                 </li>
             }
         </ul>

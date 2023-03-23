@@ -24,7 +24,7 @@
         -ms-transform: translate(-50%, -50%);
         transform: translate(-50%, -50%);
         border-radius: 15px;
-        box-shadow: $shadow_grey;
+        border: 4px solid $color_lighter_purple;
         background-color: $color_white;
 
         .bottom_menu {

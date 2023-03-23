@@ -14,22 +14,25 @@
 }
 
 .container {
-  height: calc(100vh - 185px);
+  height: calc(100vh - 130px);
   margin: 0 auto;
   display: flex;
   flex-direction: row;
 }
 .container .section_left {
-  height: 100%;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  height: calc(100% - 20px);
   width: 280px;
   margin-right: 10px;
   border-radius: 15px;
-  box-shadow: 0px 0px 9px 0px rgba(0, 0, 0, 0.15);
+  background-color: #f1f5f9;
   display: flex;
   flex-direction: column;
 }
 .container .section_left .container_list_users {
   width: calc(100% - 20px);
+  height: 100%;
   overflow-y: scroll;
   padding-left: 10px;
 }
@@ -37,7 +40,7 @@
   width: 100%;
   text-align: center;
   color: #7c4dff;
-  border-bottom: 1px solid #f3f4f6;
+  border-bottom: 1px solid #cbd5e1;
 }
 .container .section_left .container_list_users .list_users {
   width: 100%;
@@ -70,8 +73,8 @@
   border: 5px solid #dcccff;
 }
 .container .section_left .container_list_users .list_users .user .status .disconnected {
-  background-color: #9ca3af;
-  border: 5px solid #f3f4f6;
+  background-color: #94a3b8;
+  border: 5px solid #cbd5e1;
 }
 .container .section_right {
   height: 100%;
@@ -86,7 +89,7 @@
   margin-bottom: 10px;
   padding: 5px;
   border-radius: 15px;
-  box-shadow: 0px 0px 9px 0px rgba(0, 0, 0, 0.15);
+  background-color: #f1f5f9;
 }
 .container .section_right .container_list_messages .list_messages {
   position: relative;
@@ -101,7 +104,7 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  color: #9ca3af;
+  color: #94a3b8;
 }
 .container .section_right .container_list_messages .list_messages .row .message {
   display: flex;
@@ -117,7 +120,7 @@
   font-size: 11px;
 }
 .container .section_right .container_list_messages .list_messages .row .message .info .time_sent {
-  color: #9ca3af;
+  color: #94a3b8;
 }
 .container .section_right .container_list_messages .list_messages .row .message .text {
   padding: 10px;
@@ -138,7 +141,7 @@
 }
 .container .section_right .container_list_messages .list_messages .row .message_current_user .text {
   border-top-right-radius: 0px;
-  background-color: #7c4dff;
+  background-image: linear-gradient(to left, #4e30a4, #5937ba, #643ed1, #7046e8, #7c4dff);
   color: #fff;
 }
 .container .section_right .container_list_messages .list_messages .row .message_other_user {
@@ -148,8 +151,9 @@
   margin-right: 15px;
 }
 .container .section_right .container_list_messages .list_messages .row .message_other_user .text {
+  color: #fff;
   border-top-left-radius: 0px;
-  background-color: #f3f4f6;
+  background-image: linear-gradient(to right, #889bb5, #7f91aa, #7687a0, #6d7e95, #64748b);
 }
 .container .section_right .inputs {
   width: 100%;
@@ -158,7 +162,7 @@
 }
 .container .section_right .inputs .input_with_button input {
   width: 100%;
-  color: #6b7280;
+  color: #64748b;
 }
 .container .section_right .inputs .menu_emoji {
   width: 190px;
@@ -187,7 +191,7 @@
 }
 .container .section_right .inputs .menu_emoji .button_emoji .text {
   font-size: 10px;
-  color: #9ca3af;
+  color: #94a3b8;
 }
 .container .section_right .inputs .menu_emoji .button_emoji:hover {
   transform: scale(1.2);

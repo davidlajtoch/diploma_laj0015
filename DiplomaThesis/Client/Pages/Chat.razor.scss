@@ -18,22 +18,25 @@
 
 
 .container {
-    height: calc(100vh - 185px);
+    height: calc(100vh - 130px);
     margin: 0 auto;
     display: flex;
     flex-direction: row;
 
     .section_left {
-        height: 100%;
+        padding-top: 10px;
+        padding-bottom: 10px;
+        height: calc(100% - 20px);
         width: 280px;
         margin-right: 10px;
         border-radius: 15px;
-        box-shadow: $shadow_grey;
+        background-color: $color_lightest_grey;
         display: flex;
         flex-direction: column;
 
         .container_list_users {
             width: calc(100% - 20px);
+            height: 100%;
             overflow-y: scroll;
             padding-left: 10px;
 
@@ -100,7 +103,7 @@
             margin-bottom: 10px;
             padding: 5px;
             border-radius: 15px;
-            box-shadow: $shadow_grey;
+            background-color: $color_lightest_grey;
 
             .list_messages {
                 position: relative;
@@ -161,7 +164,7 @@
 
                         .text {
                             border-top-right-radius: 0px;
-                            background-color: $color_purple;
+                            background-image: linear-gradient(to left, #4e30a4, #5937ba, #643ed1, #7046e8, #7c4dff);
                             color: $color_white;
                         }
                     }
@@ -177,8 +180,9 @@
                         }
 
                         .text {
+                            color: $color_white;
                             border-top-left-radius: 0px;
-                            background-color: $color_lighter_grey;
+                            background-image: linear-gradient(to right, #889bb5, #7f91aa, #7687a0, #6d7e95, #64748b);
                         }
                     }
                 }

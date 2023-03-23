@@ -1,13 +1,16 @@
 ﻿// Colors
 $color_white: #fff;
+$color_darken: rgba(0, 0, 0, 0.2);
 
-$color_grey: #6b7280;
-$color_light_grey: #9ca3af;
-$color_lighter_grey: #f3f4f6;
+$color_grey: #64748b;
+$color_light_grey: #94a3b8;
+$color_lighter_grey: #cbd5e1;
+$color_lightest_grey: #f1f5f9;
 
 $color_purple: #7c4dff;
 $color_light_purple: #dcccff;
-$color_lighter_purple: #f8f4ff;
+$color_lighter_purple: #f7f2ff;
+$color_lightest_purple: #faf7ff;
 
 $color_red: #ff1744;
 $color_light_red: #ffebee;
@@ -16,7 +19,7 @@ $color_green: #6ee7b7;
 
 $color_yellow: #eab308;
 $color_light_yellow: #fef08a;
-$color_lighter_yellow: #fef9c3;
+$color_lighter_yellow: #fefce8;
 
 //Background gradients
 $bg_gradient_blue_purple: linear-gradient(to right, #5737af, #603cc2, #6942d6, #7347eb, #7c4dff);
@@ -28,6 +31,8 @@ $shadow_dark_purple: 0 3px 6px rgba(117, 26, 255, 0.16), 0 3px 6px rgba(117, 26,
 $shadow_grey: 0px 0px 9px 0px rgba(0,0,0,0.15);
 $shadow_light_grey: 0px 0px 9px 0px rgba(0,0,0,0.1);
 $shadow_light_purple: 0px 0px 9px 0px rgba(117, 26, 255, 0.4);
+$shadow_lg: drop-shadow(0 10px 8px rgb(0 0 0 / 0.04)) drop-shadow(0 4px 3px rgb(0 0 0 / 0.1));
+$shadow_xl: drop-shadow(0 20px 13px rgb(0 0 0 / 0.03)) drop-shadow(0 8px 5px rgb(0 0 0 / 0.08));
 
 // Fonts
 $font_nunito_bold: 'Nunito', sans-serif;

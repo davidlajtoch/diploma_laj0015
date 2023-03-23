@@ -8,7 +8,7 @@
   position: fixed;
   top: 0px;
   left: 0px;
-  background-color: rgba(255, 255, 255, 0.8);
+  background-color: rgba(247, 242, 255, 0.8);
   z-index: 5;
 }
 .user_menu_container .user_menu {
@@ -21,7 +21,6 @@
   -ms-transform: translate(-50%, -50%);
   transform: translate(-50%, -50%);
   border-radius: 15px;
-  box-shadow: 0px 0px 9px 0px rgba(0, 0, 0, 0.15);
   background-color: #fff;
 }
 .user_menu_container .user_menu .bottom_menu {
@@ -68,7 +67,7 @@
   width: 100%;
   padding-top: 5px;
   padding-bottom: 5px;
-  border-bottom: 1px solid #f3f4f6;
+  border-bottom: 1px solid #cbd5e1;
   transition: 0.2s ease-in-out;
   cursor: pointer;
 }
@@ -83,7 +82,7 @@
   float: left;
 }
 .user_menu_container .user_menu .list_user_groups .role:hover, .user_menu_container .user_menu .list_roles .role:hover {
-  color: #6b7280;
+  color: #64748b;
 }
 .user_menu_container .user_menu .user_group_selected {
   display: inline-block;
@@ -98,6 +97,6 @@
 }
 .user_menu_container .user_menu .info_no_roles {
   width: 100%;
-  color: #9ca3af;
+  color: #94a3b8;
   text-align: center;
 }

@@ -102,5 +102,13 @@
   {
     "outputFile": "Shared/DatasetPreviewTable.razor.css",
     "inputFile": "Shared/DatasetPreviewTable.razor.scss"
+  },
+  {
+    "outputFile": "Shared/NavMenuLeft.razor.css",
+    "inputFile": "Shared/NavMenuLeft.razor.scss"
+  },
+  {
+    "outputFile": "Shared/LogoAnimatedSmall.razor.css",
+    "inputFile": "Shared/LogoAnimatedSmall.razor.scss"
   }
 ]

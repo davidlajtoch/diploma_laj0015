@@ -15,7 +15,7 @@
   top: 40px;
   width: calc(100% + 1px);
   height: 41px;
-  background-color: #fff;
+  background-color: #f1f5f9;
 }
 .report_container .report {
   height: calc(100% - 45px);

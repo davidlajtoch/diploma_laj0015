@@ -1,0 +1,63 @@
+﻿@import '../wwwroot/css/variables';
+
+.logo {
+    position: relative;
+    width: calc(100% - 20px);
+    height: 60px;
+    padding: 10px;
+    background-color: $color_darken;
+    border-radius: 15px;
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 20px;
+
+    .text {
+        width: 100%;
+        height: 14px;
+        text-align: center;
+        color: $color_white;
+        font-family: $font_nunito_bold;
+        font-weight: 900;
+        letter-spacing: 10px;
+        font-size: 14px;
+    }
+
+    .bars {
+        position: absolute;
+        bottom: 10px;
+        width: calc(100% - 10px);
+        height: 35px;
+        display: flex;
+        flex-direction: row;
+        align-items:flex-end;
+        gap: 10px;
+
+        .bar {
+            width: calc((100% / 9) - 10px);
+            height: 10px;
+            background-color: $color_white;
+            border-radius: 10px;
+            animation: increaseSize 5s ease-in-out infinite;
+
+            @keyframes increaseSize {
+                0% {
+                    height: 10px;
+                }
+
+                50% {
+                    height: 100%;
+                }
+
+                100% {
+                    height: 10px;
+                }
+            }
+        }
+    }
+
+    @for $i from 1 through 9 {
+        .bar:nth-child(#{$i}n){
+            animation-delay: #{$i * 0.5}s;
+        }
+    }
+}

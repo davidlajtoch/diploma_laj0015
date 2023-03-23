@@ -66,7 +66,7 @@
   flex-direction: column;
   flex-grow: 100;
   border-radius: 15px;
-  box-shadow: 0px 0px 9px 0px rgba(0, 0, 0, 0.15);
+  border: 4px solid #f7f2ff;
 }
 .container_sections .section_left .container_subsection .subsection .list_assignments {
   width: 100%;
@@ -89,7 +89,7 @@
   padding: 10px;
   padding-left: 50px;
   padding-right: 50px;
-  background-color: #f3f4f6;
+  background-color: #cbd5e1;
   border-radius: 10px;
   cursor: pointer;
   transition: 0.2s ease-in-out;
@@ -110,14 +110,14 @@
   overflow: hidden;
 }
 .container_sections .section_left .container_subsection .subsection .list_assignments .container_assignment .urgency0 {
-  background-color: #f3f4f6;
-  color: #6b7280;
+  background-color: #faf7ff;
+  color: #64748b;
 }
 .container_sections .section_left .container_subsection .subsection .list_assignments .container_assignment .urgency0 .created {
-  color: #9ca3af;
+  color: #94a3b8;
 }
 .container_sections .section_left .container_subsection .subsection .list_assignments .container_assignment .urgency1 {
-  background-color: #fef9c3;
+  background-color: #fefce8;
   color: #eab308;
 }
 .container_sections .section_left .container_subsection .subsection .list_assignments .container_assignment .urgency2 {
@@ -156,7 +156,7 @@
   display: flex;
   flex-direction: column;
   border-radius: 15px;
-  box-shadow: 0px 0px 9px 0px rgba(0, 0, 0, 0.15);
+  border: 4px solid #f7f2ff;
   overflow: hidden;
 }
 .container_sections .section_right .section_header {
@@ -168,10 +168,10 @@
 }
 .container_sections .section_right .input_search {
   width: calc(100% - 40px);
-  color: #6b7280;
+  color: #64748b;
 }
 .container_sections .section_right .textarea {
-  color: #6b7280;
+  color: #64748b;
   resize: none;
   width: calc(100% - 20px);
   flex-grow: 100;
@@ -196,7 +196,7 @@
   width: 100%;
   padding-top: 5px;
   padding-bottom: 5px;
-  border-bottom: 1px solid #f3f4f6;
+  border-bottom: 1px solid #cbd5e1;
   transition: 0.2s ease-in-out;
   cursor: pointer;
 }
@@ -212,11 +212,11 @@
   height: 40px;
 }
 .container_sections .section_right .urgency .urgency0 {
-  background-color: #f3f4f6;
+  background-color: #faf7ff;
   color: #7c4dff;
 }
 .container_sections .section_right .urgency .urgency1 {
-  background-color: #fef9c3;
+  background-color: #fefce8;
   color: #eab308;
 }
 .container_sections .section_right .urgency .urgency2 {
@@ -242,7 +242,7 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  color: #9ca3af;
+  color: #94a3b8;
   text-align: center;
 }
 .container_sections .section_right .description {
