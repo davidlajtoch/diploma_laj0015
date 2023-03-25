@@ -10,7 +10,7 @@
     position: fixed;
     top: 0px;
     left: 0px;
-    background-color: rgba(255, 255, 255, 0.8);
+    background-color: $color_overlay_darken;
     z-index: 5;
 
     .dataset_menu {
@@ -20,11 +20,12 @@
         margin: 0;
         position: absolute;
         top: 50%;
-        left: calc(50% - 30px);
+        left: 50%;
         -ms-transform: translate(-50%, -50%);
         transform: translate(-50%, -50%);
+        zoom: 1.01; //try to fix blurry display
         border-radius: 15px;
-        box-shadow: $shadow_grey;
+        box-shadow: $shadow_grey_md;
         background-color: $color_white;
 
         .bottom_menu {

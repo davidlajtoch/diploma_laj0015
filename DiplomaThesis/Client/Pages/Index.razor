@@ -17,6 +17,7 @@
 else
 {
     <div class="animate__animated animate__fadeIn">
+        <PageHeader Text="Home" />
         <div class="section_middle">
             <div class="grid_links">
                 <NavLink style="text-decoration: none;" href="" Match="NavLinkMatch.All">
@@ -103,8 +104,6 @@ else
             <Authorized>
 
                 <div class="section_bottom">
-
-                    <PageHeader Text="Recent activity" />
                     <div class="menu">
                         <div class="group_left">
                             <button class="button_default @(_showUserGroupActivity ? "selected" : "")" @onclick="() => _showUserGroupActivity = true">Activity in my group</button>

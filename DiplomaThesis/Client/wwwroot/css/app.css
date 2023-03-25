@@ -8,6 +8,7 @@ html {
   overflow-y: scroll;
   overflow-x: hidden;
   margin: 0px;
+  background-color: #f8fafc;
 }
 
 .animate__animated.animate__fadeInUp, .animate__animated.animate__fadeInDown {
@@ -204,7 +205,6 @@ html {
 }
 .list_default .header {
   color: #7c4dff;
-  padding: 10px;
   margin-top: 0px;
 }
 .list_default .row {
@@ -278,7 +278,7 @@ html {
 .info_nothing_here_default:is(.vh_centered) {
   position: absolute;
   top: 50%;
-  left: 50%;
+  left: calc(50% + 130px);
   -ms-transform: translate(-50%, -50%);
   transform: translate(-50%, -50%);
 }
@@ -332,12 +332,12 @@ html {
 
 /* Handle */
 ::-webkit-scrollbar-thumb {
-  background: #64748b;
+  background: #e2e8f0;
 }
 
 /* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
-  background: #7c4dff;
+  background: #cbd5e1;
 }
 
 h1:focus {

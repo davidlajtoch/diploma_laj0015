@@ -30,7 +30,8 @@
         width: 280px;
         margin-right: 10px;
         border-radius: 15px;
-        background-color: $color_lightest_grey;
+        background-color: $color_white;
+        box-shadow: $shadow_grey_md;
         display: flex;
         flex-direction: column;
 
@@ -44,7 +45,7 @@
                 width: 100%;
                 text-align: center;
                 color: $color_purple;
-                border-bottom: 1px solid $color_lighter_grey;
+                border-bottom: 1px solid $color_grey300;
             }
 
             .list_users {
@@ -81,8 +82,8 @@
                         }
 
                         .disconnected {
-                            background-color: $color_light_grey;
-                            border: 5px solid $color_lighter_grey;
+                            background-color: $color_grey400;
+                            border: 5px solid $color_grey300;
                         }
                     }
                 }
@@ -103,7 +104,8 @@
             margin-bottom: 10px;
             padding: 5px;
             border-radius: 15px;
-            background-color: $color_lightest_grey;
+            background-color: $color_white;
+            box-shadow: $shadow_grey_md;
 
             .list_messages {
                 position: relative;
@@ -118,7 +120,7 @@
                     top: 50%;
                     left: 50%;
                     transform: translate(-50%, -50%);
-                    color: $color_light_grey;
+                    color: $color_grey400;
                 }
 
                 .row {
@@ -137,7 +139,7 @@
                             }
 
                             .time_sent {
-                                color: $color_light_grey;
+                                color: $color_grey400;
                             }
                         }
 
@@ -197,7 +199,7 @@
             .input_with_button {
                 input {
                     width: 100%;
-                    color: $color_grey;
+                    color: $color_grey500;
                 }
             }
 
@@ -214,7 +216,7 @@
                 top: -155px;
                 background-color: $color_white;
                 border-radius: 15px;
-                box-shadow: $shadow_grey;
+                box-shadow: $shadow_grey_md;
                 z-index: 2;
 
                 .button_emoji {
@@ -229,7 +231,7 @@
 
                     .text {
                         font-size: 10px;
-                        color: $color_light_grey;
+                        color: $color_grey400;
                     }
 
                     &:hover {

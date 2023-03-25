@@ -18,11 +18,12 @@
         top: 40px;
         width: calc(100% + 1px);
         height: 41px;
-        background-color: $color_lightest_grey;
+        background-color: $color_white;
     }
 
     .report{
         height: calc(100% - 45px);
+        margin-bottom: 10px;
 
         iframe {
             border: 0px;

@@ -10,7 +10,7 @@
     position: fixed;
     top: 0px;
     left: 0px;
-    background-color: rgba(0, 0, 0, 0.4);
+    background-color: $color_overlay_darken;
     z-index: 5;
 
     .user_menu {
@@ -23,7 +23,7 @@
         -ms-transform: translate(-50%, -50%);
         transform: translate(-50%, -50%);
         border-radius: 15px;
-        box-shadow: $shadow_grey;
+        box-shadow: $shadow_grey_md;
         background-color: $color_white;
 
         .bottom_menu {
@@ -78,7 +78,7 @@
                 width: 100%;
                 padding-top: 5px;
                 padding-bottom: 5px;
-                border-bottom: 1px solid $color_lighter_grey;
+                border-bottom: 1px solid $color_grey300;
                 transition: 0.2s ease-in-out;
                 cursor: pointer;
 
@@ -96,7 +96,7 @@
                 }
 
                 &:hover {
-                    color: $color_grey;
+                    color: $color_grey500;
                 }
             }
         }
@@ -116,7 +116,7 @@
 
         .info_no_roles {
             width: 100%;
-            color: $color_light_grey;
+            color: $color_grey400;
             text-align: center;
         }
     }

@@ -21,14 +21,14 @@
 }
 .file_drop_zone:hover, .container_loading_file:hover {
   color: #7c4dff;
-  background-color: #f1f5f9;
+  background-color: #f8fafc;
 }
 
 .file_drop_zone_hover {
   color: #7c4dff;
   border-style: solid;
   border-color: #7c4dff;
-  background-color: #f1f5f9;
+  background-color: #f8fafc;
 }
 
 .file_drop_zone_warning {

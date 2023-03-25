@@ -6,7 +6,7 @@
 
 .table_dataset_preview {
     width: 100%;
-    border: 1px solid $color_light_grey;
+    border: 1px solid $color_grey400;
     overflow-x: scroll;
 
     th {
@@ -19,7 +19,7 @@
     }
 
     tr:nth-child(even) {
-        background-color: $color_lighter_grey;
+        background-color: $color_grey300;
     }
 }
 

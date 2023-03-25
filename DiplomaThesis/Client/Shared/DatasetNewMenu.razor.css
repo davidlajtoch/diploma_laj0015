@@ -8,7 +8,7 @@
   position: fixed;
   top: 0px;
   left: 0px;
-  background-color: rgba(255, 255, 255, 0.8);
+  background-color: rgba(0, 0, 0, 0.4);
   z-index: 5;
 }
 .dataset_menu_container .dataset_menu {
@@ -18,11 +18,12 @@
   margin: 0;
   position: absolute;
   top: 50%;
-  left: calc(50% - 30px);
+  left: 50%;
   -ms-transform: translate(-50%, -50%);
   transform: translate(-50%, -50%);
+  zoom: 1.01;
   border-radius: 15px;
-  box-shadow: 0px 0px 9px 0px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
   background-color: #fff;
 }
 .dataset_menu_container .dataset_menu .bottom_menu {

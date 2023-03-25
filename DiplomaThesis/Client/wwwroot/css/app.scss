@@ -2,7 +2,7 @@
 
 body {
     font-family: 'Nunito', sans-serif;
-    color: $color_grey;
+    color: $color_grey500;
     margin: 0px;
 }
 
@@ -10,6 +10,7 @@ html {
     overflow-y: scroll;
     overflow-x: hidden;
     margin: 0px;
+    background-color: $color_grey50;
 }
 
 .animate__animated.animate__fadeInUp, .animate__animated.animate__fadeInDown {
@@ -36,8 +37,8 @@ html {
     font-size: 16px;
     border-radius: 500px;
     border: none;
-    color: $color_grey;
-    background-color: $color_lightest_grey;
+    color: $color_grey500;
+    background-color: $color_grey100;
     transition: 0.2s ease-in-out;
     cursor: pointer;
 
@@ -86,8 +87,8 @@ html {
     position: relative;
     top: -2px;
     cursor: pointer;
-    background-color: $color_lightest_grey;
-    color: $color_grey;
+    background-color: $color_grey100;
+    color: $color_grey500;
     border: none;
     border-radius: 500px;
     transition: 0.2s ease-in-out;
@@ -103,8 +104,8 @@ html {
     border: none;
     border-radius: 500px;
     font-family: $font_nunito_bold;
-    color: $color_grey;
-    background-color: $color_lightest_grey;
+    color: $color_grey500;
+    background-color: $color_grey100;
     cursor: pointer;
     transition: 0.2s ease-in-out;
 
@@ -126,7 +127,7 @@ html {
     font-family: $font_nunito_bold;
     font-size: 16px;
     color: $color_purple;
-    background-color: $color_lightest_grey;
+    background-color: $color_grey100;
     border: none;
     border-radius: 500px;
     outline: none;
@@ -149,7 +150,7 @@ html {
         padding-right: 45px;
         border: none;
         outline: none;
-        background-color: $color_lightest_grey;
+        background-color: $color_grey100;
         color: $color_purple;
         font-family: $font_nunito_bold;
         font-size: 16px;
@@ -170,7 +171,7 @@ html {
         outline: none;
         border: none;
         cursor: pointer;
-        color: $color_grey;
+        color: $color_grey500;
         transition: 0.1s ease-in-out;
 
         &:hover {
@@ -196,7 +197,7 @@ html {
 .textarea_default {
     padding: 10px;
     color: $color_purple;
-    background-color: $color_lightest_grey;
+    background-color: $color_grey100;
     border-radius: 15px;
     border: none;
     font-family: $font_nunito_bold;
@@ -222,13 +223,13 @@ html {
 
     .header {
         color: $color_purple;
-        padding: 10px;
+        //padding: 10px;
         margin-top: 0px;
     }
 
     .row {
         //box-shadow: $shadow_light_grey;
-        background-color: $color_lightest_grey;
+        background-color: $color_grey100;
         transition: all 0.2s ease-in-out;
     }
     .row:is(.selectable):hover{
@@ -309,19 +310,19 @@ html {
 .info_nothing_here_default {
     width: 100%;
     text-align: center;
-    color: $color_light_grey;
+    color: $color_grey400;
 
     &:is(.vh_centered) {
         position: absolute;
         top: 50%;
-        left: 50%;
+        left: calc(50% + 130px);
         -ms-transform: translate(-50%, -50%);
         transform: translate(-50%, -50%);
     }
 }
 
 .text_light {
-    color: $color_light_grey !important;
+    color: $color_grey400 !important;
 }
 
 .text_purple {
@@ -375,12 +376,12 @@ html {
 
 /* Handle */
 ::-webkit-scrollbar-thumb {
-    background: $color_grey;
+    background: $color_grey200;
 }
 
 /* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
-    background: $color_purple;
+    background: $color_grey300;
 }
 
 

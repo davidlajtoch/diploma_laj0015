@@ -55,38 +55,36 @@ else
                             <div class="subsection_header">
                                 @AssignmentCategories.ElementAt(i).Value <span class="text_light">@AssignmentLists[i].Count()</span>
                             </div>
-                            <div class="subsection">
-                                <div class="list_assignments">
-                                    @foreach (var assignment in AssignmentLists[i])
-                                    {
-                                        <div class="container_assignment animate__animated animate__fadeIn">
-                                            <button class="button_step_decrease" @onclick="() => UpdateAssignmentStep(assignment, -1)"
-                                    disabled="@((assignment.Step == AssignmentCategories.Keys.First())? true : false)">
-                                                <i class="material-icons icon">chevron_left</i>
-                                            </button>
+                            <div class="list_assignments">
+                                @foreach (var assignment in AssignmentLists[i])
+                                {
+                                    <div class="container_assignment animate__animated animate__fadeIn">
+                                        <button class="button_step_decrease" @onclick="() => UpdateAssignmentStep(assignment, -1)"
+                                disabled="@((assignment.Step == AssignmentCategories.Keys.First())? true : false)">
+                                            <i class="material-icons icon">chevron_left</i>
+                                        </button>
 
-                                            <div class="assignment urgency@(assignment.Urgency)" @onclick="() => SelectAssignment(assignment)">
-                                                <div class="name">@assignment.Name</div>
-                                                <div class="created">@assignment.Created</div>
-                                                <div class="description">@assignment.Description</div>
-                                                <div class="assignee">
-                                                    @if (assignment.User != null)
-                                                    {
-                                                        @assignment.User.Name
-                                                    }
-                                                    else
-                                                    {
-                                                        <span class="text_light">Not assigned</span>
-                                                    }
-                                                </div>
+                                        <div class="assignment urgency@(assignment.Urgency)" @onclick="() => SelectAssignment(assignment)">
+                                            <div class="name">@assignment.Name</div>
+                                            <div class="created">@assignment.Created</div>
+                                            <div class="description">@assignment.Description</div>
+                                            <div class="assignee">
+                                                @if (assignment.User != null)
+                                                {
+                                                    @assignment.User.Name
+                                                }
+                                                else
+                                                {
+                                                    <span class="text_light">Not assigned</span>
+                                                }
                                             </div>
-                                            <button class="button_step_increase" @onclick="() => UpdateAssignmentStep(assignment, 1)"
-                                    disabled="@((assignment.Step == AssignmentCategories.Keys.Last())? true : false)">
-                                                <i class="material-icons icon">chevron_right</i>
-                                            </button>
                                         </div>
-                                    }
-                                </div>
+                                        <button class="button_step_increase" @onclick="() => UpdateAssignmentStep(assignment, 1)"
+                                disabled="@((assignment.Step == AssignmentCategories.Keys.Last())? true : false)">
+                                            <i class="material-icons icon">chevron_right</i>
+                                        </button>
+                                    </div>
+                                }
                             </div>
                         }
                     </div>

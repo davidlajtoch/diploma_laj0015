@@ -25,7 +25,7 @@
 
             .text {
                 width: 30px;
-                color: $color_light_grey;
+                color: $color_grey400;
                 font-size: 10px;
             }
 
@@ -34,7 +34,7 @@
                 top: 5px;
                 width: calc(100% - 40px);
                 height: 1px;
-                border-top: 1px dashed $color_light_grey;
+                border-top: 1px dashed $color_grey400;
             }
         }
     }
@@ -59,7 +59,7 @@
                 width: 100%;
                 height: 40px;
                 text-align: center;
-                color: $color_grey;
+                color: $color_grey500;
                 font-family: $font_nunito_bold;
                 font-weight: 900;
                 font-size: 33px;

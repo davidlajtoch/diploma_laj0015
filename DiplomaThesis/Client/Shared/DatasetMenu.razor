@@ -104,6 +104,14 @@
                     </div>
                 }
 
+                @if (DatasetFileLoadProgress == 5)
+                {
+                    <div class="info_columns_do_not_match animate__animated animate__fadeIn">
+                        <span>Error occured while trying to upload the file.</span><br />
+                        <span>Please check the dataset in PowerBi and ensure that the data types match.</span>
+                    </div>
+                }
+
                 @if (!DatasetColumnTypesMatch)
                 {
                     <div class="info_columns_do_not_match animate__animated animate__fadeIn">
@@ -120,7 +128,7 @@
                         </button>
                     </div>
                     <div class="group_right">
-                        @if (DatasetFileLoadProgress == 2 || DatasetFileLoadProgress == 4)
+                        @if (DatasetFileLoadProgress == 2 || DatasetFileLoadProgress == 4 || DatasetFileLoadProgress == 5)
                         {
                             <button class="button_default animate__animated animate__fadeIn" @onclick="ResetDatasetFileUploadState">Choose another file</button>
                         }
@@ -189,7 +197,7 @@
 
     private async Task CompareDatasetColumnTypes(List<string> newDatasetColumnTypes)
     {
-        if (!Dataset!.ColumnTypes.SequenceEqual(newDatasetColumnTypes))
+        if (!Dataset!.ColumnTypes.SequenceEqual(newDatasetColumnTypes) && Dataset!.ColumnTypes.Any())
         {
             DatasetColumnTypesMatch = false;
             return;
@@ -237,6 +245,10 @@
             await OnDatasetChanged.InvokeAsync();
             await SaveAndToggleDatasetMenu();
             return;
+        }
+        else
+        {
+            DatasetFileLoadProgress = 5;
         }
     }
 

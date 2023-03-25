@@ -8,7 +8,7 @@
     justify-content: center;
     align-items: center;
     text-align: center;
-    border: 2px dashed $color_light_grey;
+    border: 2px dashed $color_grey400;
     border-radius: 15px;
     transition: 0.2s ease-in-out;
 
@@ -24,7 +24,7 @@
 
     &:hover {
         color: $color_purple;
-        background-color: $color_lightest_grey;
+        background-color: $color_grey50;
     }
 }
 
@@ -32,7 +32,7 @@
     color: $color_purple;
     border-style: solid;
     border-color: $color_purple;
-    background-color: $color_lightest_grey;
+    background-color: $color_grey50;
 }
 
 .file_drop_zone_warning {

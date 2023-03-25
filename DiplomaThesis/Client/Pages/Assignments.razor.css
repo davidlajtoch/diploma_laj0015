@@ -35,21 +35,23 @@
 }
 
 .container_sections {
+  height: calc(100vh - 220px);
   display: flex;
-  gap: 20px;
-  height: calc(100vh - 245px);
+  flex-direction: row;
+  margin: 0 auto;
+  gap: 10px;
 }
 .container_sections .section_left {
   display: flex;
-  gap: 20px;
+  flex-direction: row;
   flex-grow: 100;
-  padding-left: 10px;
-  padding-right: 10px;
-  overflow-x: scroll;
 }
 .container_sections .section_left .container_subsection {
-  width: 360px;
+  width: 33.3333333333%;
+  min-width: 220px;
   height: calc(100% - 10px);
+  padding-left: 10px;
+  padding-right: 10px;
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -59,49 +61,42 @@
   text-align: center;
   color: #7c4dff;
 }
-.container_sections .section_left .container_subsection .subsection {
+.container_sections .section_left .container_subsection .list_assignments {
   padding-top: 10px;
   padding-bottom: 10px;
-  display: flex;
-  flex-direction: column;
-  flex-grow: 100;
-  border-radius: 15px;
-  border: 4px solid #f7f2ff;
-}
-.container_sections .section_left .container_subsection .subsection .list_assignments {
-  width: 100%;
+  margin-bottom: 10px;
   display: flex;
   flex-direction: column;
   flex-grow: 100;
   gap: 10px;
-  overflow-y: scroll;
+  border-radius: 15px;
+  background-color: #fff;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+  overflow-y: auto;
   overflow-x: hidden;
-  position: relative;
 }
-.container_sections .section_left .container_subsection .subsection .list_assignments .container_assignment {
+.container_sections .section_left .container_subsection .list_assignments .container_assignment {
   display: flex;
 }
-.container_sections .section_left .container_subsection .subsection .list_assignments .container_assignment .assignment {
+.container_sections .section_left .container_subsection .list_assignments .container_assignment .assignment {
   max-height: 140px;
   flex-grow: 1;
   display: flex;
   flex-direction: column;
   padding: 10px;
-  padding-left: 50px;
-  padding-right: 50px;
-  background-color: #cbd5e1;
+  background-color: #f1f5f9;
   border-radius: 10px;
   cursor: pointer;
   transition: 0.2s ease-in-out;
 }
-.container_sections .section_left .container_subsection .subsection .list_assignments .container_assignment .assignment .name, .container_sections .section_left .container_subsection .subsection .list_assignments .container_assignment .assignment .created, .container_sections .section_left .container_subsection .subsection .list_assignments .container_assignment .assignment .assignee {
+.container_sections .section_left .container_subsection .list_assignments .container_assignment .assignment .name, .container_sections .section_left .container_subsection .list_assignments .container_assignment .assignment .created, .container_sections .section_left .container_subsection .list_assignments .container_assignment .assignment .assignee {
   width: 100%;
   text-align: center;
 }
-.container_sections .section_left .container_subsection .subsection .list_assignments .container_assignment .assignment .created {
+.container_sections .section_left .container_subsection .list_assignments .container_assignment .assignment .created {
   font-size: 11px;
 }
-.container_sections .section_left .container_subsection .subsection .list_assignments .container_assignment .assignment .description {
+.container_sections .section_left .container_subsection .list_assignments .container_assignment .assignment .description {
   display: -webkit-box;
   margin-top: 15px;
   margin-bottom: 15px;
@@ -109,22 +104,22 @@
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
-.container_sections .section_left .container_subsection .subsection .list_assignments .container_assignment .urgency0 {
-  background-color: #faf7ff;
+.container_sections .section_left .container_subsection .list_assignments .container_assignment .urgency0 {
+  background-color: #f1f5f9;
   color: #64748b;
 }
-.container_sections .section_left .container_subsection .subsection .list_assignments .container_assignment .urgency0 .created {
+.container_sections .section_left .container_subsection .list_assignments .container_assignment .urgency0 .created {
   color: #94a3b8;
 }
-.container_sections .section_left .container_subsection .subsection .list_assignments .container_assignment .urgency1 {
+.container_sections .section_left .container_subsection .list_assignments .container_assignment .urgency1 {
   background-color: #fefce8;
   color: #eab308;
 }
-.container_sections .section_left .container_subsection .subsection .list_assignments .container_assignment .urgency2 {
+.container_sections .section_left .container_subsection .list_assignments .container_assignment .urgency2 {
   background-color: #ffebee;
   color: #ff1744;
 }
-.container_sections .section_left .container_subsection .subsection .list_assignments .container_assignment .button_step_decrease, .container_sections .section_left .container_subsection .subsection .list_assignments .container_assignment .button_step_increase {
+.container_sections .section_left .container_subsection .list_assignments .container_assignment .button_step_decrease, .container_sections .section_left .container_subsection .list_assignments .container_assignment .button_step_increase {
   opacity: 0;
   width: 0px;
   height: 100%;
@@ -133,31 +128,32 @@
   transition: 0.2s ease-in-out;
   cursor: pointer;
 }
-.container_sections .section_left .container_subsection .subsection .list_assignments .container_assignment .button_step_decrease .icon, .container_sections .section_left .container_subsection .subsection .list_assignments .container_assignment .button_step_increase .icon {
+.container_sections .section_left .container_subsection .list_assignments .container_assignment .button_step_decrease .icon, .container_sections .section_left .container_subsection .list_assignments .container_assignment .button_step_increase .icon {
   position: relative;
   top: 1px;
   left: -1px;
 }
-.container_sections .section_left .container_subsection .subsection .list_assignments .container_assignment .button_step_decrease:hover, .container_sections .section_left .container_subsection .subsection .list_assignments .container_assignment .button_step_increase:hover {
+.container_sections .section_left .container_subsection .list_assignments .container_assignment .button_step_decrease:hover, .container_sections .section_left .container_subsection .list_assignments .container_assignment .button_step_increase:hover {
   color: #7c4dff;
 }
-.container_sections .section_left .container_subsection .subsection .list_assignments .container_assignment:hover .assignment {
+.container_sections .section_left .container_subsection .list_assignments .container_assignment:hover .assignment {
   padding-left: 10px;
   padding-right: 10px;
 }
-.container_sections .section_left .container_subsection .subsection .list_assignments .container_assignment:hover .button_step_decrease, .container_sections .section_left .container_subsection .subsection .list_assignments .container_assignment:hover .button_step_increase {
+.container_sections .section_left .container_subsection .list_assignments .container_assignment:hover .button_step_decrease, .container_sections .section_left .container_subsection .list_assignments .container_assignment:hover .button_step_increase {
   opacity: 1;
   width: 40px;
 }
 .container_sections .section_right {
   position: relative;
+  left: 0px;
   width: 400px;
   padding: 10px;
   display: flex;
   flex-direction: column;
   border-radius: 15px;
-  border: 4px solid #f7f2ff;
-  overflow: hidden;
+  background-color: #fff;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
 }
 .container_sections .section_right .section_header {
   width: 100%;
@@ -212,7 +208,7 @@
   height: 40px;
 }
 .container_sections .section_right .urgency .urgency0 {
-  background-color: #faf7ff;
+  background-color: #f1f5f9;
   color: #7c4dff;
 }
 .container_sections .section_right .urgency .urgency1 {

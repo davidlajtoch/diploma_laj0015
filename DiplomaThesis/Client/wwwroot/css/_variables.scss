@@ -1,16 +1,18 @@
 ﻿// Colors
 $color_white: #fff;
 $color_darken: rgba(0, 0, 0, 0.2);
+$color_overlay_darken: rgba(0, 0, 0, 0.4);
 
-$color_grey: #64748b;
-$color_light_grey: #94a3b8;
-$color_lighter_grey: #cbd5e1;
-$color_lightest_grey: #f1f5f9;
+$color_grey500: #64748b;
+$color_grey400: #94a3b8;
+$color_grey300: #cbd5e1;
+$color_grey200: #e2e8f0;
+$color_grey100: #f1f5f9;
+$color_grey50: #f8fafc;
+
 
 $color_purple: #7c4dff;
 $color_light_purple: #dcccff;
-$color_lighter_purple: #f7f2ff;
-$color_lightest_purple: #faf7ff;
 
 $color_red: #ff1744;
 $color_light_red: #ffebee;
@@ -18,31 +20,14 @@ $color_light_red: #ffebee;
 $color_green: #6ee7b7;
 
 $color_yellow: #eab308;
-$color_light_yellow: #fef08a;
 $color_lighter_yellow: #fefce8;
 
 //Background gradients
 $bg_gradient_blue_purple: linear-gradient(to right, #5737af, #603cc2, #6942d6, #7347eb, #7c4dff);
-$bg_purple: linear-gradient(to right, #7c4dff, #7c4dff, #7c4dff, #7c4dff, #7c4dff);
 
 // Shadows
-$shadow_dark_grey: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
-$shadow_dark_purple: 0 3px 6px rgba(117, 26, 255, 0.16), 0 3px 6px rgba(117, 26, 255, 0.23);
-$shadow_grey: 0px 0px 9px 0px rgba(0,0,0,0.15);
-$shadow_light_grey: 0px 0px 9px 0px rgba(0,0,0,0.1);
-$shadow_light_purple: 0px 0px 9px 0px rgba(117, 26, 255, 0.4);
-$shadow_lg: drop-shadow(0 10px 8px rgb(0 0 0 / 0.04)) drop-shadow(0 4px 3px rgb(0 0 0 / 0.1));
-$shadow_xl: drop-shadow(0 20px 13px rgb(0 0 0 / 0.03)) drop-shadow(0 8px 5px rgb(0 0 0 / 0.08));
+$shadow_grey_md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+$shadow_grey_lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
 
 // Fonts
 $font_nunito_bold: 'Nunito', sans-serif;
-
-// Draw colors
-$color_draw_brown: #9D6B53;
-$color_draw_dark_grey: #50514F;
-$color_draw_light_blue: #247BA0;
-$color_draw_light_green: #70C1B3;
-$color_draw_light_yellow: #FFE066;
-$color_draw_light_grey2: #E0E0E0;
-$color_draw_light_grey3: #EBEBEB;
-$color_draw_light_grey4: #F2F2F2;
