@@ -31,6 +31,20 @@ public class DatasetService : IDatasetService
         }
     }
 
+    public async Task<List<string>> GetServerDatasetFileNames()
+    {
+        try
+        {
+            var response = await _http.GetFromJsonAsync<List<string>>("Dataset/GetServerDatasetFileNames");
+            return response;
+        }
+        catch (AccessTokenNotAvailableException exception)
+        {
+            exception.Redirect();
+            return null;
+        }
+    }
+
     public async Task<bool> UploadNewDataset(string datasetName, string datasetJson)
     {
         try
@@ -54,6 +68,23 @@ public class DatasetService : IDatasetService
         {
             var content = new StringContent(datasetJson, Encoding.UTF8, "application/json");
             var response = await _http.PostAsync($"Dataset/UploadRowsToDataset/{datasetId}", content);
+
+            return response.IsSuccessStatusCode;
+        }
+        catch (AccessTokenNotAvailableException exception)
+        {
+            exception.Redirect();
+        }
+
+        return false;
+    }
+
+    public async Task<bool> UploadRowsToDatasetByServerFileIndex(int datasetFileIndex)
+    {
+        try
+        {
+            //var content = new StringContent(datasetJson, Encoding.UTF8, "application/json");
+            var response = await _http.PostAsJsonAsync($"Dataset/UploadRowsToDatasetByServerFileIndex", datasetFileIndex);
 
             return response.IsSuccessStatusCode;
         }

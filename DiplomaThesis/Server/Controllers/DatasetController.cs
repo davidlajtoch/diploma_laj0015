@@ -9,9 +9,12 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.PowerBI.Api;
 using Microsoft.PowerBI.Api.Models;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
+using System.Text;
 
 namespace DiplomaThesis.Server.Controllers;
 
@@ -24,6 +27,7 @@ public class DatasetController : ControllerBase
     private readonly PowerBiService _service;
 
     private const int _datasetRowInsertLimit = 5;
+    private const string _datasetServerFilesPath = @"..\Server\DatasetFiles";
 
     public DatasetController(PowerBiService service, ApplicationDbContext context)
     {
@@ -96,6 +100,22 @@ public class DatasetController : ControllerBase
     }
 
     [Authorize(Roles = "Architect")]
+    [HttpGet]
+    public async Task<ActionResult> GetServerDatasetFileNames()
+    {
+        DirectoryInfo datasetFilesDirectory = new DirectoryInfo(_datasetServerFilesPath);
+        FileInfo[] datasetFiles = datasetFilesDirectory.GetFiles("*.*");
+
+        List<string> datasetFileNames = new List<string>();
+        foreach (FileInfo file in datasetFiles)
+        {
+            datasetFileNames.Add(file.Name);
+        }
+
+        return Ok(datasetFileNames);
+    }
+
+    [Authorize(Roles = "Architect")]
     [HttpPost]
     public async Task<ActionResult> CreateDataset(
         [FromBody] CreateDatasetCommand createDatasetCommand
@@ -147,6 +167,7 @@ public class DatasetController : ControllerBase
             {
                 Id = Guid.NewGuid(),
                 PowerBiId = Guid.Parse(dataset.Id),
+                Name = dataset.Name,
                 ColumnNames = columns.Select(column => column.Name).ToList(),
                 ColumnTypes = columns.Select(column => column.DataType).ToList()
             };
@@ -186,6 +207,42 @@ public class DatasetController : ControllerBase
         var result = await _service.PushRowsToDataset(datasetId, rows);
 
         return result ? Ok() : StatusCode(500);
+    }
+
+    [Authorize(Roles = "Architect")]
+    [HttpPost]
+    public async Task<ActionResult> UploadRowsToDatasetByServerFileIndex(
+    [FromBody] int datasetFileIndex
+    )
+    {
+        DirectoryInfo datasetFilesDirectory = new DirectoryInfo(_datasetServerFilesPath);
+        FileInfo datasetFile = datasetFilesDirectory.GetFiles("*.*").ToList()[datasetFileIndex];
+
+        FileParsingService fileParsingService = new FileParsingService();
+        string datasetFileJson = await fileParsingService.ParseFileToJson(datasetFile.FullName, datasetFile.Extension[1..]);
+        List<object> datasetRows = JsonConvert.DeserializeObject<List<object>>(datasetFileJson);
+
+        if(datasetRows == null) return BadRequest();
+
+        string datasetName = datasetFile.Name.Split('.')[0];
+
+        var datasetInDb = _context.Datasets.Where(d => d.Name == datasetName).FirstOrDefault();
+        if (datasetInDb is null) return NotFound();
+
+        var datasetPowerBi = await _service.GetDataset(datasetInDb.PowerBiId);
+        if (datasetPowerBi is null) return NotFound();
+
+        try
+        {
+            var result = await _service.PushRowsToDataset(Guid.Parse(datasetPowerBi.Id), datasetRows);
+            return result ? Ok() : StatusCode(500);
+        } catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+        }
+        
+        return Ok();
+        
     }
 
     [Authorize(Roles = "Architect")]

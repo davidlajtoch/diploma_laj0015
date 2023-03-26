@@ -1,0 +1,104 @@
+﻿@import '../wwwroot/css/variables';
+
+.animate__animated.animate__fadeIn {
+    --animate-duration: 0.2s;
+}
+
+.dataset_menu_container {
+    width: 100vw;
+    height: 100vh;
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    background-color: $color_overlay_darken;
+    z-index: 5;
+
+    .dataset_menu {
+        width: 440px;
+        padding: 10px;
+        margin: 0;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        -ms-transform: translate(-50%, -50%);
+        transform: translate(-50%, -50%);
+        //zoom: 1.01; //try to fix blurry display
+        border-radius: 15px;
+        box-shadow: $shadow_grey_md;
+        background-color: $color_white;
+
+        .list_dataset_files_container {
+            width: 100%;
+            height: 300px;
+            overflow-y: scroll;
+
+            .list_dataset_files {
+                width: 100%;
+                height: 100%;
+                display: flex;
+                flex-direction: column;
+
+                .row {
+                    padding-top: 10px;
+                    padding-bottom: 10px;
+                    display: flex;
+                    flex-direction: row;
+                    justify-content: space-between;
+                    border-bottom: 1px solid $color_grey200;
+
+                    .file_name {
+                        text-align: left;
+                    }
+
+                    .status {
+                        margin-right: 10px;
+                        text-align: right;
+                    }
+                }
+            }
+        }
+
+
+        .bottom_menu {
+            width: 100%;
+            margin-top: 10px;
+            display: flex;
+            justify-content: space-between;
+
+            .group_right, .group_left {
+                display: flex;
+                gap: 10px;
+            }
+        }
+
+        .section_header {
+            width: 100%;
+            text-align: center;
+            margin-top: 5px;
+            margin-bottom: 5px;
+            color: $color_purple;
+        }
+
+        .container_loading_file, .container_loading_file_wrong_format, .container_uploading_file {
+            width: calc(100% - 4px);
+            height: 200px;
+            pointer-events: none;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            text-align: center;
+            border: 2px solid $color_purple;
+            border-radius: 15px;
+        }
+
+        .container_loading_file_wrong_format {
+            color: $color_red;
+            border: 2px solid $color_red;
+            background-color: $color_light_red;
+        }
+
+        .container_uploading_file {
+            border: none;
+        }
+    }
+}

@@ -1,0 +1,22 @@
+﻿.section_file_format_guide .section_header {
+  width: 100%;
+  text-align: center;
+  margin-top: 5px;
+  margin-bottom: 5px;
+  color: #7c4dff;
+}
+
+.bottom_menu {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  height: 40px;
+  margin-top: 10px;
+}
+.bottom_menu .button_circle {
+  width: 40px;
+  height: 40px;
+}
+.bottom_menu .button_circle:hover {
+  width: 50px;
+}

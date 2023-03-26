@@ -1,0 +1,127 @@
+﻿@using DiplomaThesis.Client.Services.Interfaces
+@using DiplomaThesis.Shared.Contracts
+@using System.Data;
+
+@inject IDatasetService DatasetService
+@inject IFileParsingService Parser
+@inject IAdministrationService AdministrationService
+@inject IJSRuntime JSRuntime
+
+<div class="dataset_menu_container animate__animated animate__fadeIn" style="display: @(ShowDatasetMenu ? "block" : "none");">
+    <div class="dataset_menu">
+        <div class="@(ShowFileFormatGuide ? "hidden" : "")">
+            <div class="section_dataset_info animate__animated animate__fadeIn">
+                <div class="section_header">Dataset files</div>
+                @if (DatasetFileNames != null)
+                {
+                    <div class="list_dataset_files_container">
+                        <div class="list_dataset_files">
+                            @for (int i = 0; i < DatasetFileNames.Count(); i++)
+                            {
+                                <div class="row">
+                                    <div class="file_name">@DatasetFileNames[i]</div>
+                                    <div class="status">
+                                        @if(CurrentDatasetFileUploadIndex == i)
+                                        {
+                                            <span>Uploading</span>
+                                        }
+                                        else
+                                        {
+                                            if (DatasetFilesUploadProgress[i] == false)
+                                            {
+                                                <span>Error</span>
+                                            }
+                                            else
+                                            {
+                                                <span>Done</span>
+                                            }
+                                        }
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                }
+
+                <div class="bottom_menu">
+                    <div class="group_left">
+                        <button class="button_default" @onclick="ToggleFileFormatGuide">Format guide</button>
+                    </div>
+                    <div class="group_right">
+                        <button class="button_default" @onclick="UploadRowsToDatasets">Upload rows</button>
+                        <button class="button_default" @onclick="SaveAndToggleDatasetMenu">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="@(ShowFileFormatGuide ? "" : "hidden")">
+            <FileFormatGuideOneClick OnHide=ToggleFileFormatGuide />
+        </div>
+    </div>
+</div>
+
+
+@code {
+    [Parameter]
+    public EventCallback OnDatasetChanged { get; set; }
+
+    private List<string> DatasetFileNames { get; set; }
+    private List<bool> DatasetFilesUploadProgress { get; set; } = new();
+
+    private int CurrentDatasetFileUploadIndex { get; set; } = 0;
+    public bool ShowDatasetMenu { get; set; }
+    private bool ShowFileFormatGuide = false;
+
+    public async Task SaveAndToggleDatasetMenu()
+    {
+        ShowDatasetMenu = !ShowDatasetMenu;
+    }
+
+    public async Task Show()
+    {
+        CurrentDatasetFileUploadIndex = 0;
+        await LoadDatasetFileNames();
+
+        foreach (var datasetFileName in DatasetFileNames)
+        {
+            DatasetFilesUploadProgress.Add(false);
+        }
+
+        ShowDatasetMenu = true;
+        StateHasChanged();
+    }
+
+    private async Task LoadDatasetFileNames()
+    {
+        DatasetFileNames = await DatasetService.GetServerDatasetFileNames();
+    }
+
+    private async Task UploadRowsToDatasets()
+    {
+        if (!DatasetFileNames.Any())
+        {
+            return;
+        }
+
+        foreach (var datasetFileName in DatasetFileNames)
+        {
+            DatasetFilesUploadProgress[CurrentDatasetFileUploadIndex] = await UploadRowsToDatasetByServerFileIndex(CurrentDatasetFileUploadIndex);
+        }
+    }
+
+    private async Task<bool> UploadRowsToDatasetByServerFileIndex(int datasetFileIndex)
+    {
+        if (await DatasetService.UploadRowsToDatasetByServerFileIndex(datasetFileIndex))
+        {
+            await OnDatasetChanged.InvokeAsync();
+            await SaveAndToggleDatasetMenu();
+            return true;
+        }
+        return false;
+    }
+
+    public void ToggleFileFormatGuide()
+    {
+        ShowFileFormatGuide = !ShowFileFormatGuide;
+    }
+}

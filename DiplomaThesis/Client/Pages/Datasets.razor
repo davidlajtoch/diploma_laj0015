@@ -20,6 +20,7 @@ else
         <div class="menu">
             <div class="group_left">
                 <button class="button_default" @onclick="() => DatasetNewMenu!.Show()">New dataset</button>
+                <button class="button_default" @onclick="() => DatasetOneClickMenu!.Show()">One click rows upload</button>
             </div>
 
             <div class="group_right">
@@ -47,13 +48,16 @@ else
         </ul>
 
         <DatasetNewMenu @ref="DatasetNewMenu" OnDatasetChanged="UpdateData" />
+        <DatasetOneClickMenu @ref="DatasetOneClickMenu" OnDatasetChanged="UpdateData" />
         <DatasetMenu @ref="DatasetMenu" OnDatasetChanged="UpdateData" />
     </div>
 }
 
 @code {
-    private DatasetMenu? DatasetMenu = null!;
     private DatasetNewMenu? DatasetNewMenu = null!;
+    private DatasetOneClickMenu? DatasetOneClickMenu = null!;
+    private DatasetMenu? DatasetMenu = null!;
+    
 
     private List<DatasetContract>? DatasetList { get; set; }
     private List<DatasetContract>? DatasetListFiltered { get; set; }

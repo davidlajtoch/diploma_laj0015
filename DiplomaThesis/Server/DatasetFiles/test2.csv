@@ -1,0 +1,9 @@
+Name,State,Source,Date,Release
+Change 1,New,Internal,2020-1-1T00:00:00Z,Release 2
+Change 2,Approved,Internal,2020-1-1T00:00:00Z,Release 2
+Change 3,Approved,External,2020-1-1T00:00:00Z,Release 2
+Change 4,Solved,External,2020-1-2T00:00:00Z,Release 3
+Change 5,Rejected,External,2020-1-2T00:00:00Z,Release 2
+Change 6,New,External,2020-1-2T00:00:00Z,Release 3
+Change 7,Approved,Internal,2020-1-2T00:00:00Z,Release 1
+Change 8,Rejected,Internal,2020-1-3T00:00:00Z,Release 3

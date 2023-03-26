@@ -114,5 +114,13 @@
   {
     "outputFile": "Shared/DragAndDropFileLoader.razor.css",
     "inputFile": "Shared/DragAndDropFileLoader.razor.scss"
+  },
+  {
+    "outputFile": "Shared/DatasetOneClickMenu.razor.css",
+    "inputFile": "Shared/DatasetOneClickMenu.razor.scss"
+  },
+  {
+    "outputFile": "Shared/FileFormatGuideOneClick.razor.css",
+    "inputFile": "Shared/FileFormatGuideOneClick.razor.scss"
   }
 ]

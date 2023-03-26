@@ -8,4 +8,6 @@ public interface IDatasetService
     public Task<bool> UploadNewDataset(string datasetName, string datasetJson);
     public Task<bool> UploadRowsToDataset(Guid datasetId, string datasetJson);
     public Task<bool> DeleteDataset(Guid datasetPowerBiId);
+    public Task<List<string>> GetServerDatasetFileNames();
+    public Task<bool> UploadRowsToDatasetByServerFileIndex(int datasetFileIndex);
 }

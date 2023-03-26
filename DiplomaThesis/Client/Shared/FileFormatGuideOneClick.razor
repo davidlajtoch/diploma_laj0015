@@ -1,0 +1,26 @@
+﻿<div class="section_file_format_guide animate__animated animate__fadeIn">
+    <div class="section_header">One click dataset rows upload guide</div>
+    <div class="text_center">
+        This function allows uploading rows to existing datasets with one click.<br /><br />
+        All rows in all the files saved in server folder "DatasetFiles" will be uploaded to datasets with corresponding names.<br />
+        For example - all rows from file "ExampleDataset.csv" will be uploaded to dataset "ExampleDataset".<br /><br />
+        Dataset files in this folder are expected to be correctly formatted.
+    </div>
+</div>
+<div class="bottom_menu">
+    <div class="group_left">
+        <button class="button_default nomargin" @onclick="Hide">Back</button>
+    </div>
+    <div class="group_right">
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public EventCallback<IBrowserFile> OnHide { get; set; }
+
+    private async Task Hide()
+    {
+        await OnHide.InvokeAsync();
+    }
+}
