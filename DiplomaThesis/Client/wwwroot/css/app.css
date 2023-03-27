@@ -290,6 +290,10 @@ html {
   color: #7c4dff !important;
 }
 
+.text_red {
+  color: #ff1744 !important;
+}
+
 .text_center {
   text-align: center;
 }
