@@ -27,15 +27,18 @@
                                         }
                                         else
                                         {
-                                            @if (DatasetFilesUploadStateProgress[i] == DatasetFileUploadStates[2])
-                                            {
-                                                <i class="material-icons icon text_purple status_done animate__animated animate__fadeIn">check_circle</i>
-                                            }
-                                            else
+                                            @if (DatasetFilesUploadStateProgress[i] == DatasetFileUploadStates[0])
                                             {
                                                 <span>@DatasetFilesUploadStateProgress[i]</span>
                                             }
-                                            
+                                            @if (DatasetFilesUploadStateProgress[i] == DatasetFileUploadStates[2])
+                                            {
+                                                <i class="material-icons icon text_purple animate__animated animate__fadeIn">check_circle</i>
+                                            }
+                                            @if (DatasetFilesUploadStateProgress[i] == DatasetFileUploadStates[3])
+                                            {
+                                                <i class="material-icons icon text_red animate__animated animate__fadeIn">cancel</i>
+                                            }
                                         }
                                     </div>
                                 </div>
