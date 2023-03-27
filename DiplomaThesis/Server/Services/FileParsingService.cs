@@ -7,6 +7,7 @@ using Newtonsoft.Json;
 using System.Globalization;
 using Microsoft.AspNetCore.Components.Web;
 using System.IO;
+using System;
 
 namespace DiplomaThesis.Server.Services;
 public class FileParsingService
@@ -43,7 +44,7 @@ public class FileParsingService
             fileContent = await streamReader.ReadToEndAsync();
         }
 
-        fileContent = fileContent.ReplaceLineEndings();
+        fileContent = fileContent.ReplaceLineEndings().Replace("\r", string.Empty);
         var rows = fileContent.Split("\n");
         var columnNames = rows[0].Split(",");
 

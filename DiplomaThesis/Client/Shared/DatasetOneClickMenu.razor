@@ -11,7 +11,7 @@
     <div class="dataset_menu">
         <div class="@(ShowFileFormatGuide ? "hidden" : "")">
             <div class="section_dataset_info animate__animated animate__fadeIn">
-                <div class="section_header">Dataset files</div>
+                <div class="section_header">Dataset files <span class="text_light">(@DatasetFileNames.Count())</span></div>
                 @if (DatasetFileNames != null)
                 {
                     <div class="list_dataset_files_container">
@@ -21,20 +21,13 @@
                                 <div class="row">
                                     <div class="file_name">@DatasetFileNames[i]</div>
                                     <div class="status">
-                                        @if(CurrentDatasetFileUploadIndex == i)
+                                        @if (DatasetFilesUploadStateProgress[i] == DatasetFileUploadStates[1])
                                         {
-                                            <span>Uploading</span>
+                                            <LoaderTiny />
                                         }
                                         else
                                         {
-                                            if (DatasetFilesUploadProgress[i] == false)
-                                            {
-                                                <span>Error</span>
-                                            }
-                                            else
-                                            {
-                                                <span>Done</span>
-                                            }
+                                            <span>@DatasetFilesUploadStateProgress[i]</span>
                                         }
                                     </div>
                                 </div>
@@ -65,8 +58,10 @@
     [Parameter]
     public EventCallback OnDatasetChanged { get; set; }
 
-    private List<string> DatasetFileNames { get; set; }
-    private List<bool> DatasetFilesUploadProgress { get; set; } = new();
+    private List<string> DatasetFileNames { get; set; } = new();
+    private List<string> DatasetFilesUploadStateProgress { get; set; } = new();
+    private List<string> DatasetFileUploadStates = new List<string>
+    { "Waiting", "Uploading", "Done", "Error" };
 
     private int CurrentDatasetFileUploadIndex { get; set; } = 0;
     public bool ShowDatasetMenu { get; set; }
@@ -75,6 +70,7 @@
     public async Task SaveAndToggleDatasetMenu()
     {
         ShowDatasetMenu = !ShowDatasetMenu;
+        CurrentDatasetFileUploadIndex = 0;
     }
 
     public async Task Show()
@@ -82,9 +78,10 @@
         CurrentDatasetFileUploadIndex = 0;
         await LoadDatasetFileNames();
 
+        DatasetFilesUploadStateProgress.Clear();
         foreach (var datasetFileName in DatasetFileNames)
         {
-            DatasetFilesUploadProgress.Add(false);
+            DatasetFilesUploadStateProgress.Add(DatasetFileUploadStates[0]);
         }
 
         ShowDatasetMenu = true;
@@ -105,7 +102,15 @@
 
         foreach (var datasetFileName in DatasetFileNames)
         {
-            DatasetFilesUploadProgress[CurrentDatasetFileUploadIndex] = await UploadRowsToDatasetByServerFileIndex(CurrentDatasetFileUploadIndex);
+            DatasetFilesUploadStateProgress[CurrentDatasetFileUploadIndex] = DatasetFileUploadStates[1];
+            if (await UploadRowsToDatasetByServerFileIndex(CurrentDatasetFileUploadIndex))
+            {
+                DatasetFilesUploadStateProgress[CurrentDatasetFileUploadIndex] = DatasetFileUploadStates[2];
+                CurrentDatasetFileUploadIndex++;
+                continue;
+            }
+            DatasetFilesUploadStateProgress[CurrentDatasetFileUploadIndex] = DatasetFileUploadStates[3];
+            CurrentDatasetFileUploadIndex++;
         }
     }
 
@@ -114,7 +119,6 @@
         if (await DatasetService.UploadRowsToDatasetByServerFileIndex(datasetFileIndex))
         {
             await OnDatasetChanged.InvokeAsync();
-            await SaveAndToggleDatasetMenu();
             return true;
         }
         return false;

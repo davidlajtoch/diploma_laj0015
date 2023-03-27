@@ -122,5 +122,9 @@
   {
     "outputFile": "Shared/FileFormatGuideOneClick.razor.css",
     "inputFile": "Shared/FileFormatGuideOneClick.razor.scss"
+  },
+  {
+    "outputFile": "Shared/LoaderTiny.razor.css",
+    "inputFile": "Shared/LoaderTiny.razor.scss"
   }
 ]
