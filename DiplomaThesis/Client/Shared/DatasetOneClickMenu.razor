@@ -27,7 +27,15 @@
                                         }
                                         else
                                         {
-                                            <span>@DatasetFilesUploadStateProgress[i]</span>
+                                            @if (DatasetFilesUploadStateProgress[i] == DatasetFileUploadStates[2])
+                                            {
+                                                <i class="material-icons icon text_purple status_done animate__animated animate__fadeIn">check_circle</i>
+                                            }
+                                            else
+                                            {
+                                                <span>@DatasetFilesUploadStateProgress[i]</span>
+                                            }
+                                            
                                         }
                                     </div>
                                 </div>
@@ -41,7 +49,10 @@
                         <button class="button_default" @onclick="ToggleFileFormatGuide">Format guide</button>
                     </div>
                     <div class="group_right">
-                        <button class="button_default" @onclick="UploadRowsToDatasets">Upload rows</button>
+                        <button class="button_default @(UploadInProgress ? "hidden" : "") animate__animated animate__fadeIn"
+                                @onclick="UploadRowsToDatasets">
+                            Upload rows
+                        </button>
                         <button class="button_default" @onclick="SaveAndToggleDatasetMenu">Close</button>
                     </div>
                 </div>
@@ -64,8 +75,10 @@
     { "Waiting", "Uploading", "Done", "Error" };
 
     private int CurrentDatasetFileUploadIndex { get; set; } = 0;
-    public bool ShowDatasetMenu { get; set; }
     private bool ShowFileFormatGuide = false;
+    private bool UploadInProgress = false;
+    public bool ShowDatasetMenu { get; set; }
+
 
     public async Task SaveAndToggleDatasetMenu()
     {
@@ -93,12 +106,23 @@
         DatasetFileNames = await DatasetService.GetServerDatasetFileNames();
     }
 
+    private void ResetDatasetFileUploadProgress()
+    {
+        for (int i = 0; i < DatasetFilesUploadStateProgress.Count(); i++)
+        {
+            DatasetFilesUploadStateProgress[i] = DatasetFileUploadStates[0];
+        }
+    }
+
     private async Task UploadRowsToDatasets()
     {
         if (!DatasetFileNames.Any())
         {
             return;
         }
+
+        ResetDatasetFileUploadProgress();
+        UploadInProgress = true;
 
         foreach (var datasetFileName in DatasetFileNames)
         {
@@ -112,6 +136,7 @@
             DatasetFilesUploadStateProgress[CurrentDatasetFileUploadIndex] = DatasetFileUploadStates[3];
             CurrentDatasetFileUploadIndex++;
         }
+        UploadInProgress = false;
     }
 
     private async Task<bool> UploadRowsToDatasetByServerFileIndex(int datasetFileIndex)

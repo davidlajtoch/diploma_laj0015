@@ -12,6 +12,7 @@ using Microsoft.PowerBI.Api.Models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
+using System.Data;
 using System.Globalization;
 using System.IO;
 using System.Text;
@@ -206,6 +207,9 @@ public class DatasetController : ControllerBase
 
         var result = await _service.PushRowsToDataset(datasetId, rows);
 
+        await RecordActivity("Rows were added to dataset " + dataset.Name, null);
+        _context.SaveChanges();
+
         return result ? Ok() : StatusCode(500);
     }
 
@@ -232,16 +236,14 @@ public class DatasetController : ControllerBase
         var datasetPowerBi = await _service.GetDataset(datasetInDb.PowerBiId);
         if (datasetPowerBi is null) return NotFound();
 
-        try
+        var result = await _service.PushRowsToDataset(Guid.Parse(datasetPowerBi.Id), datasetRows);
+
+        if (result)
         {
-            var result = await _service.PushRowsToDataset(Guid.Parse(datasetPowerBi.Id), datasetRows);
-            return result ? Ok() : StatusCode(500);
-        } catch (Exception ex)
-        {
-            Console.WriteLine(ex.Message);
+            await RecordActivity("Rows were added to dataset " + datasetPowerBi.Name, null);
+            _context.SaveChanges();
         }
-        
-        return Ok();
+        return result ? Ok() : StatusCode(500);
         
     }
 

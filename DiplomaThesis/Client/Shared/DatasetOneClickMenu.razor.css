@@ -47,6 +47,8 @@
   text-align: left;
 }
 .dataset_menu_container .dataset_menu .list_dataset_files_container .list_dataset_files .row .status {
+  height: 16px;
+  font-size: 16px;
   margin-right: 10px;
   text-align: right;
 }
