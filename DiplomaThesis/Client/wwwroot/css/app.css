@@ -23,6 +23,27 @@ html {
   border: 1px solid rgb(255, 255, 255);
 }
 
+.page_main_menu_default {
+  width: 100%;
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: space-between;
+}
+.page_main_menu_default .group_right, .page_main_menu_default .group_left {
+  height: 40px;
+  display: flex;
+  gap: 10px;
+}
+@media only screen and (max-width: 600px) {
+  .page_main_menu_default {
+    flex-direction: column;
+  }
+  .page_main_menu_default .group_left {
+    margin-bottom: 10px;
+    margin-left: -5px;
+  }
+}
+
 .button_default, .button_warning {
   position: relative;
   height: 40px;
@@ -273,13 +294,6 @@ html {
   width: 100%;
   text-align: center;
   color: #94a3b8;
-}
-.info_nothing_here_default:is(.vh_centered) {
-  position: absolute;
-  top: 50%;
-  left: calc(50% + 130px);
-  -ms-transform: translate(-50%, -50%);
-  transform: translate(-50%, -50%);
 }
 
 .text_light {

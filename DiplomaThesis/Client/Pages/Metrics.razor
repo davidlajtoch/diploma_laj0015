@@ -20,7 +20,7 @@
 else
 {
     <div class="animate__animated animate__fadeIn">
-        <div class="menu">
+        <div class="page_main_menu_default">
             <div class="group_left">
                 <button class="button_default @(ShowUserGroupReports ? "selected" : "")" @onclick="() => ShowUserGroupReports = true">User group reports</button>
                 <button class="button_default @(!ShowUserGroupReports ? "selected" : "")" @onclick="() => ShowUserGroupReports = false">All reports</button>
@@ -31,57 +31,65 @@ else
             </div>
         </div>
         <AuthorizeView Roles="Architect">
-            <div class="list_reports">
-                @if (ShowUserGroupReports)
+
+            @if (ShowUserGroupReports)
+            {
+                if (ReportsUserGroupFiltered == null || !ReportsUserGroupFiltered.Any())
                 {
-                    foreach (var report in ReportsUserGroupFiltered!)
-                    {
-                        <div id="@report.Id" class="item @(_expandedReportId == report.Id ? "item_expanded" : "")">
-                            <ReportContainer Report="@report" />
-                            <div class="menu_bottom">
-                                <div class="group_left"></div>
-                                <div class="group_right">
-                                    <button class="button_default" @onclick="() => ExpandReport(report.Id)">
-                                        @(_expandedReportId == report.Id ? "Shrink" : "Expand")
-                                    </button>
-                                    <button class="button_default" @onclick="() => ReportMenu!.ShowReportMenu(report)">
-                                        Options
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    }
-                    if(ReportsUserGroupFiltered == null || !ReportsUserGroupFiltered.Any())
-                    {
-                        <div class="info_nothing_here_default vh_centered animate__animated animate__fadeIn">There are no reports to display</div>
-                    }
+                    <div class="info_nothing_here_default animate__animated animate__fadeIn">There are no reports to display</div>
                 }
                 else
                 {
-                    foreach (var report in ReportsAllFiletered!)
-                    {
-                        <div id="@report.Id" class="item @(_expandedReportId == report.Id ? "item_expanded" : "")">
-                            <ReportContainer Report="@report" />
-                            <div class="menu_bottom">
-                                <div class="group_left"></div>
-                                <div class="group_right">
-                                    <button class="button_default" @onclick="() => ExpandReport(report.Id)">
-                                        @(_expandedReportId == report.Id ? "Shrink" : "Expand")
-                                    </button>
-                                    <button class="button_default" @onclick="() => ReportMenu!.ShowReportMenu(report)">
-                                        Options
-                                    </button>
+                    <div class="list_reports">
+                        @foreach (var report in ReportsUserGroupFiltered!)
+                        {
+                            <div id="@report.Id" class="item @(_expandedReportId == report.Id ? "item_expanded" : "")">
+                                <ReportContainer Report="@report" />
+                                <div class="menu_bottom">
+                                    <div class="group_left"></div>
+                                    <div class="group_right">
+                                        <button class="button_default" @onclick="() => ExpandReport(report.Id)">
+                                            @(_expandedReportId == report.Id ? "Shrink" : "Expand")
+                                        </button>
+                                        <button class="button_default" @onclick="() => ReportMenu!.ShowReportMenu(report)">
+                                            Options
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    }
-                    if (ReportsAllFiletered == null || !ReportsAllFiletered.Any())
-                    {
-                        <div class="info_nothing_here_default vh_centered animate__animated animate__fadeIn">There are no reports to display</div>
-                    }
+                        }
+                    </div>
                 }
-
-            </div>
+            }
+            else
+            {
+                if (ReportsAllFiletered == null || !ReportsAllFiletered.Any())
+                {
+                    <div class="info_nothing_here_default animate__animated animate__fadeIn">There are no reports to display</div>
+                }
+                else
+                {
+                    <div class="list_reports">
+                        @foreach (var report in ReportsAllFiletered!)
+                        {
+                            <div id="@report.Id" class="item @(_expandedReportId == report.Id ? "item_expanded" : "")">
+                                <ReportContainer Report="@report" />
+                                <div class="menu_bottom">
+                                    <div class="group_left"></div>
+                                    <div class="group_right">
+                                        <button class="button_default" @onclick="() => ExpandReport(report.Id)">
+                                            @(_expandedReportId == report.Id ? "Shrink" : "Expand")
+                                        </button>
+                                        <button class="button_default" @onclick="() => ReportMenu!.ShowReportMenu(report)">
+                                            Options
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+            }
         </AuthorizeView>
 
         <div>

@@ -1,47 +1,44 @@
 ﻿@using System.Data;
 @using System.Globalization;
 
-@if (DatasetDataTable != null)
+@if (DatasetColumnTypes != null)
 {
     <table class="table_dataset_preview animate__animated animate__fadeIn">
         <tr>
-            @for (int i = 0; i < DatasetDataTable!.Columns.Count; i++)
+            @for (int i = 0; i < DatasetNewListOfDict[0].Keys.Count(); i++)
             {
                 <th>
-                    @DatasetDataTable.Columns[i] :
+                    @DatasetNewListOfDict[0].ElementAt(i).Key :
                     <span class="text_light">@DatasetColumnTypes![i]</span>
                 </th>
             }
         </tr>
-        @for (int row = 0; row < DatasetDataTable.Rows.Count; row++)
+
+        @for (int row = 0; row < DatasetNewListOfDict.Count; row++)
         {
             if (row >= DatasetPreviewMaxRows) break;
+
             <tr>
-                @for (int column = 0; column < DatasetDataTable.Columns.Count; column++)
+                @foreach (var columnValue in DatasetNewListOfDict[row].Values)
                 {
                     <td>
-                        @DatasetDataTable.Rows[row].ItemArray[column]
+                        @columnValue
                     </td>
                 }
             </tr>
         }
     </table>
-
-    <!--
-    <div class="control_menu">
-        <button class="button_default" @onclick="AutoCorrectDataTypes">Auto correct data types</button>
-    </div>
-    -->
 }
 
 @code {
     [Parameter]
-    public DataTable DatasetDataTable { get; set; }
+    public List<Dictionary<string, string>> DatasetNewListOfDict { get; set; }
     [Parameter]
     public EventCallback<List<string>> OnDatasetFileLoaded { get; set; }
 
     private List<string>? DatasetColumnTypes { get; set; }
     private const int DatasetPreviewMaxRows = 5;
+    private const string DatasetNullValueString = "NULL";
 
     protected override async Task OnInitializedAsync()
     {
@@ -53,46 +50,52 @@
     {
         List<string> datasetColumnDatatypesList = new();
 
-        for (int c = 0; c < DatasetDataTable.Columns.Count; c++)
+        foreach (KeyValuePair<string, string> entry in DatasetNewListOfDict[0])
+        {
+            datasetColumnDatatypesList.Add("String");
+        }
+
+        for (int column = 0; column < DatasetNewListOfDict[0].Keys.Count(); column++)
         {
             bool isDateTime = true;
             bool isDouble = true;
             bool isBool = true;
-
-            var columnName = DatasetDataTable.Columns[c].ToString();
-            datasetColumnDatatypesList.Add("String");
-
-            for (int r = 1; r < DatasetDataTable.Rows.Count; r++)
+            for (int row = 0; row < DatasetNewListOfDict.Count; row++)
             {
-                if (!DateTime.TryParse(DatasetDataTable.Rows[r][columnName].ToString(), out _))
+                var columnValue = DatasetNewListOfDict[row].ElementAt(column).Value;
+
+                if (columnValue.ToString() == string.Empty)
+                {
+                    continue;
+                }
+                if (!DateTime.TryParse(columnValue.ToString(), out _))
                 {
                     isDateTime = false;
                 }
 
-                if (!double.TryParse(DatasetDataTable.Rows[r][columnName].ToString(), NumberStyles.Any, CultureInfo.InvariantCulture, out _))
+                if (!double.TryParse(columnValue.ToString(), NumberStyles.Any, CultureInfo.InvariantCulture, out _))
                 {
                     isDouble = false;
                 }
 
-                if (!bool.TryParse(DatasetDataTable.Rows[r][columnName].ToString(), out _))
+                if (!bool.TryParse(columnValue.ToString(), out _))
                 {
                     isBool = false;
                 }
             }
-
             if (isDateTime)
             {
-                datasetColumnDatatypesList[c] = "DateTime";
+                datasetColumnDatatypesList[column] = "DateTime";
                 continue;
             }
             if (isDouble)
             {
-                datasetColumnDatatypesList[c] = "Double";
+                datasetColumnDatatypesList[column] = "Double";
                 continue;
             }
             if (isBool)
             {
-                datasetColumnDatatypesList[c] = "Bool";
+                datasetColumnDatatypesList[column] = "Bool";
                 continue;
             }
         }

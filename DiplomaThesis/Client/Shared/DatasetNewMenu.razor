@@ -32,9 +32,9 @@
                     </div>
                 }
 
-                @if (DatasetFileLoadProgress == 2 && DatasetNewDataTable != null)
+                @if (DatasetFileLoadProgress == 2 && DatasetNewListOfDict != null)
                 {
-                    <DatasetPreviewTable DatasetDataTable="DatasetNewDataTable" />
+                    <DatasetPreviewTable DatasetNewListOfDict="DatasetNewListOfDict" />
                 }
 
                 @if (DatasetFileLoadProgress == 3)
@@ -84,7 +84,7 @@
     public EventCallback OnDatasetChanged { get; set; }
 
     private DatasetContract? Dataset { get; set; }
-    private DataTable? DatasetNewDataTable { get; set; }
+    private List<Dictionary<string, string>>? DatasetNewListOfDict { get; set; }
     private string DatasetNewJson { get; set; } = string.Empty;
     private string DatasetNewName { get; set; } = string.Empty;
 
@@ -109,7 +109,7 @@
     private void ResetDatasetFileUploadState()
     {
         DatasetFileLoadProgress = 0;
-        DatasetNewDataTable = null;
+        DatasetNewListOfDict = null;
         DatasetNewJson = string.Empty;
         ShowFileFormatGuide = false;
     }
@@ -123,7 +123,7 @@
             string datasetFileExtension = datasetFile.Name.Split(".").Last();
             DatasetNewName = datasetFile.Name.Split(".").First();
             DatasetNewJson = await Parser.ParseFileToJson(datasetFile, datasetFileExtension);
-            DatasetNewDataTable = await Parser.ParseJsonToDataTable(DatasetNewJson);
+            DatasetNewListOfDict = await Parser.ParseJsonToListOfDict(DatasetNewJson);
             DatasetFileLoadProgress = 2;
         }
         catch

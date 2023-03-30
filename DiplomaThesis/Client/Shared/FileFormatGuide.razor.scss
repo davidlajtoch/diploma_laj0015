@@ -1,6 +1,8 @@
 ﻿@import '../wwwroot/css/variables';
 
 .section_file_format_guide {
+    height: 50vh;
+    overflow-y: scroll;
 
     .section_header {
         width: 100%;

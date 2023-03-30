@@ -226,7 +226,7 @@ public class DatasetController : ControllerBase
         string datasetFileJson = await fileParsingService.ParseFileToJson(datasetFile.FullName, datasetFile.Extension[1..]);
         List<object> datasetRows = JsonConvert.DeserializeObject<List<object>>(datasetFileJson);
 
-        if(datasetRows == null) return BadRequest();
+        if (datasetRows == null) return BadRequest();
 
         string datasetName = datasetFile.Name.Split('.')[0];
 
@@ -244,7 +244,7 @@ public class DatasetController : ControllerBase
             _context.SaveChanges();
         }
         return result ? Ok() : StatusCode(500);
-        
+
     }
 
     [Authorize(Roles = "Architect")]
@@ -254,10 +254,11 @@ public class DatasetController : ControllerBase
     )
     {
         var datasetPowerBi = await _service.GetDataset(deleteDatasetCommand.PowerBiId);
-        if (datasetPowerBi is null) return StatusCode(500);
-
-        var result = await _service.DeleteDataset(deleteDatasetCommand.PowerBiId);
-        if (!result) return StatusCode(500);
+        if (datasetPowerBi != null)
+        {
+            var result = await _service.DeleteDataset(deleteDatasetCommand.PowerBiId);
+            if (!result) return StatusCode(500);
+        }
 
         var datasetDb = _context.Datasets.Where(d => d.PowerBiId == Guid.Parse(datasetPowerBi.Id)).FirstOrDefault();
 

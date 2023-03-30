@@ -9,6 +9,7 @@ using Newtonsoft.Json;
 using Microsoft.PowerBI.Api.Models;
 using Microsoft.Rest.Serialization;
 using System.Globalization;
+using System.Text.RegularExpressions;
 
 namespace DiplomaThesis.Client.Services.Implementations;
 
@@ -98,51 +99,18 @@ public class FileParsingService : IFileParsingService
         return sb.ToString();
     }
 
-    public async Task<DataTable> ParseJsonToDataTable(string json)
+    public async Task<List<Dictionary<string, string>>> ParseJsonToListOfDict(string json)
     {
-        return JsonConvert.DeserializeObject<DataTable>(json);
-    }
-
-    public static bool ChangeColumnDataType(DataTable table, string columnname, Type newtype)
-    {
-        if (table.Columns.Contains(columnname) == false)
-            return false;
-
-        DataColumn column = table.Columns[columnname];
-        if (column.DataType == newtype)
-            return true;
-
-        try
+        List<string> rowsJson = new();
+        foreach (Match match in Regex.Matches(json, "{[^}]+}"))
         {
-            DataColumn newcolumn = new DataColumn("temporary", newtype);
-            table.Columns.Add(newcolumn);
-
-            foreach (DataRow row in table.Rows)
-            {
-                try
-                {
-                    if (newtype == typeof(double))
-                    {
-                        row["temporary"] = (decimal)Convert.ChangeType(row[columnname], typeof(decimal), CultureInfo.InvariantCulture);
-                    }
-                    else
-                    {
-                        row["temporary"] = Convert.ChangeType(row[columnname], newtype);
-                    }
-
-                }
-                catch { }
-            }
-            newcolumn.SetOrdinal(column.Ordinal);
-            table.Columns.Remove(columnname);
-            newcolumn.ColumnName = columnname;
+            rowsJson.Add(match.Value);
         }
-        catch (Exception)
+        List<Dictionary<string, string>> result = new();
+        foreach(var row in rowsJson)
         {
-            return false;
+            result.Add(JsonConvert.DeserializeObject<Dictionary<string, string>>(row));
         }
-
-        return true;
+        return result;
     }
-
 }

@@ -10,5 +10,5 @@ public interface IFileParsingService
     public Task<string> ReadJson(IBrowserFile datasetFile);
     public Task<string> ParseCsvToJson(IBrowserFile datasetFile);
     public Task<string> ParseXlsxToJson(IBrowserFile datasetFile);
-    public Task<DataTable> ParseJsonToDataTable(string json);
+    public Task<List<Dictionary<string, string>>> ParseJsonToListOfDict(string json);
 }
