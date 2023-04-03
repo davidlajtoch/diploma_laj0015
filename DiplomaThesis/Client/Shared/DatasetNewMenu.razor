@@ -64,7 +64,7 @@
                         }
                         @if (DatasetNewJson != null && DatasetNewJson != string.Empty)
                         {
-                            <button class="button_default" @onclick="UploadNewDataset">Upload</button>
+                            <button class="button_default @((DatasetFileLoadProgress == 3)? "hidden" : "")" @onclick="UploadNewDataset">Upload</button>
                         }
 
                         <button class="button_default" @onclick="SaveAndToggleDatasetMenu">Close</button>

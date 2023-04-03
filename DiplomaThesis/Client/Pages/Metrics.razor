@@ -22,8 +22,8 @@ else
     <div class="animate__animated animate__fadeIn">
         <div class="page_main_menu_default">
             <div class="group_left">
-                <button class="button_default @(ShowUserGroupReports ? "selected" : "")" @onclick="() => ShowUserGroupReports = true">User group reports</button>
-                <button class="button_default @(!ShowUserGroupReports ? "selected" : "")" @onclick="() => ShowUserGroupReports = false">All reports</button>
+                <button class="button_default @(ShowUserGroupReports ? "selected" : "")" @onclick="() => ShowUserGroupReports = true">User group metrics</button>
+                <button class="button_default @(!ShowUserGroupReports ? "selected" : "")" @onclick="() => ShowUserGroupReports = false">All metrics</button>
             </div>
             <div class="group_right">
                 <input type="text" class="input_search_default" placeholder="Search by name..."
@@ -36,7 +36,7 @@ else
             {
                 if (ReportsUserGroupFiltered == null || !ReportsUserGroupFiltered.Any())
                 {
-                    <div class="info_nothing_here_default animate__animated animate__fadeIn">There are no reports to display</div>
+                    <div class="info_nothing_here_default animate__animated animate__fadeIn">There are no metrics to display</div>
                 }
                 else
                 {
@@ -65,7 +65,7 @@ else
             {
                 if (ReportsAllFiletered == null || !ReportsAllFiletered.Any())
                 {
-                    <div class="info_nothing_here_default animate__animated animate__fadeIn">There are no reports to display</div>
+                    <div class="info_nothing_here_default animate__animated animate__fadeIn">There are no metrics to display</div>
                 }
                 else
                 {

@@ -124,7 +124,7 @@
                     <div class="group_left">
                         <button class="button_default" @onclick="ToggleFileFormatGuide">Format guide</button>
                         <button class="button_warning" @onclick="DeleteDataset" @onmouseout="ResetDatasetDeleteConfirm">
-                            @(DeleteDatasetConfirmation ? "Are you sure?" : "Delete dataset")
+                            @(DeleteDatasetConfirmation ? "Are you sure? This also deletes related metrics" : "Delete dataset")
                         </button>
                     </div>
                     <div class="group_right">
