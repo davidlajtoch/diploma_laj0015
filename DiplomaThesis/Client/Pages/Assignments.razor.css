@@ -7,7 +7,7 @@
   border-radius: 15px;
   margin: 0 auto;
   position: relative;
-  top: 50%;
+  top: calc(50% - 58px);
 }
 .warning_no_user_group .icon {
   width: 100%;
