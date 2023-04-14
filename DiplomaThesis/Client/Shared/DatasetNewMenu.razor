@@ -12,12 +12,15 @@
         <div class="@(ShowFileFormatGuide ? "hidden" : "")">
             <div class="section_dataset_info animate__animated animate__fadeIn">
                 <div class="section_header">New dataset preview</div>
-                <table class="table_info">
-                    <tr>
-                        <td class="label">Name</td>
-                        <td>@DatasetNewName</td>
-                    </tr>
-                </table>
+                @if(DatasetFileLoadProgress != 0 && DatasetFileLoadProgress != 1)
+                {
+                    <table class="table_info">
+                        <tr>
+                            <td class="label">Name</td>
+                            <td>@DatasetNewName</td>
+                        </tr>
+                    </table>
+                }
 
                 @if (DatasetFileLoadProgress == 0)
                 {

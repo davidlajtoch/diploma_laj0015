@@ -116,7 +116,7 @@
                 {
                     <div class="info_columns_do_not_match animate__animated animate__fadeIn">
                         <span>Column types of existing Dataset do not match with the column types of this file.</span><br />
-                        <span>Try correcting the file and try again.</span>
+                        <span>Try correcting the file or choose another file.</span>
                     </div>
                 }
 
@@ -176,7 +176,6 @@
     {
         Dataset = dataset;
         DatasetRowsExistingData = await DatasetRowService.GetDatasetRowsByDatasetId(dataset.Id);
-
         ShowDatasetMenu = true;
 
         StateHasChanged();
@@ -188,6 +187,7 @@
         DatasetNewListOfDict = null;
         DatasetNewJson = string.Empty;
         ShowFileFormatGuide = false;
+        DatasetColumnTypesMatch = true;
     }
 
     private void ResetDatasetDeleteConfirm()

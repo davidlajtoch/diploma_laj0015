@@ -2,7 +2,7 @@
 @implements IAsyncDisposable
 
 <label @ref="fileDropContainer" class="file_drop_zone @HoverClass @((DataFileWrongType)? "file_drop_zone_warning" : "") animate__animated animate__fadeIn" @ondragenter="OnDragEnter" @ondragleave="OnDragLeave" @ondragover="OnDragEnter">
-    Click to choose a file or drag and drop the file to this area<br /><br />
+    Click to choose a file or drag and drop the file into this area<br /><br />
     Supported files<br />
     @AllowedFileExtensions
     <InputFile @ref="inputFile" OnChange="@(args => LoadFile(args))" accept="@AllowedFileExtensions" />

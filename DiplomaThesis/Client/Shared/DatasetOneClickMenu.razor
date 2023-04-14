@@ -11,7 +11,7 @@
     <div class="dataset_menu">
         <div class="@(ShowFileFormatGuide ? "hidden" : "")">
             <div class="section_dataset_info animate__animated animate__fadeIn">
-                <div class="section_header">Dataset files <span class="text_light">(@DatasetFileNames.Count())</span></div>
+                <div class="section_header">Server dataset files <span class="text_light">(@DatasetFileNames.Count())</span></div>
                 @if (DatasetFileNames != null)
                 {
                     <div class="list_dataset_files_container">
@@ -49,7 +49,7 @@
 
                 <div class="bottom_menu">
                     <div class="group_left">
-                        <button class="button_default" @onclick="ToggleFileFormatGuide">Format guide</button>
+                        <button class="button_default" @onclick="ToggleFileFormatGuide">Guide</button>
                     </div>
                     <div class="group_right">
                         <button class="button_default @(UploadInProgress ? "hidden" : "") animate__animated animate__fadeIn"

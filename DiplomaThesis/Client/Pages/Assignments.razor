@@ -50,13 +50,13 @@ else
                 @for (int i = 0; i < AssignmentLists.Count(); i++)
                 {
                     <div class="container_subsection">
-                        @if (AssignmentLists[i] != null || AssignmentLists[i].Count() != 0)
+                        @if (AssignmentListsFiltered[i] != null || AssignmentListsFiltered[i].Count() != 0)
                         {
                             <div class="subsection_header">
-                                @AssignmentCategories.ElementAt(i).Value <span class="text_light">@AssignmentLists[i].Count()</span>
+                                @AssignmentCategories.ElementAt(i).Value <span class="text_light">@AssignmentListsFiltered[i].Count()</span>
                             </div>
                             <div class="list_assignments">
-                                @foreach (var assignment in AssignmentLists[i])
+                                @foreach (var assignment in AssignmentListsFiltered[i])
                                 {
                                     <div class="container_assignment animate__animated animate__fadeIn">
                                         <button class="button_step_decrease" @onclick="() => UpdateAssignmentStep(assignment, -1)"
@@ -201,6 +201,7 @@ else
     private string UserName = string.Empty;
 
     private List<List<AssignmentContract>> AssignmentLists = new List<List<AssignmentContract>>();
+    private List<List<AssignmentContract>> AssignmentListsFiltered = new List<List<AssignmentContract>>();
 
     private Dictionary<int, string> AssignmentCategories = new Dictionary<int, string>
     {
@@ -218,13 +219,6 @@ else
     private bool UserInUserGroup = false;
     private bool UserUserGroupLeader = false;
     private bool DeleteAssignmentConfirmation = false;
-
-    private async Task UpdateData()
-    {
-        AssignmentsUserGroup = await AssignmentService.GetUserGroupAssignments(UserGroup!.Id);
-        CategorizeAssignments();
-        StateHasChanged();
-    }
 
     protected override async Task OnInitializedAsync()
     {
@@ -247,7 +241,6 @@ else
         CategorizeAssignments();
 
         UserInUserGroup = true;
-        Console.WriteLine(UserUserGroupLeader);
     }
 
     private async Task GetSetUserId()
@@ -272,6 +265,7 @@ else
             {
                 AssignmentLists[assignmentCategory.Key] = AssignmentsUserGroup!.FindAll(a => a.Step == assignmentCategory.Key);
             }
+            AssignmentListsFiltered = AssignmentLists;
             return;
         }
 
@@ -279,6 +273,7 @@ else
         {
             AssignmentLists.Add(AssignmentsUserGroup!.FindAll(a => a.Step == assignmentCategory.Key));
         }
+        AssignmentListsFiltered = AssignmentLists;
     }
 
     private void SelectAssignment(AssignmentContract assignment)
@@ -479,9 +474,9 @@ else
 
     private void SearchAssignmentByName(string searchedAssignment)
     {
-        if (searchedAssignment == string.Empty || searchedAssignment == null)
+        for (int i = 0; i < AssignmentLists.Count(); i++)
         {
-            return;
+            AssignmentListsFiltered[i] = AssignmentLists[i]!.FindAll(a => a.Name.Contains(searchedAssignment));
         }
     }
 

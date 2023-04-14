@@ -354,7 +354,7 @@ html {
 
 /* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
-  background: #cbd5e1;
+  background: #7c4dff;
 }
 
 h1:focus {
