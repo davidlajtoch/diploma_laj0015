@@ -10,7 +10,7 @@
 
 <PageTitle>Home - ReporTiny</PageTitle>
 
-@if (_activityAll is null || _activityUserGroup is null)
+@if (ActivityAll is null || ActivityUserGroup is null)
 {
     <Loader />
 }
@@ -106,15 +106,15 @@ else
                 <div class="section_bottom">
                     <div class="page_main_menu_default">
                         <div class="group_left">
-                            <button class="button_default @(_showUserGroupActivity ? "selected" : "")" @onclick="() => _showUserGroupActivity = true">Activity in my group</button>
-                            <button class="button_default @(!_showUserGroupActivity ? "selected" : "")" @onclick="() => _showUserGroupActivity = false">All activity</button>
+                            <button class="button_default @(ShowUserGroupActivity ? "selected" : "")" @onclick="() => ShowUserGroupActivity = true">Activity in my group</button>
+                            <button class="button_default @(!ShowUserGroupActivity ? "selected" : "")" @onclick="() => ShowUserGroupActivity = false">All activity</button>
                         </div>
 
                         <div class="group_right">
-                            @if (_showUserGroupActivity)
+                            @if (ShowUserGroupActivity)
                             {
                                 <input type="text" class="input_search_default" placeholder="Search..."
-                               @oninput="@((e) => SearchAllActivity(e.Value!.ToString()!))">
+                               @oninput="@((e) => SearchUserGroupActivity(e.Value!.ToString()!))">
                             }
                             else
                             {
@@ -124,9 +124,9 @@ else
                         </div>
                     </div>
 
-                    @if (_showUserGroupActivity)
+                    @if (ShowUserGroupActivity)
                     {
-                        @if (!_activityUserGroupSearched!.Any())
+                        @if (!ActivityUserGroupFiltered!.Any())
                         {
                             <div class="info_nothing_here_default animate__animated animate__fadeIn">No records to display</div>
                         }
@@ -138,7 +138,7 @@ else
                                     <div class="col col_25">User Group</div>
                                     <div class="col col_25">Created</div>
                                 </li>
-                                @foreach (var activity in _activityUserGroupSearched!)
+                                @foreach (var activity in ActivityUserGroupFiltered!)
                                 {
                                     <li class="row">
                                         <div class="col col_50 col_align_left" data-label="Activity">@activity.Message</div>
@@ -151,7 +151,7 @@ else
                     }
                     else
                     {
-                        @if (!_activityAllSearched!.Any())
+                        @if (!ActivityAllFiltered!.Any())
                         {
                             <div class="info_nothing_here_default animate__animated animate__fadeIn">No records to display</div>
                         }
@@ -163,7 +163,7 @@ else
                                     <div class="col col_25">User Group</div>
                                     <div class="col col_25">Created</div>
                                 </li>
-                                @foreach (var activity in _activityAllSearched!)
+                                @foreach (var activity in ActivityAllFiltered!)
                                 {
                                     <li class="row">
                                         <div class="col col_50 col_align_left" data-label="Activity">@activity.Message</div>
@@ -190,12 +190,12 @@ else
 }
 
 @code {
-    private List<ActivityContract>? _activityAll;
-    private List<ActivityContract>? _activityAllSearched;
-    private List<ActivityContract>? _activityUserGroup;
-    private List<ActivityContract>? _activityUserGroupSearched;
+    private List<ActivityContract>? ActivityAll;
+    private List<ActivityContract>? ActivityAllFiltered;
+    private List<ActivityContract>? ActivityUserGroup;
+    private List<ActivityContract>? ActivityUserGroupFiltered;
 
-    private bool _showUserGroupActivity = true;
+    private bool ShowUserGroupActivity = true;
 
     protected override async Task OnInitializedAsync()
     {
@@ -207,38 +207,38 @@ else
         var activityAll = await ActivityService.GetAllActivity();
         var activityUserGroup = await ActivityService.GetCurrentUserUserGroupActivity();
 
-        _activityAll = activityAll;
-        _activityAllSearched = activityAll;
-        _activityUserGroup = activityUserGroup;
-        _activityUserGroupSearched = activityUserGroup;
+        ActivityAll = activityAll;
+        ActivityAllFiltered = activityAll;
+        ActivityUserGroup = activityUserGroup;
+        ActivityUserGroupFiltered = activityUserGroup;
 
         StateHasChanged();
     }
 
-    private void SearchAllActivity(string searched_string)
+    private void SearchAllActivity(string searchedString)
     {
-        if (searched_string is null)
+        if (searchedString is null)
         {
             return;
         }
 
-        _activityAllSearched = _activityAll!.FindAll(a =>
-            a.Message.Contains(searched_string) ||
-            a.UserGroupName.Contains(searched_string) ||
-            a.Created.ToString()!.Contains(searched_string));
+        ActivityAllFiltered = ActivityAll!.FindAll(a =>
+            a.Message.Contains(searchedString) ||
+            a.UserGroupName.Contains(searchedString) ||
+            a.Created.ToString()!.Contains(searchedString));
     }
 
-    private void SearchUserGroupActivity(string searched_string)
+    private void SearchUserGroupActivity(string searchedString)
     {
-        if (searched_string is null)
+        if (searchedString is null)
         {
             return;
         }
 
-        _activityUserGroupSearched = _activityUserGroup!.FindAll(a =>
-            a.Message.Contains(searched_string) ||
-            a.UserGroupName.Contains(searched_string) ||
-            a.Created.ToString()!.Contains(searched_string));
+        ActivityUserGroupFiltered = ActivityUserGroup!.FindAll(a =>
+            a.Message.Contains(searchedString) ||
+            a.UserGroupName.Contains(searchedString) ||
+            a.Created.ToString()!.Contains(searchedString));
     }
 
     private async Task BeginSignOut(MouseEventArgs args)
