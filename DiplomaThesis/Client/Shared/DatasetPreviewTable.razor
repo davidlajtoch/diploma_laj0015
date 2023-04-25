@@ -27,6 +27,11 @@
                 }
             </tr>
         }
+        <tr>
+            <td class="number_of_rows" colspan="@DatasetNewListOfDict[0].Keys.Count()">
+                @NumberOfRows rows total
+            </td>
+        </tr>
     </table>
 }
 
@@ -39,6 +44,7 @@
     private List<string>? DatasetColumnTypes { get; set; }
     private const int DatasetPreviewMaxRows = 5;
     private const string DatasetNullValueString = "NULL";
+    private int NumberOfRows = 0;
 
     protected override async Task OnInitializedAsync()
     {
@@ -55,12 +61,14 @@
             datasetColumnDatatypesList.Add("String");
         }
 
+        var numberOfRows = 0;
         for (int column = 0; column < DatasetNewListOfDict[0].Keys.Count(); column++)
         {
             bool isDateTime = true;
             bool isDouble = true;
             bool isBool = true;
-            for (int row = 0; row < DatasetNewListOfDict.Count; row++)
+            int row = 0;
+            for (; row < DatasetNewListOfDict.Count; row++)
             {
                 var columnValue = DatasetNewListOfDict[row].ElementAt(column).Value;
 
@@ -97,6 +105,11 @@
             {
                 datasetColumnDatatypesList[column] = "Bool";
                 continue;
+            }
+
+            if(column == 0)
+            {
+                NumberOfRows = row;
             }
         }
 

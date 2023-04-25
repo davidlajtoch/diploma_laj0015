@@ -39,7 +39,9 @@ else
                 <li class="header">
                     <div class="col col_25">ID</div>
                     <div class="col col_25">Name</div>
-                    <div class="col col_25">Columns</div>
+                    <div class="col col_10">Columns</div>
+                    <div class="col col_10">Rows</div>
+                    <div class="col col_20">Last update</div>
                     <div class="col col_25">Uploaded through ReporTiny</div>
                 </li>
                 @foreach (var dataset in DatasetListFiltered!)
@@ -47,7 +49,15 @@ else
                     <li class="row selectable" @onclick="() => DatasetMenu!.ShowDataset(dataset)">
                         <div class="col col_25" data-label="ID">@dataset.Id</div>
                         <div class="col col_25" data-label="Name">@dataset.Name</div>
-                        <div class="col col_25" data-label="Columns">@dataset.ColumnNames.Count()</div>
+                        <div class="col col_10" data-label="Columns">
+                            @((dataset.ColumnNames.Count() != 0) ? dataset.ColumnNames.Count() : "Unknown")
+                        </div>
+                        <div class="col col_10" data-label="Rows">
+                            @((dataset.NumberOfRows != null) ? dataset.NumberOfRows : "Unknown")
+                        </div>
+                        <div class="col col_20" data-label="Last updated">
+                            @((dataset.DateUpdated != null) ? dataset.DateUpdated : "Unknown")
+                        </div>
                         <div class="col col_25" data-label="Uploaded through ReporTiny">@dataset.ColumnNames.Any()</div>
                     </li>
                 }

@@ -17,6 +17,11 @@
 .table_dataset_preview tr:nth-child(even) {
   background-color: #cbd5e1;
 }
+.table_dataset_preview .number_of_rows {
+  color: #7c4dff;
+  background-color: #fff;
+  text-align: center;
+}
 
 .control_menu {
   display: flex;

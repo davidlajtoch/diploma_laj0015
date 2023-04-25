@@ -69,6 +69,8 @@ public class DatasetController : ControllerBase
         {
             Id = Guid.Parse(datasetInPowerBi.Id),
             Name = datasetInPowerBi.Name,
+            DateUpdated = datasetInDb?.DateUpdated,
+            NumberOfRows = datasetInDb?.NumberOfRows,
             ColumnNames = datasetInDb?.ColumnNames ?? new List<string>(),
             ColumnTypes = datasetInDb?.ColumnTypes ?? new List<string>()
         });
@@ -92,6 +94,8 @@ public class DatasetController : ControllerBase
                 Id = Guid.Parse(datasetInPowerBi.Id),
                 PowerBiId = Guid.Parse(datasetInPowerBi.Id),
                 Name = datasetInPowerBi.Name,
+                DateUpdated = datasetInDb?.DateUpdated,
+                NumberOfRows = datasetInDb?.NumberOfRows,
                 ColumnNames = datasetInDb?.ColumnNames ?? new List<string>(),
                 ColumnTypes = datasetInDb?.ColumnTypes ?? new List<string>()
             });
@@ -169,6 +173,8 @@ public class DatasetController : ControllerBase
                 Id = Guid.NewGuid(),
                 PowerBiId = Guid.Parse(dataset.Id),
                 Name = dataset.Name,
+                DateUpdated = DateTime.Now,
+                NumberOfRows = rows.Count,
                 ColumnNames = columns.Select(column => column.Name).ToList(),
                 ColumnTypes = columns.Select(column => column.DataType).ToList()
             };
@@ -202,12 +208,20 @@ public class DatasetController : ControllerBase
         [FromBody] List<object> rows
     )
     {
-        var dataset = await _service.GetDataset(datasetId);
-        if (dataset is null) return NotFound();
+        var datasetPbi = await _service.GetDataset(datasetId);
+        if (datasetPbi is null) return NotFound();
 
         var result = await _service.PushRowsToDataset(datasetId, rows);
 
-        await RecordActivity("Rows were added to dataset " + dataset.Name, null);
+        var datasetsInDb = await _context.Datasets.ToListAsync();
+        var datasetInDb = datasetsInDb.Find(d => d.PowerBiId.Equals(datasetId));
+
+        if (datasetInDb is null) return NotFound();
+
+        datasetInDb.DateUpdated = DateTime.Now;
+        datasetInDb.NumberOfRows += rows.Count;
+
+        await RecordActivity("Rows were added to dataset " + datasetPbi.Name, null);
         _context.SaveChanges();
 
         return result ? Ok() : StatusCode(500);
@@ -241,6 +255,8 @@ public class DatasetController : ControllerBase
         if (result)
         {
             await RecordActivity("Rows were added to dataset " + datasetPowerBi.Name, null);
+            datasetInDb.DateUpdated = DateTime.Now;
+            datasetInDb.NumberOfRows += datasetRows.Count;
             _context.SaveChanges();
         }
         return result ? Ok() : StatusCode(500);

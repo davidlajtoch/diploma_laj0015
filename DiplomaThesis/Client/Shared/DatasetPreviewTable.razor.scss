@@ -21,6 +21,12 @@
     tr:nth-child(even) {
         background-color: $color_grey300;
     }
+
+    .number_of_rows{
+        color: $color_purple;
+        background-color: $color_white;
+        text-align: center;
+    }
 }
 
 .control_menu{
