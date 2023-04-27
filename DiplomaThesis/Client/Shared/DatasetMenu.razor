@@ -28,15 +28,15 @@
                     </tr>
                     <tr>
                         <td class="label">Columns</td>
-                        <td>@((Dataset.ColumnNames.Count() != 0) ? Dataset.ColumnNames.Count() : "Unknown")</td>
+                        <td>@((Dataset.ColumnNames.Count() != 0) ? Dataset.ColumnNames.Count() : "?")</td>
                     </tr>
                     <tr>
                         <td class="label">Rows</td>
-                        <td>@((Dataset.NumberOfRows != null) ? Dataset.NumberOfRows : "Unknown")</td>
+                        <td>@((Dataset.NumberOfRows != null) ? Dataset.NumberOfRows : "?")</td>
                     </tr>
                     <tr>
                         <td class="label">Last update</td>
-                        <td>@((Dataset.DateUpdated != null) ? Dataset.DateUpdated : "Unknown")</td>
+                        <td>@((Dataset.DateUpdated != null) ? Dataset.DateUpdated : "?")</td>
                     </tr>
                     <tr>
                         <td class="label">Uploaded through ReporTiny</td>

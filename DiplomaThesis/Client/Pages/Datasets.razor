@@ -50,13 +50,13 @@ else
                         <div class="col col_25" data-label="ID">@dataset.Id</div>
                         <div class="col col_25" data-label="Name">@dataset.Name</div>
                         <div class="col col_10" data-label="Columns">
-                            @((dataset.ColumnNames.Count() != 0) ? dataset.ColumnNames.Count() : "Unknown")
+                            @((dataset.ColumnNames.Count() != 0) ? dataset.ColumnNames.Count() : "?")
                         </div>
                         <div class="col col_10" data-label="Rows">
-                            @((dataset.NumberOfRows != null) ? dataset.NumberOfRows : "Unknown")
+                            @((dataset.NumberOfRows != null) ? dataset.NumberOfRows : "?")
                         </div>
                         <div class="col col_20" data-label="Last updated">
-                            @((dataset.DateUpdated != null) ? dataset.DateUpdated : "Unknown")
+                            @((dataset.DateUpdated != null) ? dataset.DateUpdated : "?")
                         </div>
                         <div class="col col_25" data-label="Uploaded through ReporTiny">@dataset.ColumnNames.Any()</div>
                     </li>
