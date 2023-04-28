@@ -4,7 +4,6 @@
   flex-direction: row;
   flex-wrap: wrap;
   justify-content: space-around;
-  gap: 10px;
 }
 .list_reports .item {
   width: calc(40vw - 30px);
