@@ -2,10 +2,10 @@
 
 .main_menu {
     width: 200px;
-    height: calc(100vh - 60px);
+    height: calc(100vh - 40px);
     position: sticky;
     top: 0;
-    padding: 30px;
+    padding: 20px;
     background-image: linear-gradient(to top, #4e30a4, #5937ba, #643ed1, #7046e8, #7c4dff);
     color: $color_white;
     display: flex;
