@@ -30,7 +30,7 @@ else
                    @oninput="@((e) => SearchReport(e.Value!.ToString()!))">
             </div>
         </div>
-        <AuthorizeView Roles="Architect">
+        
 
             @if (ShowUserGroupReports)
             {
@@ -51,9 +51,11 @@ else
                                         <button class="button_default" @onclick="() => ExpandReport(report.Id)">
                                             @(ExpandedReportId == report.Id ? "Shrink" : "Expand")
                                         </button>
-                                        <button class="button_default" @onclick="() => ReportMenu!.ShowReportMenu(report)">
-                                            Options
-                                        </button>
+                                        <AuthorizeView Roles="Architect">
+                                            <button class="button_default" @onclick="() => ReportMenu!.ShowReportMenu(report)">
+                                                Options
+                                            </button>
+                                        </AuthorizeView>
                                     </div>
                                 </div>
                             </div>
@@ -80,9 +82,11 @@ else
                                         <button class="button_default" @onclick="() => ExpandReport(report.Id)">
                                             @(ExpandedReportId == report.Id ? "Shrink" : "Expand")
                                         </button>
-                                        <button class="button_default" @onclick="() => ReportMenu!.ShowReportMenu(report)">
-                                            Options
-                                        </button>
+                                        <AuthorizeView Roles="Architect">
+                                            <button class="button_default" @onclick="() => ReportMenu!.ShowReportMenu(report)">
+                                                Options
+                                            </button>
+                                        </AuthorizeView>
                                     </div>
                                 </div>
                             </div>
@@ -90,7 +94,7 @@ else
                     </div>
                 }
             }
-        </AuthorizeView>
+        
 
         <div>
             <AuthorizeView Roles="Architect">

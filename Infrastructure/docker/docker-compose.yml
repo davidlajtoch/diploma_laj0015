@@ -9,4 +9,4 @@ services:
       - "1434:1434"
     environment:
       - ACCEPT_EULA=Y
-      - SA_PASSWORD=DThesis2021
+      - SA_PASSWORD=DThesis2022
